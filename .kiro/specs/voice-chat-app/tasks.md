@@ -48,7 +48,7 @@ This implementation plan breaks down the voice chat application into discrete, a
   - Decode base64 PCM16 audio from API responses
   - _Requirements: 1.4, 8.2, 8.4_
 
-- [ ] 6. Implement WebSocket connection hook for OpenAI Realtime API
+- [x] 6. Implement WebSocket connection hook for OpenAI Realtime API
   - Create `lib/hooks/voice-chat/use-realtime-api.ts`
   - Implement connect function to establish WebSocket connection to `wss://api.openai.com/v1/realtime`
   - Add authentication header with API key as Bearer token

@@ -38,7 +38,7 @@ This implementation plan breaks down the voice chat application into discrete, a
   - Handle permission denial and other recording errors
   - _Requirements: 1.1, 1.2, 4.1, 4.2, 4.3, 4.4, 4.5, 6.3_
 
-- [ ] 5. Implement audio playback hook
+- [x] 5. Implement audio playback hook
   - Create `lib/hooks/voice-chat/use-audio-player.ts`
   - Initialize Web Audio API context for playback
   - Implement playAudio function to play received audio buffers

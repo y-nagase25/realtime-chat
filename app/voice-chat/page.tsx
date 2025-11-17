@@ -66,10 +66,10 @@ export default function VoiceChatPage() {
     if (isPlaying) {
       // Stop audio playback immediately
       stopAudio();
-      
+
       // Send interruption signal to API
       interrupt();
-      
+
       console.log('Interrupted AI playback');
     }
 
@@ -96,22 +96,22 @@ export default function VoiceChatPage() {
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-2xl font-bold mb-4">Voice Chat with AI Assistant</h1>
-      
+
       {error && (
-        <div className="bg-destructive/10 text-destructive p-4 rounded-md mb-4">
-          {error}
-        </div>
+        <div className="bg-destructive/10 text-destructive p-4 rounded-md mb-4">{error}</div>
       )}
 
       <div className="space-y-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Status:</span>
-            <span className={`text-sm font-medium ${isConnected ? 'text-green-600' : 'text-gray-400'}`}>
+            <span
+              className={`text-sm font-medium ${isConnected ? 'text-green-600' : 'text-gray-400'}`}
+            >
               {isConnected ? 'Connected' : 'Disconnected'}
             </span>
           </div>
-          
+
           {isPlaying && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">AI is speaking...</span>
@@ -128,10 +128,7 @@ export default function VoiceChatPage() {
             {isRecording ? '⏹ Stop Recording' : '🎤 Start Recording'}
           </Button>
 
-          <Button
-            onClick={() => setShowApiKeyDialog(true)}
-            variant="outline"
-          >
+          <Button onClick={() => setShowApiKeyDialog(true)} variant="outline">
             Configure API Key
           </Button>
 
@@ -140,7 +137,7 @@ export default function VoiceChatPage() {
               Disconnect
             </Button>
           ) : (
-            <Button onClick={() => connect()} variant="outline" disabled={!apiKey}>
+            <Button onClick={() => connect()} variant="outline">
               Connect
             </Button>
           )}
@@ -158,9 +155,7 @@ export default function VoiceChatPage() {
                 <div
                   key={message.id}
                   className={`p-3 rounded-lg ${
-                    message.speaker === 'user'
-                      ? 'bg-blue-100 ml-8'
-                      : 'bg-gray-100 mr-8'
+                    message.speaker === 'user' ? 'bg-blue-100 ml-8' : 'bg-gray-100 mr-8'
                   }`}
                 >
                   <div className="text-xs text-muted-foreground mb-1">
@@ -175,8 +170,9 @@ export default function VoiceChatPage() {
 
         <div className="text-xs text-muted-foreground">
           <p>
-            <strong>Interruption Support:</strong> You can start recording while the AI is speaking to interrupt it.
-            The AI will stop speaking immediately and begin processing your new input.
+            <strong>Interruption Support:</strong> You can start recording while the AI is speaking
+            to interrupt it. The AI will stop speaking immediately and begin processing your new
+            input.
           </p>
         </div>
       </div>

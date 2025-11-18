@@ -49,36 +49,39 @@ export function useConversationStorage() {
   }, [isStorageAvailable]);
 
   // Add a new message
-  const addMessage = useCallback((speaker: 'user' | 'assistant', text: string) => {
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      speaker,
-      text,
-      timestamp: Date.now(),
-    };
+  const addMessage = useCallback(
+    (speaker: 'user' | 'assistant', text: string) => {
+      const newMessage: Message = {
+        id: crypto.randomUUID(),
+        speaker,
+        text,
+        timestamp: Date.now(),
+      };
 
-    setMessages((prev) => {
-      const updated = [...prev, newMessage];
-      
-      // Try to save to local storage
-      if (storageAvailable) {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-        } catch (error) {
-          console.error('Failed to save message to local storage:', error);
-          setStorageAvailable(false);
-          // Continue with in-memory storage
+      setMessages((prev) => {
+        const updated = [...prev, newMessage];
+
+        // Try to save to local storage
+        if (storageAvailable) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+          } catch (error) {
+            console.error('Failed to save message to local storage:', error);
+            setStorageAvailable(false);
+            // Continue with in-memory storage
+          }
         }
-      }
-      
-      return updated;
-    });
-  }, [storageAvailable]);
+
+        return updated;
+      });
+    },
+    [storageAvailable]
+  );
 
   // Clear all messages
   const clearMessages = useCallback(() => {
     setMessages([]);
-    
+
     if (storageAvailable) {
       try {
         localStorage.removeItem(STORAGE_KEY);

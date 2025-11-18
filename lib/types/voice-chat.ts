@@ -54,7 +54,10 @@ export interface ResponseCancelMessage {
 
 // WebSocket message types - Incoming
 export interface TranscriptMessage {
-  type: 'conversation.item.created' | 'response.audio_transcript.delta' | 'response.audio_transcript.done';
+  type:
+    | 'conversation.item.created'
+    | 'response.audio_transcript.delta'
+    | 'response.audio_transcript.done';
   item?: {
     role: 'user' | 'assistant';
     content?: Array<{
@@ -80,11 +83,11 @@ export interface ErrorMessage {
   };
 }
 
-export type WebSocketMessage = 
-  | AudioMessage 
-  | CommitMessage 
-  | SessionUpdateMessage 
-  | ResponseCancelMessage 
-  | TranscriptMessage 
-  | AudioResponseMessage 
+export type WebSocketMessage =
+  | AudioMessage
+  | CommitMessage
+  | SessionUpdateMessage
+  | ResponseCancelMessage
+  | TranscriptMessage
+  | AudioResponseMessage
   | ErrorMessage;

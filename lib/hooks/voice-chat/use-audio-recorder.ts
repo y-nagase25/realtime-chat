@@ -20,7 +20,7 @@ export function useAudioRecorder({
 }: UseAudioRecorderOptions): UseAudioRecorderReturn {
   const [isRecording, setIsRecording] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  
+
   const audioContextRef = useRef<AudioContext | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const processorNodeRef = useRef<ScriptProcessorNode | null>(null);
@@ -41,17 +41,17 @@ export function useAudioRecorder({
       processorNodeRef.current.disconnect();
       processorNodeRef.current = null;
     }
-    
+
     if (sourceNodeRef.current) {
       sourceNodeRef.current.disconnect();
       sourceNodeRef.current = null;
     }
-    
+
     if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
     }
-    
+
     if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       audioContextRef.current.close();
       audioContextRef.current = null;
@@ -75,7 +75,7 @@ export function useAudioRecorder({
 
       // Initialize AudioContext with 24kHz sample rate for OpenAI compatibility
       audioContextRef.current = new AudioContext({ sampleRate: 24000 });
-      
+
       const source = audioContextRef.current.createMediaStreamSource(stream);
       sourceNodeRef.current = source;
 
@@ -85,7 +85,7 @@ export function useAudioRecorder({
 
       processor.onaudioprocess = (event) => {
         if (!isRecording) return;
-        
+
         const inputData = event.inputBuffer.getChannelData(0);
         const pcm16Data = convertToPCM16(inputData);
         onAudioData(pcm16Data);
@@ -97,10 +97,14 @@ export function useAudioRecorder({
       setIsRecording(true);
     } catch (error) {
       setHasPermission(false);
-      
+
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-          onError(new Error('Microphone permission denied. Please allow microphone access to use voice chat.'));
+          onError(
+            new Error(
+              'Microphone permission denied. Please allow microphone access to use voice chat.'
+            )
+          );
         } else if (error.name === 'NotFoundError') {
           onError(new Error('No microphone found. Please connect a microphone to use voice chat.'));
         } else {
@@ -109,7 +113,7 @@ export function useAudioRecorder({
       } else {
         onError(new Error('Failed to start recording: Unknown error'));
       }
-      
+
       cleanup();
     }
   }, [isRecording, onAudioData, onError, convertToPCM16, cleanup]);

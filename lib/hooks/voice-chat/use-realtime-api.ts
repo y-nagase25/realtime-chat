@@ -18,7 +18,8 @@ interface UseRealtimeAPIReturn {
   interrupt: () => void;
 }
 
-const REALTIME_API_URL = 'wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01';
+const REALTIME_API_URL =
+  'wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01';
 const MAX_RECONNECT_ATTEMPTS = 5;
 const INITIAL_RECONNECT_DELAY = 1000; // 1 second
 
@@ -132,10 +133,7 @@ export function useRealtimeAPI({
 
     try {
       // Create WebSocket connection with API key as Bearer token
-      const ws = new WebSocket(REALTIME_API_URL, [
-        'realtime',
-        `openai-insecure-api-key.${apiKey}`,
-      ]);
+      const ws = new WebSocket(REALTIME_API_URL, ['realtime', `openai-insecure-api-key.${apiKey}`]);
 
       wsRef.current = ws;
 
@@ -174,7 +172,7 @@ export function useRealtimeAPI({
       // Handle connection close
       ws.addEventListener('close', (event) => {
         wsRef.current = null;
-        
+
         if (!isManualDisconnectRef.current) {
           setConnectionState('disconnected');
           // Attempt reconnection if not manually disconnected
@@ -201,7 +199,7 @@ export function useRealtimeAPI({
   // Disconnect from WebSocket
   const disconnect = useCallback(() => {
     isManualDisconnectRef.current = true;
-    
+
     // Clear any pending reconnection attempts
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);

@@ -13,7 +13,7 @@ interface UseAudioPlayerReturn {
 
 export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerReturn {
   const { onPlaybackEnd } = options;
-  
+
   const [isPlaying, setIsPlaying] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioQueueRef = useRef<ArrayBuffer[]>([]);
@@ -90,7 +90,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
     } catch (error) {
       console.error('Error playing audio:', error);
       isProcessingRef.current = false;
-      
+
       // Continue processing queue even if one chunk fails
       if (audioQueueRef.current.length > 0) {
         processQueue();
@@ -103,21 +103,27 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
   }, [onPlaybackEnd]);
 
   // Queue audio for smooth playback
-  const queueAudio = useCallback((audioData: ArrayBuffer) => {
-    audioQueueRef.current.push(audioData);
-    processQueue();
-  }, [processQueue]);
+  const queueAudio = useCallback(
+    (audioData: ArrayBuffer) => {
+      audioQueueRef.current.push(audioData);
+      processQueue();
+    },
+    [processQueue]
+  );
 
   // Play audio immediately (clears queue)
-  const playAudio = useCallback((audioData: ArrayBuffer) => {
-    // Stop current playback
-    stopAudio();
-    
-    // Clear queue and add new audio
-    audioQueueRef.current = [audioData];
-    nextStartTimeRef.current = 0;
-    processQueue();
-  }, [processQueue]);
+  const playAudio = useCallback(
+    (audioData: ArrayBuffer) => {
+      // Stop current playback
+      stopAudio();
+
+      // Clear queue and add new audio
+      audioQueueRef.current = [audioData];
+      nextStartTimeRef.current = 0;
+      processQueue();
+    },
+    [processQueue]
+  );
 
   // Stop audio playback for interruption support
   const stopAudio = useCallback(() => {
@@ -152,7 +158,7 @@ export function decodeBase64PCM16(base64Audio: string): ArrayBuffer {
   // Decode base64 to binary string
   const binaryString = atob(base64Audio);
   const bytes = new Uint8Array(binaryString.length);
-  
+
   for (let i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
@@ -160,7 +166,7 @@ export function decodeBase64PCM16(base64Audio: string): ArrayBuffer {
   // Convert PCM16 to Float32 for Web Audio API
   const pcm16 = new Int16Array(bytes.buffer);
   const float32 = new Float32Array(pcm16.length);
-  
+
   for (let i = 0; i < pcm16.length; i++) {
     float32[i] = pcm16[i] / 32768.0; // Convert to -1.0 to 1.0 range
   }

@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import * as React from "react"
+import * as React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,64 +8,64 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
-const API_KEY_STORAGE_KEY = "openai_api_key"
+const API_KEY_STORAGE_KEY = 'openai_api_key';
 
 interface ApiKeyDialogProps {
-  open: boolean
-  onSave: (apiKey: string) => void
-  onCancel: () => void
+  open: boolean;
+  onSave: (apiKey: string) => void;
+  onCancel: () => void;
 }
 
 export function ApiKeyDialog({ open, onSave, onCancel }: ApiKeyDialogProps) {
-  const [apiKey, setApiKey] = React.useState("")
-  const [error, setError] = React.useState<string | null>(null)
+  const [apiKey, setApiKey] = React.useState('');
+  const [error, setError] = React.useState<string | null>(null);
 
   // Load existing API key when dialog opens
   React.useEffect(() => {
     if (open) {
-      const storedKey = getStoredApiKey()
+      const storedKey = getStoredApiKey();
       if (storedKey) {
-        setApiKey(storedKey)
+        setApiKey(storedKey);
       }
-      setError(null)
+      setError(null);
     }
-  }, [open])
+  }, [open]);
 
   const handleSave = () => {
     // Validate API key format
     if (!validateApiKeyFormat(apiKey)) {
-      setError("Invalid API key format. OpenAI API keys start with 'sk-'")
-      return
+      setError("Invalid API key format. OpenAI API keys start with 'sk-'");
+      return;
     }
 
     // Save to local storage
-    saveApiKey(apiKey)
-    
+    saveApiKey(apiKey);
+
     // Call the onSave callback
-    onSave(apiKey)
-    
+    onSave(apiKey);
+
     // Reset state
-    setApiKey("")
-    setError(null)
-  }
+    setApiKey('');
+    setError(null);
+  };
 
   const handleCancel = () => {
     // Reset state
-    setApiKey("")
-    setError(null)
-    onCancel()
-  }
+    setApiKey('');
+    setError(null);
+    onCancel();
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSave()
+    if (e.key === 'Enter') {
+      handleSave();
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleCancel()}>
@@ -73,8 +73,8 @@ export function ApiKeyDialog({ open, onSave, onCancel }: ApiKeyDialogProps) {
         <DialogHeader>
           <DialogTitle>Configure OpenAI API Key</DialogTitle>
           <DialogDescription>
-            Enter your OpenAI API key to enable voice chat. Your key will be
-            stored locally in your browser.
+            Enter your OpenAI API key to enable voice chat. Your key will be stored locally in your
+            browser.
           </DialogDescription>
         </DialogHeader>
 
@@ -87,8 +87,8 @@ export function ApiKeyDialog({ open, onSave, onCancel }: ApiKeyDialogProps) {
               placeholder="sk-..."
               value={apiKey}
               onChange={(e) => {
-                setApiKey(e.target.value)
-                setError(null)
+                setApiKey(e.target.value);
+                setError(null);
               }}
               onKeyDown={handleKeyDown}
               aria-invalid={!!error}
@@ -110,7 +110,7 @@ export function ApiKeyDialog({ open, onSave, onCancel }: ApiKeyDialogProps) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 // Helper functions for API key management
@@ -119,7 +119,7 @@ export function ApiKeyDialog({ open, onSave, onCancel }: ApiKeyDialogProps) {
  * Validates that the API key follows OpenAI's format (starts with "sk-")
  */
 export function validateApiKeyFormat(apiKey: string): boolean {
-  return apiKey.trim().startsWith("sk-") && apiKey.trim().length > 3
+  return apiKey.trim().startsWith('sk-') && apiKey.trim().length > 3;
 }
 
 /**
@@ -127,10 +127,10 @@ export function validateApiKeyFormat(apiKey: string): boolean {
  */
 export function saveApiKey(apiKey: string): void {
   try {
-    localStorage.setItem(API_KEY_STORAGE_KEY, apiKey.trim())
+    localStorage.setItem(API_KEY_STORAGE_KEY, apiKey.trim());
   } catch (error) {
-    console.error("Failed to save API key to local storage:", error)
-    throw new Error("Failed to save API key")
+    console.error('Failed to save API key to local storage:', error);
+    throw new Error('Failed to save API key');
   }
 }
 
@@ -139,10 +139,10 @@ export function saveApiKey(apiKey: string): void {
  */
 export function getStoredApiKey(): string | null {
   try {
-    return localStorage.getItem(API_KEY_STORAGE_KEY)
+    return localStorage.getItem(API_KEY_STORAGE_KEY);
   } catch (error) {
-    console.error("Failed to retrieve API key from local storage:", error)
-    return null
+    console.error('Failed to retrieve API key from local storage:', error);
+    return null;
   }
 }
 
@@ -150,8 +150,8 @@ export function getStoredApiKey(): string | null {
  * Validates the stored API key (checks both existence and format)
  */
 export function validateStoredApiKey(): boolean {
-  const apiKey = getStoredApiKey()
-  return apiKey !== null && validateApiKeyFormat(apiKey)
+  const apiKey = getStoredApiKey();
+  return apiKey !== null && validateApiKeyFormat(apiKey);
 }
 
 /**
@@ -159,8 +159,8 @@ export function validateStoredApiKey(): boolean {
  */
 export function clearStoredApiKey(): void {
   try {
-    localStorage.removeItem(API_KEY_STORAGE_KEY)
+    localStorage.removeItem(API_KEY_STORAGE_KEY);
   } catch (error) {
-    console.error("Failed to clear API key from local storage:", error)
+    console.error('Failed to clear API key from local storage:', error);
   }
 }

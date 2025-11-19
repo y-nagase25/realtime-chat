@@ -1,15 +1,26 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { Button } from './ui/button';
-import { CloudLightning } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { SessionStopped } from './SessionStopped';
+import { SessionActive } from './SessionActive';
 
 export function SessionControl() {
   const [isActivating, setIsActivating] = useState(false);
+  const [isSessionActive, setIsSessionActive] = useState(false);
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
+
+  // Attach event listeners to the data channel when a new one is created
+  useEffect(() => {
+    if (dataChannelRef.current) {
+      // Set session active when the data channel is opened
+      dataChannelRef.current.addEventListener('open', () => {
+        setIsSessionActive(true);
+      });
+    }
+  }, [dataChannelRef.current]);
 
   async function startSession() {
     try {
@@ -75,24 +86,39 @@ export function SessionControl() {
     }
   }
 
-  function handleStartSession() {
-    if (isActivating) return;
+  function stopSession() {
+    // Stop current session, clean up peer connection and data channel
+    if (dataChannelRef) {
+      dataChannelRef.current?.close();
+    }
 
-    setIsActivating(true);
-    startSession();
+    peerConnectionRef.current?.getSenders().forEach((sender) => {
+      if (sender.track) {
+        sender.track.stop();
+      }
+    });
+
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+    }
+
+    dataChannelRef.current = null;
+    peerConnectionRef.current = null;
+    // setIsActivating(false);
+    setIsSessionActive(false);
   }
+
   return (
     <div className="flex gap-4 border-t-2 border-gray-200 h-full rounded-md">
-      {/* <Button>Session Active</Button> */}
-      <div className="flex items-center justify-center w-full h-full">
-        <Button
-          onClick={handleStartSession}
-          className={isActivating ? 'bg-gray-600' : 'bg-red-600'}
-        >
-          <CloudLightning height={16} />
-          {isActivating ? 'starting session...' : 'start session'}
-        </Button>
-      </div>
+      {isSessionActive ? (
+        <SessionActive stopSession={stopSession} />
+      ) : (
+        <SessionStopped
+          isActivating={isActivating}
+          setIsActivating={setIsActivating}
+          startSession={startSession}
+        />
+      )}
     </div>
   );
 }

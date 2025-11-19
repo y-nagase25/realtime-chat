@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { SessionStopped } from './SessionStopped';
 import { SessionActive } from './SessionActive';
 
@@ -11,16 +11,6 @@ export function SessionControl() {
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
-
-  // Attach event listeners to the data channel when a new one is created
-  useEffect(() => {
-    if (dataChannelRef.current) {
-      // Set session active when the data channel is opened
-      dataChannelRef.current.addEventListener('open', () => {
-        setIsSessionActive(true);
-      });
-    }
-  }, [dataChannelRef.current]);
 
   async function startSession() {
     try {
@@ -44,7 +34,9 @@ export function SessionControl() {
       audioElementRef.current = document.createElement('audio');
       audioElementRef.current.autoplay = true;
       pc.ontrack = (e) => {
-        audioElementRef.current.srcObject = e.streams[0];
+        if (audioElementRef.current) {
+          audioElementRef.current.srcObject = e.streams[0];
+        }
       };
 
       // Add local audio track for microphone input in the browser
@@ -56,6 +48,22 @@ export function SessionControl() {
       // Set up data channel for sending and receiving events
       const dc = pc.createDataChannel('oai-events');
       dataChannelRef.current = dc;
+
+      // Attach event listeners to the data channel
+      dc.addEventListener('open', () => {
+        setIsSessionActive(true);
+        setIsActivating(false);
+      });
+
+      dc.addEventListener('close', () => {
+        setIsSessionActive(false);
+      });
+
+      dc.addEventListener('error', (error) => {
+        console.error('Data channel error:', error);
+        setIsSessionActive(false);
+        setIsActivating(false);
+      });
 
       // Start the session using the Session Description Protocol (SDP)
       const offer = await pc.createOffer();
@@ -83,13 +91,15 @@ export function SessionControl() {
       await pc.setRemoteDescription(answer);
     } catch (err) {
       console.error(err instanceof Error ? err.message : 'Unknown error');
+      setIsActivating(false);
+      setIsSessionActive(false);
     }
   }
 
   function stopSession() {
     // Stop current session, clean up peer connection and data channel
-    if (dataChannelRef) {
-      dataChannelRef.current?.close();
+    if (dataChannelRef.current) {
+      dataChannelRef.current.close();
     }
 
     peerConnectionRef.current?.getSenders().forEach((sender) => {
@@ -102,9 +112,15 @@ export function SessionControl() {
       peerConnectionRef.current.close();
     }
 
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.srcObject = null;
+    }
+
     dataChannelRef.current = null;
     peerConnectionRef.current = null;
-    // setIsActivating(false);
+    audioElementRef.current = null;
+    setIsActivating(false);
     setIsSessionActive(false);
   }
 

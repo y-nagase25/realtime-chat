@@ -70,8 +70,7 @@ export function SessionControl() {
       await pc.setLocalDescription(offer);
 
       // ⭐️ Send offer to OpenAI. get answer
-      const baseUrl = 'https://api.openai.com/v1/realtime';
-      //   const model = 'gpt-realtime';
+      const baseUrl = 'https://api.openai.com/v1/realtime/calls';
       const sdpResponse = await fetch(baseUrl, {
         method: 'POST',
         body: offer.sdp,

@@ -1,12 +1,11 @@
+import { openai } from '@/lib/openai';
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
 import type { ResponseUsage } from 'openai/resources/responses/responses';
 
 const MODEL = 'gpt-5-mini';
 
 export async function POST() {
-  const client = new OpenAI();
-  const response = await client.responses.create({
+  const response = await openai.responses.create({
     model: MODEL,
     input: 'Reply with only one word: name a color',
     // max_output_tokens: 16,

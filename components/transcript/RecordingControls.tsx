@@ -6,7 +6,7 @@ import { Mic, Square } from 'lucide-react';
 import { useRecording } from '@/lib/hooks/transcript/use-recording';
 
 export function RecordingControls() {
-  const { isRecording, isTranscribing, canRecord, startRecording, stopRecording } = useRecording();
+  const { isRecording, isProcessing, startRecording, stopRecording } = useRecording();
 
   return (
     <Card className="mb-8 p-8">
@@ -15,7 +15,7 @@ export function RecordingControls() {
           <Button
             size="lg"
             variant={isRecording ? 'destructive' : 'default'}
-            disabled={!canRecord}
+            disabled={isProcessing}
             onClick={isRecording ? stopRecording : startRecording}
             className="size-24 rounded-full"
           >
@@ -27,26 +27,14 @@ export function RecordingControls() {
           </Button>
         </div>
         <div className="text-center">
-          {isRecording && (
-            <>
-              <div className="mb-2 text-3xl font-bold tabular-nums">
-                {/* {formatTime(recordingTime)} */}
-              </div>
-              <p className="text-sm text-muted-foreground">Recording in progress...</p>
-            </>
-          )}
-          {isTranscribing && (
+          {isProcessing && (
             <div className="flex items-center gap-2">
               <div className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              <p className="text-sm text-muted-foreground">Transcribing audio...</p>
+              <p className="text-sm text-muted-foreground">Processing audio...</p>
             </div>
           )}
-          {!isRecording && !isTranscribing && (
-            <p className="text-sm text-muted-foreground">
-              {canRecord
-                ? 'Click the button to start recording'
-                : 'Grant microphone permission to start'}
-            </p>
+          {!isRecording && !isProcessing && (
+            <p className="text-sm text-muted-foreground">Click the button to start recording</p>
           )}
         </div>
       </div>

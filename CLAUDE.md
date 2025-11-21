@@ -4,7 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js application that implements real-time voice chat using OpenAI's Realtime API with WebRTC. The application enables bidirectional voice communication between users and OpenAI's GPT models.
+This is a Next.js application that implements real-time voice chat using OpenAI's Realtime API with WebRTC, as well as audio transcription using OpenAI's Whisper API. The application enables:
+- Bidirectional voice communication between users and OpenAI's GPT models via WebRTC
+- Audio file transcription using the Whisper speech-to-text API
+- Text generation using OpenAI's GPT-5 models with cost calculation
 
 ## Development Commands
 
@@ -57,17 +60,34 @@ The application establishes WebRTC connections to OpenAI's Realtime API followin
 - UI states for active and inactive sessions
 - Control interfaces for starting/stopping conversations
 
-**RealtimeApiPage** (`app/realtime-api/page.tsx`)
-- Detailed implementation with comprehensive event logging
+**RealtimeApiPage** (`app/realtime-api/beta/page.tsx`, `app/realtime-api/ga/page.tsx`)
+- Beta version: Detailed implementation with comprehensive event logging
+- GA version: Production-ready implementation using SessionControl component
 - Connection state machine with states: idle → fetching-token → creating-peer → requesting-mic → creating-offer → connecting → connected
 - Audio playback handling with browser autoplay policy detection
+
+**TranscribePage** (`app/transcribe/page.tsx`)
+- UI for audio file transcription using Whisper API
+- Audio recording and upload interface (in development)
 
 ### API Routes
 
 **`/api/realtime/session`** (`app/api/realtime/session/route.ts`)
-- POST endpoint to obtain ephemeral tokens from OpenAI
+- POST endpoint to obtain ephemeral tokens from OpenAI Realtime API
 - Requires `OPENAI_API_KEY` environment variable
 - Returns `clientSecret` and `expiresAt` for client WebRTC authentication
+
+**`/api/transcribe`** (`app/api/transcribe/route.ts`)
+- POST endpoint for audio file transcription using Whisper API
+- Accepts multipart/form-data with audio file
+- Returns transcription result with JSON format
+- Uses `whisper-1` model with temperature 0.1
+
+**`/api/text`** (`app/api/text/route.ts`)
+- POST endpoint for text generation using GPT-5 models
+- Demonstrates cost calculation for input/output tokens
+- Supports GPT-5, GPT-5-mini, and GPT-5-nano models
+- Includes pricing information and usage tracking
 
 ### Type System
 
@@ -82,6 +102,14 @@ The application establishes WebRTC connections to OpenAI's Realtime API followin
 - Hook for managing audio recording state
 - Handles MediaRecorder lifecycle and permissions
 - Audio level monitoring and visualization support
+
+### Utility Modules
+
+**`lib/openai.ts`**
+- OpenAI client initialization and configuration
+- Whisper API model configuration (`whisper-1`)
+- Cost calculation utilities for Whisper transcription ($0.006 per minute)
+- Mock audio file helpers for testing
 
 ## Code Style and Conventions
 
@@ -118,17 +146,56 @@ import { SessionControl } from '@/components/SessionControl';
 - Audio autoplay policies may block playback - implementation includes retry mechanisms
 - HTTPS required for production (microphone access restriction)
 
-## OpenAI Realtime API Integration
+## OpenAI API Integration
 
+### Realtime API (WebRTC Voice Chat)
 - Model: `gpt-4o-realtime-preview`
 - Voice options: alloy, echo, shimmer, etc.
 - Audio format: PCM16 (typically)
 - Connection: WebRTC with ephemeral token authentication
 - Events transmitted via `oai-events` data channel
 
-## Current Development Status
+### Whisper API (Audio Transcription)
+- Model: `whisper-1`
+- Pricing: $0.006 per minute
+- Response format: JSON
+- Temperature: 0.1 for more deterministic results
+- Supports various audio formats (MP3, WAV, etc.)
 
-Based on recent commits:
-- Core session start/stop functionality implemented
-- UI components for active/stopped states created
-- Header and menubar styling completed
+### Text Generation API
+- Models: GPT-5, GPT-5-mini, GPT-5-nano
+- Pricing: Variable based on model and token usage
+- Input/output token tracking and cost calculation
+- Cached token support with 90% discount
+
+## Pages and Routes
+- `/` - Home page
+- `/realtime-api/beta` - Realtime API implementation with detailed event logging
+- `/realtime-api/ga` - Production-ready Realtime API implementation
+- `/transcribe` - Audio transcription interface (in development)
+
+## Requirements-Driven Development
+
+When a `requirements.md` file exists in the `specs/[feature_name]/`:
+
+1. **Read requirements first** before any implementation
+2. **Follow the specification strictly**
+3. **Implement only what is in scope**
+4. **Do not add features marked as "Out of Scope"**
+5. **Verify against acceptance criteria**
+6. **Create design & task document** before implementation
+
+### Workflow
+```
+requirements.md exists
+  ↓
+Read and parse
+  ↓
+Create design & task specs
+  ↓
+Implement according to spec
+  ↓
+Verify against acceptance criteria
+  ↓
+Run tests and checks
+```

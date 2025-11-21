@@ -1,90 +1,117 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 export function useRecording() {
-  const [permissionState, setPermissionState] = useState<'prompt' | 'granted' | 'denied'>('prompt');
-
   const [isRecording, setIsRecording] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
-  const [canRecord, setCanRecord] = useState(true);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const [audioLevel, setAudioLevel] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [transcription, setTranscription] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
-  // Start recording
-  const startRecording = async () => {
+  const transcribeAudio = useCallback(async (audioBlob: Blob) => {
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      const audioFile = new File([audioBlob], 'recording.webm', {
+        type: 'audio/webm',
+      });
+
+      formData.append('audio', audioFile);
+
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Transcription failed');
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setTranscription(data.transcription.text);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to transcribe audio';
+      setError(errorMessage);
+      console.error('Error transcribing audio:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  }, []);
+
+  const startRecording = useCallback(async () => {
+    setError(null);
+    setTranscription(null);
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
 
-      // Setup audio context for visualization
-      audioContextRef.current = new AudioContext();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      source.connect(analyserRef.current);
-      analyserRef.current.fftSize = 256;
-
-      // Start visualizing
-
-      // Setup media recorder
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
       };
 
       mediaRecorderRef.current.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        // await transcribeAudio(audioBlob, recordingTime);
 
-        // Cleanup
-        stream.getTracks().forEach((track) => track.stop());
-        if (audioContextRef.current) {
-          audioContextRef.current.close();
+        // Cleanup stream
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((track) => {
+            track.stop();
+          });
+          streamRef.current = null;
         }
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
+
+        // Transcribe if we have audio data
+        if (audioBlob.size > 0) {
+          await transcribeAudio(audioBlob);
+        } else {
+          setError('No audio data recorded');
         }
       };
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
-      setRecordingTime(0);
-
-      // Start timer
-      timerIntervalRef.current = setInterval(() => {
-        setRecordingTime((prev) => prev + 1);
-      }, 1000);
     } catch (err) {
-      console.error(err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to access microphone';
+      setError(errorMessage);
+      console.error('Error starting recording:', err);
     }
-  };
+  }, [transcribeAudio]);
 
-  // Stop recording
-  const stopRecording = () => {
+  const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
-
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-        // timerIntervalRef.current = null;
-      }
     }
-  };
+  }, [isRecording]);
+
+  const reset = useCallback(() => {
+    setTranscription(null);
+    setError(null);
+    setIsProcessing(false);
+  }, []);
 
   return {
-    permissionState,
-    setPermissionState,
     isRecording,
-    isTranscribing,
-    canRecord,
+    isProcessing,
+    transcription,
+    error,
     startRecording,
     stopRecording,
+    reset,
   };
 }

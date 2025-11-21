@@ -1,6 +1,6 @@
 import OpenAI, { type Uploadable } from 'openai';
 import type { AudioModel } from 'openai/resources';
-import fs from 'fs';
+import fs from 'node:fs';
 
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

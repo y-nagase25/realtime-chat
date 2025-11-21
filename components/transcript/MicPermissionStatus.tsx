@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function MicPermissionStatus() {
-  const [permissionState, setPermissionState] = useState<'prompt' | 'granted' | 'denied'>(
-    'prompt'
-  );
+  const [permissionState, setPermissionState] = useState<'prompt' | 'granted' | 'denied'>('prompt');
 
   async function onRequestPermission() {
     try {

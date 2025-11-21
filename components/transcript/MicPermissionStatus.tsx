@@ -1,18 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { Mic, MicOff, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useRecording } from '@/lib/hooks/transcript/use-recording';
 
 export function MicPermissionStatus() {
-  const { permissionState, setPermissionState } = useRecording();
+  const [permissionState, setPermissionState] = useState<'prompt' | 'granted' | 'denied'>(
+    'prompt'
+  );
 
   async function onRequestPermission() {
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
       setPermissionState('granted');
-    } catch (err) {
+    } catch (_err) {
       setPermissionState('denied');
     }
   }

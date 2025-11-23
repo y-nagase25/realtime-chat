@@ -33,9 +33,14 @@ export interface UseSpeakingScoringReturn {
  * State machine reducer
  */
 function speakingReducer(state: SpeakingState, event: SpeakingEvent): SpeakingState {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Speaking] State transition:', { from: state, event: event.type });
+  }
+
   switch (state) {
     case 'idle':
       if (event.type === 'START_RECORDING') return 'recording';
+      if (event.type === 'STOP_RECORDING') return 'transcribing'; // Allow direct transition when recording managed by AudioRecorder
       break;
     case 'recording':
       if (event.type === 'STOP_RECORDING') return 'transcribing';

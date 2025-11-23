@@ -24,6 +24,9 @@ export function Header() {
           <MenubarItem asChild>
             <Link href={'/transcribe'}>Transcribe</Link>
           </MenubarItem>
+          <MenubarItem asChild>
+            <Link href={'/speaking-practice'}>Speaking Practice</Link>
+          </MenubarItem>
           <MenubarSub>
             <MenubarSubTrigger>Realtime API</MenubarSubTrigger>
             <MenubarSubContent>

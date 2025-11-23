@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { useQuestionNavigation } from '@/lib/hooks/use-question-navigation';
+import { QuestionBadge } from '@/components/QuestionBadge';
 import type { Question } from '@/lib/types/db';
 
 interface QuestionsProps {
@@ -37,9 +38,12 @@ export function Questions({ questions }: QuestionsProps) {
       {/* Question Card */}
       <Card className="flex-1">
         <CardHeader>
-          <CardTitle className="text-lg">
-            Q{currentQuestionIndex + 1} / {totalQuestions}
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">
+              Q{currentQuestionIndex + 1} / {totalQuestions}
+            </CardTitle>
+            <QuestionBadge level={currentQuestion.level} />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">

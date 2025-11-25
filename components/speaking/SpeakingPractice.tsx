@@ -12,7 +12,6 @@ import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { AudioRecorder } from './AudioRecorder';
 import { TranscriptDisplay } from './TranscriptDisplay';
 import { ScoringResults } from './ScoringResults';
-import { AttemptHistory } from './AttemptHistory';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -118,9 +117,6 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
           </Button>
         </div>
       )}
-
-      {/* Attempt History */}
-      <AttemptHistory />
     </div>
   );
 }

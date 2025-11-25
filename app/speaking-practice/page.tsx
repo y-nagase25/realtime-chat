@@ -4,8 +4,7 @@
  */
 
 import { getQuestions } from '@/lib/loaders';
-import { Questions } from '@/components/Questions';
-import { SpeakingPractice } from '@/components/speaking';
+import { SpeakingPracticeContainer } from '@/components/speaking/SpeakingPracticeContainer';
 
 export default async function SpeakingPracticePage() {
   const { data: questions } = await getQuestions();
@@ -19,17 +18,12 @@ export default async function SpeakingPracticePage() {
     );
   }
 
-  const currentQuestion = questions[0];
-
   return (
     <div className="container mx-auto max-w-4xl space-y-6 p-6">
       <h1 className="text-3xl font-bold">Speaking Practice</h1>
 
-      {/* Question Display */}
-      <Questions questions={questions} />
-
-      {/* Speaking Practice Component */}
-      <SpeakingPractice question={currentQuestion} />
+      {/* Speaking Practice Container manages shared question state */}
+      <SpeakingPracticeContainer questions={questions} />
     </div>
   );
 }

@@ -18,13 +18,10 @@ import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { calculateSessionStats, getScoreBadgeClass } from '@/lib/utils/scoring';
 import { Button } from '@/components/ui/button';
 
-interface AttemptHistoryProps {
-  questionId: number;
-}
+export function AttemptHistory() {
+  const { getAttemptHistory } = useAttemptHistory();
+  const attempts = getAttemptHistory();
 
-export function AttemptHistory({ questionId }: AttemptHistoryProps) {
-  const { getQuestionAttempts } = useAttemptHistory();
-  const attempts = getQuestionAttempts(questionId);
   const stats = calculateSessionStats(attempts);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -110,12 +107,9 @@ export function AttemptHistory({ questionId }: AttemptHistoryProps) {
                         {attempt.score}
                       </div>
                       <div className="text-left">
-                        <div className="text-sm font-medium">
-                          {date.toLocaleDateString()} at {date.toLocaleTimeString()}
-                        </div>
+                        <div className="text-sm font-medium">Q.{attempt.question_id}</div>
                         <div className="text-xs text-muted-foreground">
-                          {attempt.good_points.length} good points •{' '}
-                          {attempt.areas_for_improvement.length} areas to improve
+                          {date.toLocaleDateString()} at {date.toLocaleTimeString()}
                         </div>
                       </div>
                     </div>

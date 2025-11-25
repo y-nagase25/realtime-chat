@@ -120,7 +120,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
       )}
 
       {/* Attempt History */}
-      {question.id && <AttemptHistory questionId={question.id} />}
+      <AttemptHistory />
     </div>
   );
 }

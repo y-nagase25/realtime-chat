@@ -17,7 +17,7 @@ export interface UseAttemptHistoryReturn {
   attempts: SpeakingAttempt[];
   addAttempt: (attempt: Omit<SpeakingAttempt, 'id' | 'created_at'>) => void;
   clearHistory: () => void;
-  getQuestionAttempts: (questionId: number) => SpeakingAttempt[];
+  getAttemptHistory: () => SpeakingAttempt[];
 }
 
 /**
@@ -75,21 +75,16 @@ export function useAttemptHistory(): UseAttemptHistoryReturn {
   }, [clearAttempts]);
 
   /**
-   * Get attempts for a specific question
+   * Get attempts history
    */
-  const getQuestionAttempts = useCallback(
-    (questionId: number): SpeakingAttempt[] => {
-      return sanitizedAttempts
-        .filter((attempt) => attempt.question_id === questionId)
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    },
-    [sanitizedAttempts]
-  );
+  const getAttemptHistory = useCallback(() => {
+    return sanitizedAttempts;
+  }, [sanitizedAttempts]);
 
   return {
     attempts: sanitizedAttempts,
     addAttempt,
     clearHistory,
-    getQuestionAttempts,
+    getAttemptHistory,
   };
 }

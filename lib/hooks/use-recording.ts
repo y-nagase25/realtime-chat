@@ -95,7 +95,9 @@ export function useRecording(): UseRecordingReturn {
 
         // Cleanup stream
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
+          streamRef.current.getTracks().forEach((track) => {
+            track.stop();
+          });
           streamRef.current = null;
         }
       };

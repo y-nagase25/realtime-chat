@@ -72,27 +72,28 @@ function speakingReducer(state: SpeakingState, event: SpeakingEvent): SpeakingSt
  * Retry helper with exponential backoff
  */
 async function withRetry<T>(fn: () => Promise<T>, maxRetries: number = 3): Promise<T> {
-  let lastError: Error;
-
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
     } catch (error) {
-      lastError = error as Error;
+      const err = error as Error;
 
       // Don't retry on validation errors
-      if (error instanceof Error && error.message.includes('Invalid')) {
-        throw error;
+      if (err.message.includes('Invalid')) {
+        throw err;
+      }
+
+      // last attempt
+      if (i === maxRetries - 1) {
+        throw err;
       }
 
       // Exponential backoff
-      if (i < maxRetries - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 2 ** i * 1000));
-      }
+      await new Promise((resolve) => setTimeout(resolve, 2 ** i * 1000));
     }
   }
 
-  throw lastError!;
+  throw new Error('Unexpected state: retry loop completed without result');
 }
 
 /**

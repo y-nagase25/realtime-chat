@@ -8,15 +8,10 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  IconChevronDown,
-  IconChevronUp,
-  IconAlertTriangle,
-  IconInfoCircle,
-} from '@tabler/icons-react';
 import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { calculateSessionStats, getScoreBadgeClass } from '@/lib/utils/scoring';
 import { Button } from '@/components/ui/button';
+import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, InfoIcon } from 'lucide-react';
 
 export function AttemptHistory() {
   const { getAttemptHistory } = useAttemptHistory();
@@ -34,7 +29,7 @@ export function AttemptHistory() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <IconInfoCircle className="mb-2 h-12 w-12 text-muted-foreground" />
+            <InfoIcon className="mb-2 h-12 w-12 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               No attempts yet. Record your first response to get started!
             </p>
@@ -48,7 +43,7 @@ export function AttemptHistory() {
     <div className="space-y-4">
       {/* Warning about temporary data */}
       <Alert>
-        <IconAlertTriangle className="h-4 w-4" />
+        <AlertTriangleIcon className="h-4 w-4" />
         <AlertDescription>
           Your attempt history is temporary and will be cleared when you close or reload this page.
         </AlertDescription>
@@ -114,9 +109,9 @@ export function AttemptHistory() {
                       </div>
                     </div>
                     {isExpanded ? (
-                      <IconChevronUp className="h-5 w-5" />
+                      <ChevronUpIcon className="h-5 w-5" />
                     ) : (
-                      <IconChevronDown className="h-5 w-5" />
+                      <ChevronDownIcon className="h-5 w-5" />
                     )}
                   </Button>
 

@@ -15,7 +15,7 @@ import { ScoringResults } from './ScoringResults';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { AlertCircleIcon } from 'lucide-react';
 
 interface SpeakingPracticeProps {
   question: Question;
@@ -71,7 +71,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
       {/* Error Display */}
       {error && state === 'error' && (
         <Alert variant="destructive">
-          <IconAlertCircle className="h-4 w-4" />
+          <AlertCircleIcon className="h-4 w-4" />
           <AlertDescription>
             <div className="font-medium">Error: {error}</div>
             <Button variant="outline" size="sm" className="mt-2" onClick={reset}>

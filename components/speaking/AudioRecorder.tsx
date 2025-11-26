@@ -6,9 +6,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { IconPlayerRecord, IconPlayerStop } from '@tabler/icons-react';
 import { useRecording } from '@/lib/hooks/use-recording';
 import { formatDuration } from '@/lib/utils/audio';
+import { AudioLines, Pause } from 'lucide-react';
 import { useEffect } from 'react';
 
 interface AudioRecorderProps {
@@ -34,7 +34,7 @@ export function AudioRecorder({ onRecordingComplete, disabled }: AudioRecorderPr
       <div className="flex items-center gap-4">
         {!isRecording ? (
           <Button onClick={startRecording} disabled={disabled} size="lg" className="w-full">
-            <IconPlayerRecord className="mr-2 h-5 w-5" />
+            <AudioLines className="mr-2 h-5 w-5" />
             Start Recording
           </Button>
         ) : (
@@ -45,7 +45,7 @@ export function AudioRecorder({ onRecordingComplete, disabled }: AudioRecorderPr
             size="lg"
             className="w-full"
           >
-            <IconPlayerStop className="mr-2 h-5 w-5" />
+            <Pause className="mr-2 h-5 w-5" />
             Stop Recording
           </Button>
         )}

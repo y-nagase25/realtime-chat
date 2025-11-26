@@ -6,7 +6,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { IconCheck, IconAlertTriangle } from '@tabler/icons-react';
+import { CheckIcon, AlertTriangleIcon } from 'lucide-react';
 import type { ScoringResult } from '@/lib/types/speaking';
 import { getScoreBadgeClass } from '@/lib/utils/scoring';
 
@@ -37,7 +37,7 @@ export function ScoringResults({ result, transcript }: ScoringResultsProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <IconCheck className="h-5 w-5 text-green-600" />
+              <CheckIcon className="h-5 w-5 text-green-600" />
               Good Points
             </CardTitle>
           </CardHeader>
@@ -45,7 +45,7 @@ export function ScoringResults({ result, transcript }: ScoringResultsProps) {
             <ul className="space-y-2">
               {result.goodPoints.map((point, index) => (
                 <li key={index} className="flex gap-2">
-                  <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
                   <span className="text-sm">{point}</span>
                 </li>
               ))}
@@ -59,7 +59,7 @@ export function ScoringResults({ result, transcript }: ScoringResultsProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <IconAlertTriangle className="h-5 w-5 text-yellow-600" />
+              <AlertTriangleIcon className="h-5 w-5 text-yellow-600" />
               Areas for Improvement
             </CardTitle>
           </CardHeader>
@@ -67,7 +67,7 @@ export function ScoringResults({ result, transcript }: ScoringResultsProps) {
             <ul className="space-y-2">
               {result.areasForImprovement.map((area, index) => (
                 <li key={index} className="flex gap-2">
-                  <IconAlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600" />
+                  <AlertTriangleIcon className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600" />
                   <span className="text-sm">{area}</span>
                 </li>
               ))}

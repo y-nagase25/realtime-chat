@@ -2,10 +2,10 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { useQuestionNavigation } from '@/lib/hooks/use-question-navigation';
 import { QuestionBadge } from '@/components/QuestionBadge';
 import type { Question } from '@/lib/types/db';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 interface QuestionsProps {
   questions: Question[];
@@ -52,7 +52,7 @@ export function Questions({
         size="icon"
         className="shrink-0"
       >
-        <IconChevronLeft className="h-6 w-6" />
+        <ChevronLeftIcon className="h-6 w-6" />
       </Button>
 
       {/* Question Card */}
@@ -80,7 +80,7 @@ export function Questions({
         size="icon"
         className="shrink-0"
       >
-        <IconChevronRight className="h-6 w-6" />
+        <ChevronRightIcon className="h-6 w-6" />
       </Button>
     </div>
   );

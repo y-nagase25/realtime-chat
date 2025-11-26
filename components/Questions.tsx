@@ -9,18 +9,38 @@ import type { Question } from '@/lib/types/db';
 
 interface QuestionsProps {
   questions: Question[];
+  // Optional: external state for controlled mode
+  currentQuestionIndex?: number;
+  totalQuestions?: number;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  canGoPrevious?: boolean;
+  canGoNext?: boolean;
 }
 
-export function Questions({ questions }: QuestionsProps) {
-  const {
-    currentQuestion,
-    currentQuestionIndex,
-    totalQuestions,
-    handlePrevious,
-    handleNext,
-    canGoPrevious,
-    canGoNext,
-  } = useQuestionNavigation(questions);
+export function Questions({
+  questions,
+  currentQuestionIndex: externalIndex,
+  totalQuestions: externalTotal,
+  onPrevious: externalPrevious,
+  onNext: externalNext,
+  canGoPrevious: externalCanGoPrevious,
+  canGoNext: externalCanGoNext,
+}: QuestionsProps) {
+  // Use internal navigation state if external props are not provided
+  const internalNavigation = useQuestionNavigation(questions);
+
+  // Determine which state to use (external or internal)
+  const isControlled = externalIndex !== undefined;
+  const currentQuestionIndex = isControlled
+    ? externalIndex
+    : internalNavigation.currentQuestionIndex;
+  const totalQuestions = externalTotal ?? internalNavigation.totalQuestions;
+  const handlePrevious = externalPrevious ?? internalNavigation.handlePrevious;
+  const handleNext = externalNext ?? internalNavigation.handleNext;
+  const canGoPrevious = externalCanGoPrevious ?? internalNavigation.canGoPrevious;
+  const canGoNext = externalCanGoNext ?? internalNavigation.canGoNext;
+  const currentQuestion = questions[currentQuestionIndex];
 
   return (
     <div className="flex items-center gap-4 mb-4">

@@ -53,16 +53,11 @@ The application establishes WebRTC connections to OpenAI's Realtime API followin
 
 **SessionControl** (`components/SessionControl.tsx`)
 - Main orchestrator for WebRTC session lifecycle
-- Manages peer connection, data channel, and audio element refs
+- Uses `useRealtimeSession` hook for WebRTC logic
 - Handles session start/stop operations
 
-**SessionActive** / **SessionStopped** (`components/SessionActive.tsx`, `components/SessionStopped.tsx`)
-- UI states for active and inactive sessions
-- Control interfaces for starting/stopping conversations
-
-**RealtimeApiPage** (`app/realtime-api/beta/page.tsx`, `app/realtime-api/ga/page.tsx`)
-- Beta version: Detailed implementation with comprehensive event logging
-- GA version: Production-ready implementation using SessionControl component
+**RealtimeApiPage** (`app/realtime-api/ga/page.tsx`)
+- Production-ready implementation using SessionControl component
 - Connection state machine with states: idle → fetching-token → creating-peer → requesting-mic → creating-offer → connecting → connected
 - Audio playback handling with browser autoplay policy detection
 
@@ -160,7 +155,6 @@ import { SessionControl } from '@/components/SessionControl';
 
 ## Pages and Routes
 - `/` - Home page
-- `/realtime-api/beta` - Realtime API implementation with detailed event logging
 - `/realtime-api/ga` - Production-ready Realtime API implementation
 - `/speaking-practice` - Speaking practice interface with audio transcription
 

@@ -1,8 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { SessionStopped } from './SessionStopped';
-import { SessionActive } from './SessionActive';
+import { Button } from './ui/button';
+import { Spinner } from './ui/spinner';
 
 export function SessionControl() {
   const [isActivating, setIsActivating] = useState(false);
@@ -123,16 +123,24 @@ export function SessionControl() {
     setIsSessionActive(false);
   }
 
+  function handleStartSession() {
+    if (isActivating) return;
+
+    setIsActivating(true);
+    startSession();
+  }
+
   return (
-    <div className="flex gap-4 border-t-2 border-gray-200 h-full rounded-md">
+    <div className="flex gap-4 h-full rounded-md">
       {isSessionActive ? (
-        <SessionActive stopSession={stopSession} />
+        <Button variant="destructive" onClick={stopSession}>
+          Disconnect
+        </Button>
       ) : (
-        <SessionStopped
-          isActivating={isActivating}
-          setIsActivating={setIsActivating}
-          startSession={startSession}
-        />
+        <Button onClick={handleStartSession} disabled={isActivating}>
+          {isActivating && <Spinner className="mr-2 h-4 w-4" />}
+          Start Conversation
+        </Button>
       )}
     </div>
   );

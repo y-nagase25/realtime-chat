@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Next.js application that implements real-time voice chat using OpenAI's Realtime API with WebRTC, as well as audio transcription using OpenAI's Whisper API. The application enables:
 - Bidirectional voice communication between users and OpenAI's GPT models via WebRTC
-- Audio file transcription using the Whisper speech-to-text API
+- Audio transcription using the Whisper speech-to-text API for speaking practice features
 - Text generation using OpenAI's GPT-5 models with cost calculation
 
 ## Development Commands
@@ -66,10 +66,6 @@ The application establishes WebRTC connections to OpenAI's Realtime API followin
 - Connection state machine with states: idle → fetching-token → creating-peer → requesting-mic → creating-offer → connecting → connected
 - Audio playback handling with browser autoplay policy detection
 
-**TranscribePage** (`app/transcribe/page.tsx`)
-- UI for audio file transcription using Whisper API
-- Audio recording and upload interface (in development)
-
 ### API Routes
 
 **`/api/realtime/session`** (`app/api/realtime/session/route.ts`)
@@ -79,6 +75,7 @@ The application establishes WebRTC connections to OpenAI's Realtime API followin
 
 **`/api/transcribe`** (`app/api/transcribe/route.ts`)
 - POST endpoint for audio file transcription using Whisper API
+- Used by speaking practice feature for audio transcription
 - Accepts multipart/form-data with audio file
 - Returns transcription result with JSON format
 - Uses `whisper-1` model with temperature 0.1
@@ -95,13 +92,6 @@ The application establishes WebRTC connections to OpenAI's Realtime API followin
 - Comprehensive TypeScript definitions for WebRTC messages
 - OpenAI Realtime API message types (audio, transcription, session updates)
 - Connection state and status types
-
-### Custom Hooks
-
-**`lib/hooks/transcript/use-recording.ts`**
-- Hook for managing audio recording state
-- Handles MediaRecorder lifecycle and permissions
-- Audio level monitoring and visualization support
 
 ### Utility Modules
 
@@ -172,7 +162,7 @@ import { SessionControl } from '@/components/SessionControl';
 - `/` - Home page
 - `/realtime-api/beta` - Realtime API implementation with detailed event logging
 - `/realtime-api/ga` - Production-ready Realtime API implementation
-- `/transcribe` - Audio transcription interface (in development)
+- `/speaking-practice` - Speaking practice interface with audio transcription
 
 ## Requirements-Driven Development
 

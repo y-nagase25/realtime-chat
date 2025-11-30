@@ -17,8 +17,8 @@ export function Header() {
               />
             </Link>
             <div className="flex items-center space-x-8">
-              <Link href="/speaking-practice">Speaking</Link>
-              <Link href="/realtime-api/ga">Chat[GA]</Link>
+              <Link href="/speaking">Speaking</Link>
+              <Link href="/realtime-chat">Realtime Chat</Link>
             </div>
           </div>
         </nav>

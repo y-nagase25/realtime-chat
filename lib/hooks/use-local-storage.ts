@@ -8,6 +8,14 @@ import { useState, useEffect, useCallback } from 'react';
 
 type SetValue<T> = (value: T | ((val: T) => T)) => void;
 
+// Custom event for local storage changes within the same window
+const LOCAL_STORAGE_EVENT = 'local-storage-change';
+
+interface LocalStorageEventDetail {
+  key: string;
+  newValue: string | null;
+}
+
 /**
  * Hook for managing local storage with automatic JSON serialization
  * @param key Storage key
@@ -42,7 +50,15 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T
 
         // Save to local storage
         if (typeof window !== 'undefined') {
-          window.localStorage.setItem(key, JSON.stringify(valueToStore));
+          const stringifiedValue = JSON.stringify(valueToStore);
+          window.localStorage.setItem(key, stringifiedValue);
+
+          // Dispatch custom event for same-window synchronization
+          window.dispatchEvent(
+            new CustomEvent<LocalStorageEventDetail>(LOCAL_STORAGE_EVENT, {
+              detail: { key, newValue: stringifiedValue },
+            })
+          );
         }
       } catch (error) {
         console.error(`Error setting localStorage key "${key}":`, error);
@@ -58,18 +74,26 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T
 
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem(key);
+
+        // Dispatch custom event for same-window synchronization
+        window.dispatchEvent(
+          new CustomEvent<LocalStorageEventDetail>(LOCAL_STORAGE_EVENT, {
+            detail: { key, newValue: null },
+          })
+        );
       }
     } catch (error) {
       console.error(`Error clearing localStorage key "${key}":`, error);
     }
   }, [key, initialValue]);
 
-  // Listen for changes from other tabs/windows
+  // Listen for changes from other tabs/windows AND same window
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
 
+    // Handle changes from other tabs/windows
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key && e.newValue !== null) {
         try {
@@ -77,15 +101,35 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T
         } catch (error) {
           console.error(`Error parsing storage event for key "${key}":`, error);
         }
+      } else if (e.key === key && e.newValue === null) {
+        setStoredValue(initialValue);
+      }
+    };
+
+    // Handle changes from the same window
+    const handleCustomEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<LocalStorageEventDetail>;
+      if (customEvent.detail.key === key) {
+        if (customEvent.detail.newValue !== null) {
+          try {
+            setStoredValue(JSON.parse(customEvent.detail.newValue) as T);
+          } catch (error) {
+            console.error(`Error parsing custom event for key "${key}":`, error);
+          }
+        } else {
+          setStoredValue(initialValue);
+        }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener(LOCAL_STORAGE_EVENT, handleCustomEvent);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener(LOCAL_STORAGE_EVENT, handleCustomEvent);
     };
-  }, [key]);
+  }, [key, initialValue]);
 
   return [storedValue, setValue, clearValue];
 }

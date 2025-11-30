@@ -1,10 +1,7 @@
 export default function Page() {
   return (
-    <>
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">TOP</h1>
-      </div>
-      <main></main>
-    </>
+    <div className="container mx-auto max-w-4xl space-y-6 p-6">
+      <h1 className="text-3xl font-bold">TOP</h1>
+    </div>
   );
 }

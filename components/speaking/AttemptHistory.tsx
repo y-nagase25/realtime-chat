@@ -13,8 +13,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronDownIcon, ChevronUpIcon, InfoIcon } from 'lucide-react';
 
 export function AttemptHistory() {
-  const { getAttemptHistory } = useAttemptHistory();
-  const attempts = getAttemptHistory();
+  const { attempts } = useAttemptHistory();
 
   const stats = calculateSessionStats(attempts);
 

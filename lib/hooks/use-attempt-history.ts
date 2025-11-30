@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { SpeakingAttempt } from '@/lib/types/speaking';
 import { useLocalStorage } from './use-local-storage';
@@ -17,7 +17,6 @@ export interface UseAttemptHistoryReturn {
   attempts: SpeakingAttempt[];
   addAttempt: (attempt: Omit<SpeakingAttempt, 'id' | 'created_at'>) => void;
   clearHistory: () => void;
-  getAttemptHistory: () => SpeakingAttempt[];
 }
 
 /**
@@ -30,7 +29,10 @@ export function useAttemptHistory(): UseAttemptHistoryReturn {
   );
 
   // Sanitize attempts on load
-  const sanitizedAttempts = sanitizeLocalStorageData(attempts);
+  const sanitizedAttempts = useMemo(
+    () => sanitizeLocalStorageData(attempts),
+    [attempts]
+  );
 
   /**
    * Add a new attempt to history
@@ -74,17 +76,9 @@ export function useAttemptHistory(): UseAttemptHistoryReturn {
     clearAttempts();
   }, [clearAttempts]);
 
-  /**
-   * Get attempts history
-   */
-  const getAttemptHistory = useCallback(() => {
-    return sanitizedAttempts;
-  }, [sanitizedAttempts]);
-
   return {
     attempts: sanitizedAttempts,
     addAttempt,
     clearHistory,
-    getAttemptHistory,
   };
 }

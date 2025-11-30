@@ -113,7 +113,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
 
           {/* Try Again Button */}
           <Button variant="outline" onClick={handleTryAgain} className="w-full">
-            Try Another Attempt
+            Try Another Question
           </Button>
         </div>
       )}

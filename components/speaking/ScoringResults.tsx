@@ -18,16 +18,21 @@ interface ScoringResultsProps {
 export function ScoringResults({ result, transcript }: ScoringResultsProps) {
   return (
     <div className="space-y-4">
-      {/* Score Badge */}
+      {/* Transcript Reference */}
       <Card>
-        <CardContent className="flex items-center justify-center py-8">
-          <div className="text-center">
-            <div className="mb-2 text-sm font-medium text-muted-foreground">Your Score</div>
-            <div
-              className={`inline-flex items-center rounded-full border-2 px-6 py-3 text-4xl font-bold ${getScoreBadgeClass(result.score)}`}
-            >
-              {result.score}/10
-            </div>
+        <CardHeader>
+          <CardTitle>Result</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg bg-muted p-4">
+            <p className="text-sm leading-relaxed">{transcript}</p>
+          </div>
+        </CardContent>
+        <CardContent>
+          <div
+            className={`inline-flex items-center rounded-full border-2 px-3 py-2 font-bold ${getScoreBadgeClass(result.score)}`}
+          >
+            {result.score}/10
           </div>
         </CardContent>
       </Card>
@@ -75,18 +80,6 @@ export function ScoringResults({ result, transcript }: ScoringResultsProps) {
           </CardContent>
         </Card>
       )}
-
-      {/* Transcript Reference */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Your Response</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-lg bg-muted p-4">
-            <p className="text-sm leading-relaxed">{transcript}</p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

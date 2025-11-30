@@ -28,11 +28,8 @@ export function useAttemptHistory(): UseAttemptHistoryReturn {
     []
   );
 
-  // Sanitize attempts on load
-  const sanitizedAttempts = useMemo(
-    () => sanitizeLocalStorageData(attempts),
-    [attempts]
-  );
+  // Sanitize attempts with memoization
+  const sanitizedAttempts = useMemo(() => sanitizeLocalStorageData(attempts), [attempts]);
 
   /**
    * Add a new attempt to history

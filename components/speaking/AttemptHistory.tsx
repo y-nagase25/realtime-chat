@@ -7,11 +7,10 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { calculateSessionStats, getScoreBadgeClass } from '@/lib/utils/scoring';
 import { Button } from '@/components/ui/button';
-import { AlertTriangleIcon, ChevronDownIcon, ChevronUpIcon, InfoIcon } from 'lucide-react';
+import { ChevronDownIcon, ChevronUpIcon, InfoIcon } from 'lucide-react';
 
 export function AttemptHistory() {
   const { getAttemptHistory } = useAttemptHistory();
@@ -41,45 +40,12 @@ export function AttemptHistory() {
 
   return (
     <div className="space-y-4">
-      {/* Warning about temporary data */}
-      <Alert>
-        <AlertTriangleIcon className="h-4 w-4" />
-        <AlertDescription>
-          Your attempt history is temporary and will be cleared when you close or reload this page.
-        </AlertDescription>
-      </Alert>
-
-      {/* Session Statistics */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Session Statistics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <div>
-              <div className="text-2xl font-bold">{stats.totalAttempts}</div>
-              <div className="text-xs text-muted-foreground">Total Attempts</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold">{stats.averageScore.toFixed(1)}</div>
-              <div className="text-xs text-muted-foreground">Average Score</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold">{stats.bestScore}</div>
-              <div className="text-xs text-muted-foreground">Best Score</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold">{stats.latestScore ?? '-'}</div>
-              <div className="text-xs text-muted-foreground">Latest Score</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* <SessionStatistics stats={stats} /> */}
 
       {/* Attempts List */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Past Attempts</CardTitle>
+          <CardTitle className="text-lg">Past Attempts ({stats.totalAttempts})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Spinner } from './ui/spinner';
 import { useRealtimeSession } from '@/lib/hooks/use-realtime-session';
 import { Badge } from './ui/badge';
+import { AudioLines, Pause } from 'lucide-react';
 
 export function SessionControl() {
   const {
@@ -20,7 +21,7 @@ export function SessionControl() {
     <>
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle className="text-lg">Connection Status</CardTitle>
+          <CardTitle>Connection Status</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-3">
@@ -45,11 +46,16 @@ export function SessionControl() {
       </Card>
       {isSessionActive ? (
         <Button variant="destructive" onClick={stopSession}>
+          <Pause className="mr-2 h-5 w-5" />
           Disconnect
         </Button>
       ) : (
         <Button onClick={handleStartSession} disabled={isActivating}>
-          {isActivating && <Spinner className="mr-2 h-4 w-4" />}
+          {isActivating ? (
+            <Spinner className="mr-2 h-5 w-5" />
+          ) : (
+            <AudioLines className="mr-2 h-5 w-5" />
+          )}
           Start Conversation
         </Button>
       )}

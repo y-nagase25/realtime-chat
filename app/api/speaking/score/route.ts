@@ -4,9 +4,11 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
-import { openai } from '@/lib/openai';
+import { completionModel, openai } from '@/lib/openai';
 import { buildScoringPrompt } from '@/lib/utils/scoring';
 import { validateScoringRequest } from '@/lib/utils/validation';
+import type { CompletionUsage } from 'openai/resources';
+import { trackSpeakingScore } from '@/lib/utils/track-usage';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -24,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Call OpenAI Chat Completion API
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: completionModel,
       messages: [
         {
           role: 'system',
@@ -33,8 +35,10 @@ export async function POST(request: NextRequest) {
       ],
       response_format: { type: 'json_object' },
       temperature: 0.3,
-      max_tokens: 500,
+      max_completion_tokens: 500,
     });
+    const usage = completion.usage as CompletionUsage;
+    trackSpeakingScore(completionModel, usage);
 
     // Parse response
     const content = completion.choices[0]?.message?.content;

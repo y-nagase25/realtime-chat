@@ -9,6 +9,7 @@ export const openai = new OpenAI({
 
 export const textModel: ChatModel = 'gpt-5-mini';
 export const audioModel: AudioModel = 'whisper-1';
+export const completionModel: ChatModel = 'gpt-4o-mini';
 
 // Whisper cost calculator
 export function calculateWhisperCost(durationInSeconds: number): number {

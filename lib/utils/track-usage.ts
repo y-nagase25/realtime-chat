@@ -1,6 +1,7 @@
 import { getSupabaseClient } from '@/lib/supabase';
 import type { TokenUsageInsert } from '@/lib/types/db';
 import type { ResponseUsage } from 'openai/resources/responses/responses';
+import type { CompletionUsage } from 'openai/resources';
 
 /**
  * Track OpenAI API token usage in Supabase database
@@ -38,16 +39,13 @@ export async function trackTokenUsage(data: TokenUsageInsert): Promise<void> {
 /**
  * Track text generation API usage
  */
-export async function trackTextGeneration(
-  model: string,
-  response_usage: ResponseUsage
-): Promise<void> {
+export async function trackTextGeneration(model: string, usage: ResponseUsage): Promise<void> {
   await trackTokenUsage({
     api_type: 'text_generation',
     model_name: model,
-    input_tokens: response_usage.input_tokens,
-    output_tokens: response_usage.output_tokens,
-    total_tokens: response_usage.total_tokens,
+    input_tokens: usage.input_tokens,
+    output_tokens: usage.output_tokens,
+    total_tokens: usage.total_tokens,
   });
 }
 
@@ -59,5 +57,18 @@ export async function trackAudioTranscription(model: string, seconds: number): P
     api_type: 'transcription',
     model_name: model,
     audio_duration_seconds: seconds,
+  });
+}
+
+/**
+ * Track speaking score API usage
+ */
+export async function trackSpeakingScore(model: string, usage: CompletionUsage): Promise<void> {
+  await trackTokenUsage({
+    api_type: 'transcription',
+    model_name: model,
+    input_tokens: usage.prompt_tokens,
+    output_tokens: usage.completion_tokens,
+    total_tokens: usage.total_tokens,
   });
 }

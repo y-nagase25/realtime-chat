@@ -10,10 +10,13 @@ import { useQuestionNavigation } from '@/lib/hooks/use-question-navigation';
 import { Questions } from '@/components/Questions';
 import { SpeakingPractice } from './SpeakingPractice';
 import { AttemptHistory } from './AttemptHistory';
+import { memo } from 'react';
 
 interface SpeakingPracticeContainerProps {
   questions: Question[];
 }
+
+const AttemptHistoryMemo = memo(() => <AttemptHistory />);
 
 export function SpeakingPracticeContainer({ questions }: SpeakingPracticeContainerProps) {
   const {
@@ -47,7 +50,7 @@ export function SpeakingPracticeContainer({ questions }: SpeakingPracticeContain
 
       {/* Right Column: Attempt History (40% on desktop) */}
       <div className="lg:col-span-4">
-        <AttemptHistory />
+        <AttemptHistoryMemo />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { Attempt } from './Attempt';
@@ -12,6 +13,16 @@ import { InfoIcon, TrashIcon } from 'lucide-react';
 
 export function AttemptHistory() {
   const { attempts, clearHistory } = useAttemptHistory();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Render empty state during SSR to match initial client render
+  if (!isClient) {
+    return <EmptyAttemptHistory />;
+  }
 
   if (attempts.length === 0) {
     return <EmptyAttemptHistory />;
@@ -19,11 +30,14 @@ export function AttemptHistory() {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Past Attempts ({attempts.length})</CardTitle>
-          <TrashIcon color="var(--destructive)" size={20} onClick={() => clearHistory()} />
-        </div>
+      <CardHeader className="flex items-center justify-between">
+        <CardTitle className="text-lg">Past Attempts ({attempts.length})</CardTitle>
+        <TrashIcon
+          size={20}
+          onClick={() => clearHistory()}
+          className="cursor-pointer"
+          color="var(--destructive)"
+        />
       </CardHeader>
       <CardContent>
         <div className="space-y-2">

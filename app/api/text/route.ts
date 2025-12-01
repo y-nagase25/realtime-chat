@@ -1,24 +1,24 @@
-import { openai } from '@/lib/openai';
+import { openai, textModel } from '@/lib/openai';
+import { trackTextGeneration } from '@/lib/utils/track-usage';
 import { NextResponse } from 'next/server';
 import type { ResponseUsage } from 'openai/resources/responses/responses';
 
-const MODEL = 'gpt-5-mini';
-
 export async function POST() {
   const response = await openai.responses.create({
-    model: MODEL,
-    input: 'Reply with only one word: name a color',
-    // max_output_tokens: 16,
-    // text: { verbosity: 'low' }
+    model: textModel,
+    input: 'Reply with only one word: name a animal',
   });
 
   console.log('Response ID:', response.id);
   console.log('Model:', response.model);
   console.log('Output:', response.output_text);
+  console.log('Token:', response.usage);
 
-  const usage = response.usage;
-  console.log('Token:', usage);
-  console.log('Cost:', calculateCost(usage, MODEL));
+  if (response.usage) {
+    trackTextGeneration(textModel, response.usage).catch(() => {
+      // Errors already logged internally
+    });
+  }
 
   return NextResponse.json({
     output: response.output,

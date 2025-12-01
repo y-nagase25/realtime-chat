@@ -1,5 +1,5 @@
 import OpenAI, { type Uploadable } from 'openai';
-import type { AudioModel } from 'openai/resources';
+import type { AudioModel, ChatModel } from 'openai/resources';
 import fs from 'node:fs';
 
 export const openai = new OpenAI({
@@ -7,6 +7,7 @@ export const openai = new OpenAI({
   dangerouslyAllowBrowser: false,
 });
 
+export const textModel: ChatModel = 'gpt-5-mini';
 export const audioModel: AudioModel = 'whisper-1';
 
 // Whisper cost calculator

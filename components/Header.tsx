@@ -11,9 +11,15 @@ export function Header() {
               <Image
                 src="/aigo-header.png"
                 alt="AI-GO Logo"
-                width={100}
-                height={100}
+                width={649}
+                height={239}
                 loading="eager"
+                priority
+                style={{
+                  width: '100px',
+                  height: 'auto',
+                  maxWidth: '100%',
+                }}
               />
             </Link>
             <div className="flex items-center space-x-8">

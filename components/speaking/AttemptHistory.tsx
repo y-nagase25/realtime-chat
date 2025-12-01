@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { Attempt } from './Attempt';
 import { InfoIcon, TrashIcon } from 'lucide-react';
@@ -21,7 +22,7 @@ export function AttemptHistory() {
 
   // Render empty state during SSR to match initial client render
   if (!isClient) {
-    return <EmptyAttemptHistory />;
+    return <LoadingAttemptHistory />;
   }
 
   if (attempts.length === 0) {
@@ -63,6 +64,21 @@ function EmptyAttemptHistory() {
             No attempts yet. Record your first response to get started!
           </p>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function LoadingAttemptHistory() {
+  return (
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-6 w-48" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="mb-2 h-6 w-48" />
+        <Skeleton className="mb-2 h-6 w-48" />
+        <Skeleton className="mb-2 h-6 w-48" />
       </CardContent>
     </Card>
   );

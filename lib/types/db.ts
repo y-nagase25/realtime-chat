@@ -31,6 +31,11 @@ export interface TokenUsageRow extends TokenUsageInsert {
 export interface Database {
   public: {
     Tables: {
+      questions: {
+        Row: Question;
+        Insert: Omit<Question, 'id' | 'created_at'>;
+        Update: Partial<Omit<Question, 'id' | 'created_at'>>;
+      };
       token_usage: {
         Row: TokenUsageRow;
         Insert: TokenUsageInsert;

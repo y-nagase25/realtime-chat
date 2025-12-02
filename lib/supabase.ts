@@ -1,12 +1,11 @@
 'server-only';
 
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './types/db';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 // Singleton pattern for connection pooling
-let supabaseClient: ReturnType<typeof createClient<Database>> | null = null;
+let supabaseClient: SupabaseClient | null = null;
 
-export function getSupabaseClient() {
+export function getSupabaseClient(): SupabaseClient {
   if (supabaseClient) {
     return supabaseClient;
   }
@@ -18,7 +17,7 @@ export function getSupabaseClient() {
     throw new Error('Missing Supabase environment variables');
   }
 
-  supabaseClient = createClient<Database>(supabaseUrl, supabaseKey, {
+  supabaseClient = createClient(supabaseUrl, supabaseKey, {
     auth: {
       persistSession: false, // Server-side, no session persistence
     },

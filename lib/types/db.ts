@@ -1,3 +1,8 @@
+export const TABLE_NAME = {
+  QUESTIONS: 'questions',
+  TOKEN_USAGE: 'token_usage',
+};
+
 // 'public.questions' table
 export interface Question {
   id?: number;

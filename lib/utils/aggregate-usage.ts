@@ -20,7 +20,7 @@ import type { UsageTrackingRecord } from '@/lib/types/usage-stats';
  */
 export function aggregateTranscriptionSeconds(records: UsageTrackingRecord[]): number {
   return records.reduce((sum, record) => {
-    return sum + (record.duration_seconds ?? 0);
+    return sum + (record.audio_duration_seconds ?? 0);
   }, 0);
 }
 

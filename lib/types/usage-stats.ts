@@ -12,7 +12,7 @@ export interface UsageTrackingRecord {
   input_tokens: number | null;
   output_tokens: number | null;
   cached_tokens: number | null;
-  duration_seconds: number | null;
+  audio_duration_seconds: number | null;
   cost: number | null;
   created_at: string; // ISO 8601 timestamp
 }

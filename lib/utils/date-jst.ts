@@ -23,28 +23,31 @@ export interface JSTDateRange {
  */
 export function getJSTDayRange(): JSTDateRange {
   const now = new Date();
-  const JST_OFFSET_MINUTES = 9 * 60; // JST is UTC+9 hours
 
-  // Convert current time to JST by adjusting for timezone offset
-  // getTimezoneOffset() returns the offset in minutes (e.g., -540 for JST)
-  const jstNow = new Date(now.getTime() + (JST_OFFSET_MINUTES - now.getTimezoneOffset()) * 60000);
+  // 現在のUTC時刻に9時間を加えて日本時間を計算
+  const jstMillis = now.getTime() + 9 * 60 * 60 * 1000;
+  const jstDate = new Date(jstMillis);
 
-  // Get start of day in JST (00:00:00)
-  // Create UTC date with JST date components
-  const startOfDay = new Date(
-    Date.UTC(jstNow.getFullYear(), jstNow.getMonth(), jstNow.getDate(), 0, 0, 0, 0)
-  );
+  // 日本時間の年月日を取得
+  const year = jstDate.getUTCFullYear();
+  const month = jstDate.getUTCMonth();
+  const date = jstDate.getUTCDate();
 
-  // Adjust back to UTC by subtracting JST offset
-  startOfDay.setHours(startOfDay.getHours() - 9);
+  // 日本時間00:00:00のUTC時刻を計算
+  const jstMidnight = new Date(Date.UTC(year, month, date, 0, 0, 0, 0));
+  const utcStart = new Date(jstMidnight.getTime() - 9 * 60 * 60 * 1000);
 
-  // End of day is exactly 24 hours after start
-  const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+  // 終了時刻は開始時刻の23時間59分59秒999ミリ秒後
+  const utcEnd = new Date(utcStart.getTime() + 24 * 60 * 60 * 1000 - 1);
 
   // Format date string as YYYY-MM-DD
-  const dateString = jstNow.toISOString().split('T')[0];
+  const dateString = jstDate.toISOString().split('T')[0];
 
-  return { startOfDay, endOfDay, dateString };
+  return {
+    startOfDay: utcStart,
+    endOfDay: utcEnd,
+    dateString,
+  };
 }
 
 /**

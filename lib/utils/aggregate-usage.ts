@@ -27,23 +27,22 @@ export function aggregateTranscriptionSeconds(records: UsageTrackingRecord[]): n
 /**
  * Calculate total speaking-scoring tokens from usage tracking records
  *
- * Sums both input_tokens and output_tokens for each record, handling null/undefined values
+ * Sums total_tokens for each record, handling null/undefined values
  *
  * @param {UsageTrackingRecord[]} records - Array of usage tracking records with token data
- * @returns {number} Total token count (input + output tokens)
+ * @returns {number} Total token count
  *
  * @example
  * const records = [
- *   { input_tokens: 100, output_tokens: 50, ... },
- *   { input_tokens: 200, output_tokens: null, ... },
- *   { input_tokens: null, output_tokens: 75, ... },
+ *   { total_tokens: 100, ... },
+ *   { total_tokens: 200, ... },
+ *   { total_tokens: null, ... },
  * ];
- * aggregateSpeakingTokens(records); // Returns 425 (100+50+200+0+0+75)
+ * aggregateSpeakingTokens(records); // Returns 300 (100+200+0)
  */
 export function aggregateSpeakingTokens(records: UsageTrackingRecord[]): number {
   return records.reduce((sum, record) => {
-    const inputTokens = record.input_tokens ?? 0;
-    const outputTokens = record.output_tokens ?? 0;
-    return sum + inputTokens + outputTokens;
+    const totalTokens = record.total_tokens ?? 0;
+    return sum + totalTokens;
   }, 0);
 }

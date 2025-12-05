@@ -13,7 +13,7 @@ import {
 } from '@/lib/utils/aggregate-usage';
 import type { DailyUsageStats, UsageTrackingRecord } from '@/lib/types/usage-stats';
 import { TABLE_NAME } from '@/lib/types/db';
-import { audioModel } from '@/lib/openai';
+import { audioModel, completionModel } from '@/lib/openai';
 
 export async function GET() {
   try {
@@ -37,8 +37,9 @@ export async function GET() {
       // Query speaking-scoring data
       supabase
         .from(TABLE_NAME.TOKEN_USAGE)
-        .select('input_tokens, output_tokens')
-        .eq('api_type', 'speaking-scoring')
+        .select('total_tokens')
+        .eq('api_type', 'transcription')
+        .eq('model_name', completionModel)
         .gte('created_at', startOfDay.toISOString())
         .lt('created_at', endOfDay.toISOString()),
     ]);

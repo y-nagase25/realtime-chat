@@ -35,133 +35,133 @@
 ## Phase 2: API Implementation (P0 Core)
 
 ### 2.1 API Route Setup
-- [ ] Create `app/api/usage/daily/route.ts`
-  - [ ] Set up file structure with `GET` export
-  - [ ] Import required dependencies:
-    - [ ] `NextResponse` from 'next/server'
-    - [ ] `getSupabaseClient` from '@/lib/supabase'
-    - [ ] `getJSTDayRange` from '@/lib/utils/date-jst'
-    - [ ] Aggregation functions from '@/lib/utils/aggregate-usage'
-    - [ ] Types from '@/lib/types/usage-stats'
+- [x] Create `app/api/usage/daily/route.ts`
+  - [x] Set up file structure with `GET` export
+  - [x] Import required dependencies:
+    - [x] `NextResponse` from 'next/server'
+    - [x] `getSupabaseClient` from '@/lib/supabase'
+    - [x] `getJSTDayRange` from '@/lib/utils/date-jst'
+    - [x] Aggregation functions from '@/lib/utils/aggregate-usage'
+    - [x] Types from '@/lib/types/usage-stats'
 
 ### 2.2 API Business Logic
-- [ ] Implement `GET` handler function
-  - [ ] Add try-catch error handling wrapper
-  - [ ] Initialize Supabase client
-  - [ ] Calculate JST date range using `getJSTDayRange()`
-  - [ ] Query transcription data:
-    - [ ] Select `duration_seconds` column
-    - [ ] Filter by `api_type = 'transcription'`
-    - [ ] Filter by `created_at >= startOfDay`
-    - [ ] Filter by `created_at < endOfDay`
-  - [ ] Query speaking-scoring data:
-    - [ ] Select `input_tokens, output_tokens` columns
-    - [ ] Filter by `api_type = 'speaking-scoring'`
-    - [ ] Filter by `created_at >= startOfDay`
-    - [ ] Filter by `created_at < endOfDay`
-  - [ ] Execute queries in parallel using `Promise.all()`
-  - [ ] Handle query errors (check `error` from Supabase response)
+- [x] Implement `GET` handler function
+  - [x] Add try-catch error handling wrapper
+  - [x] Initialize Supabase client
+  - [x] Calculate JST date range using `getJSTDayRange()`
+  - [x] Query transcription data:
+    - [x] Select `duration_seconds` column
+    - [x] Filter by `api_type = 'transcription'`
+    - [x] Filter by `created_at >= startOfDay`
+    - [x] Filter by `created_at < endOfDay`
+  - [x] Query speaking-scoring data:
+    - [x] Select `input_tokens, output_tokens` columns
+    - [x] Filter by `api_type = 'speaking-scoring'`
+    - [x] Filter by `created_at >= startOfDay`
+    - [x] Filter by `created_at < endOfDay`
+  - [x] Execute queries in parallel using `Promise.all()`
+  - [x] Handle query errors (check `error` from Supabase response)
 
 ### 2.3 API Response Formatting
-- [ ] Aggregate query results
-  - [ ] Call `aggregateTranscriptionSeconds()` with transcription data
-  - [ ] Call `aggregateSpeakingTokens()` with speaking data
-  - [ ] Count records for each type
-- [ ] Build response object matching `DailyUsageStats` type
-  - [ ] Include `date` (YYYY-MM-DD format)
-  - [ ] Include `timezone: 'JST'`
-  - [ ] Include transcription totals and count
-  - [ ] Include speaking-scoring totals and count
-- [ ] Return JSON response with 200 status
+- [x] Aggregate query results
+  - [x] Call `aggregateTranscriptionSeconds()` with transcription data
+  - [x] Call `aggregateSpeakingTokens()` with speaking data
+  - [x] Count records for each type
+- [x] Build response object matching `DailyUsageStats` type
+  - [x] Include `date` (YYYY-MM-DD format)
+  - [x] Include `timezone: 'JST'`
+  - [x] Include transcription totals and count
+  - [x] Include speaking-scoring totals and count
+- [x] Return JSON response with 200 status
 
 ### 2.4 API Error Handling
-- [ ] Implement error catch block
-  - [ ] Log error to console with context
-  - [ ] Return generic error message (don't expose details)
-  - [ ] Set 500 status code
-  - [ ] Match `UsageStatsError` type
+- [x] Implement error catch block
+  - [x] Log error to console with context
+  - [x] Return generic error message (don't expose details)
+  - [x] Set 500 status code
+  - [x] Match `UsageStatsError` type
 
 ### 2.5 API Performance Optimization (P1)
-- [ ] Add HTTP cache headers
-  - [ ] Set `Cache-Control: public, s-maxage=60, stale-while-revalidate=300`
+- [x] Add HTTP cache headers
+  - [x] Set `Cache-Control: public, s-maxage=60, stale-while-revalidate=300`
   - [ ] Test cache behavior in browser DevTools
 
 ## Phase 3: Component Implementation (P0 UI)
 
 ### 3.1 Custom Hook
-- [ ] Create `hooks/useDailyUsage.ts`
-  - [ ] Define hook function with optional `refreshInterval` parameter
-  - [ ] Initialize state using `useState<UsageDisplayState>`
-    - [ ] Default: `isLoading: true`, `hasError: false`, `transcriptionSeconds: null`, `speakingTokens: null`
-  - [ ] Create `fetchUsage` async function
-    - [ ] Call `fetch('/api/usage/daily')`
-    - [ ] Check response.ok
-    - [ ] Parse JSON response as `DailyUsageStats`
-    - [ ] Update state with data
-    - [ ] Handle errors (catch block)
-      - [ ] Log error to console
-      - [ ] Set `hasError: true`
-      - [ ] Set `isLoading: false`
-  - [ ] Add `useEffect` hook
-    - [ ] Call `fetchUsage()` on mount
-    - [ ] Set up interval for auto-refresh (if `refreshInterval` provided)
-    - [ ] Clean up interval on unmount
-  - [ ] Return state object
-  - [ ] Add TypeScript types for all function signatures
+- [x] Create `hooks/useDailyUsage.ts`
+  - [x] Define hook function with optional `refreshInterval` parameter
+  - [x] Initialize state using `useState<UsageDisplayState>`
+    - [x] Default: `isLoading: true`, `hasError: false`, `transcriptionSeconds: null`, `speakingTokens: null`
+  - [x] Create `fetchUsage` async function
+    - [x] Call `fetch('/api/usage/daily')`
+    - [x] Check response.ok
+    - [x] Parse JSON response as `DailyUsageStats`
+    - [x] Update state with data
+    - [x] Handle errors (catch block)
+      - [x] Log error to console
+      - [x] Set `hasError: true`
+      - [x] Set `isLoading: false`
+  - [x] Add `useEffect` hook
+    - [x] Call `fetchUsage()` on mount
+    - [x] Set up interval for auto-refresh (if `refreshInterval` provided)
+    - [x] Clean up interval on unmount
+  - [x] Return state object
+  - [x] Add TypeScript types for all function signatures
 
 ### 3.2 Sub-component: UsageStat
-- [ ] Create `UsageStat` component in `components/DailyUsageCard.tsx`
-  - [ ] Define `UsageStatProps` interface
-    - [ ] `label: string`
-    - [ ] `value: number | null`
-    - [ ] `unit: string`
-    - [ ] `isLoading: boolean`
-    - [ ] `hasError: boolean`
-  - [ ] Implement component JSX
-    - [ ] Create flex container with `justify-between`
-    - [ ] Display label with muted color
-    - [ ] Display value:
-      - [ ] Show "---" if loading, error, or null
-      - [ ] Show formatted number with unit if loaded
-    - [ ] Apply consistent spacing
+- [x] Create `UsageStat` component in `components/DailyUsageCard.tsx`
+  - [x] Define `UsageStatProps` interface
+    - [x] `label: string`
+    - [x] `value: number | null`
+    - [x] `unit: string`
+    - [x] `isLoading: boolean`
+    - [x] `hasError: boolean`
+  - [x] Implement component JSX
+    - [x] Create flex container with `justify-between`
+    - [x] Display label with muted color
+    - [x] Display value:
+      - [x] Show "---" if loading, error, or null
+      - [x] Show formatted number with unit if loaded
+    - [x] Apply consistent spacing
 
 ### 3.3 Main Component: DailyUsageCard
-- [ ] Create `components/DailyUsageCard.tsx`
-  - [ ] Import dependencies:
-    - [ ] `useDailyUsage` hook
-    - [ ] Card components from '@/components/ui/card'
-    - [ ] `formatNumber` from '@/lib/utils/date-jst'
-  - [ ] Implement `DailyUsageCard` component
-    - [ ] Call `useDailyUsage(60000)` for 60-second refresh (P1)
-    - [ ] Destructure state: `{ transcriptionSeconds, speakingTokens, isLoading, hasError }`
-    - [ ] Return JSX structure:
-      - [ ] `<Card>` wrapper
-      - [ ] `<CardHeader>` with `<CardTitle>Daily Usage (Today)</CardTitle>`
-      - [ ] `<CardContent>` with `space-y-3` class
-        - [ ] `<UsageStat>` for transcription (label: "Transcription", unit: "sec")
-        - [ ] `<UsageStat>` for speaking score (label: "Speaking Score", unit: "tokens")
-  - [ ] Export component as named export
+- [x] Create `components/DailyUsageCard.tsx`
+  - [x] Import dependencies:
+    - [x] `useDailyUsage` hook
+    - [x] Card components from '@/components/ui/card'
+    - [x] `formatNumber` from '@/lib/utils/date-jst'
+  - [x] Implement `DailyUsageCard` component
+    - [x] Call `useDailyUsage(60000)` for 60-second refresh (P1)
+    - [x] Destructure state: `{ transcriptionSeconds, speakingTokens, isLoading, hasError }`
+    - [x] Return JSX structure:
+      - [x] `<Card>` wrapper
+      - [x] `<CardHeader>` with `<CardTitle>Daily Usage (Today)</CardTitle>`
+      - [x] `<CardContent>` with `space-y-3` class
+        - [x] `<UsageStat>` for transcription (label: "Transcription", unit: "sec")
+        - [x] `<UsageStat>` for speaking score (label: "Speaking Score", unit: "tokens")
+  - [x] Export component as named export
 
 ### 3.4 Integration with Top Page
-- [ ] Modify `app/page.tsx`
-  - [ ] Import `DailyUsageCard` component
-  - [ ] Add component to page JSX
-  - [ ] Position card appropriately on page (after title, before other content)
-  - [ ] Ensure responsive layout (card should fit in existing grid/layout)
+- [x] Modify `app/page.tsx`
+  - [x] Import `DailyUsageCard` component
+  - [x] Add component to page JSX
+  - [x] Position card appropriately on page (after title, before other content)
+  - [x] Ensure responsive layout (card should fit in existing grid/layout)
 
 ## Phase 4: Polish & Testing (P0 Validation)
 
 ### 4.1 Visual Polish
-- [ ] Review component styling
-  - [ ] Verify card matches existing UI design system
-  - [ ] Check spacing consistency with other components
-  - [ ] Test typography (font size, weight, color)
-  - [ ] Verify "---" placeholder is clearly visible
-- [ ] Test responsive design
-  - [ ] Mobile view (320px - 768px)
-  - [ ] Tablet view (768px - 1024px)
-  - [ ] Desktop view (1024px+)
-  - [ ] Check text doesn't overflow
+- [x] Review component styling
+  - [x] Verify card matches existing UI design system
+  - [x] Check spacing consistency with other components
+  - [x] Test typography (font size, weight, color)
+  - [x] Verify "---" placeholder is clearly visible
+- [x] Test responsive design
+  - [x] Mobile view (320px - 768px)
+  - [x] Tablet view (768px - 1024px)
+  - [x] Desktop view (1024px+)
+  - [x] Check text doesn't overflow
 
 ### 4.2 Manual Testing
 - [ ] Test loading state

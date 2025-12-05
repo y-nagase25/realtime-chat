@@ -48,4 +48,5 @@ export interface UsageDisplayState {
   speakingTokens: number | null;
   isLoading: boolean;
   hasError: boolean;
+  refetch: () => void;
 }

@@ -1,5 +1,7 @@
 import { audioModel, openai } from '@/lib/openai';
+import { trackAudioTranscription } from '@/lib/utils/track-usage';
 import { type NextRequest, NextResponse } from 'next/server';
+import type { Transcription } from 'openai/resources/audio';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +19,9 @@ export async function POST(request: NextRequest) {
       response_format: 'json',
       temperature: 0.1,
     });
+
+    const usage = transcription.usage as Transcription.Duration;
+    if (usage) trackAudioTranscription(audioModel, usage.seconds);
 
     return NextResponse.json({
       transcription: transcription,

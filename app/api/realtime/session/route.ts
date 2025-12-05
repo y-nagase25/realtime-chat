@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { env } from '@/lib/environment';
 
 type SessionResponseType = {
   value: string;
@@ -32,6 +33,8 @@ export async function POST() {
   });
 
   try {
+    if (env.isProduction) throw new Error('This API is not available in production.');
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -48,10 +51,12 @@ export async function POST() {
       expiresAt: data.expires_at,
       session: data.session,
     });
-  } catch (err) {
-    console.error(err instanceof Error ? err.message : 'unknown error');
-    return NextResponse.json({
-      message: 'failed to generate ephemeral key.',
+  } catch (error) {
+    console.error('[RealtimeSession] Error:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
     });
+    return NextResponse.json({ error: 'Failed to generate ephemeral key' }, { status: 500 });
   }
 }

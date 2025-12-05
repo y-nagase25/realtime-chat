@@ -1,3 +1,4 @@
+import 'server-only';
 import OpenAI, { type Uploadable } from 'openai';
 import type { AudioModel, ChatModel } from 'openai/resources';
 import fs from 'node:fs';

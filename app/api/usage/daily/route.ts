@@ -14,9 +14,14 @@ import {
 import type { DailyUsageStats, UsageTrackingRecord } from '@/lib/types/usage-stats';
 import { TABLE_NAME } from '@/lib/types/db';
 import { audioModel, completionModel } from '@/lib/openai';
+import { env } from '@/lib/environment';
+
+export const revalidate = 60;
 
 export async function GET() {
   try {
+    if (env.isProduction) throw new Error('This API is not available in production.');
+
     // Initialize Supabase client
     const supabase = getSupabaseClient();
 
@@ -75,11 +80,7 @@ export async function GET() {
     };
 
     // Return JSON response with cache headers for performance
-    return NextResponse.json(responseData, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
-      },
-    });
+    return NextResponse.json(responseData);
   } catch (error) {
     // Log error details server-side for debugging
     console.error('[DailyUsage] Error fetching usage statistics:', {

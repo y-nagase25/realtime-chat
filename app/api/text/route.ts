@@ -44,7 +44,7 @@ const PRICING = {
   },
 };
 
-function calculateCost(
+function _calculateCost(
   usage: ResponseUsage | undefined,
   model: 'gpt-5' | 'gpt-5-mini' | 'gpt-5-nano'
 ) {

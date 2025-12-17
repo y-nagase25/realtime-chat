@@ -233,7 +233,7 @@
 ## Phase 2: Core Features (P0 Requirements)
 
 ### Task 2.1: Implement Time Formatting
-- [ ] In `TodayTokenUsageList.tsx`, create utility function before component:
+- [x] In `TodayTokenUsageList.tsx`, create utility function before component:
   ```typescript
   /**
    * Formats ISO timestamp to JST time-only display (HH:MM:SS)
@@ -248,7 +248,7 @@
     });
   }
   ```
-- [ ] Test in browser console with sample timestamp:
+- [x] Test in browser console with sample timestamp:
   ```javascript
   formatTime("2025-12-17T14:30:45.123Z") // Should render "14:30:45"
   ```
@@ -258,7 +258,7 @@
 ---
 
 ### Task 2.2: Implement API Type and Model Display
-- [ ] Create constant for API type labels:
+- [x] Create constant for API type labels:
   ```typescript
   const API_TYPE_LABELS: Record<string, string> = {
     text_generation: 'Text Generation',
@@ -266,7 +266,7 @@
     realtime_session: 'Realtime Session',
   };
   ```
-- [ ] Create helper function:
+- [x] Create helper function:
   ```typescript
   /**
    * Formats API type enum to human-readable label
@@ -275,14 +275,14 @@
     return API_TYPE_LABELS[apiType] || apiType;
   }
   ```
-- [ ] Model name will display as-is (no formatting function needed)
+- [x] Model name will display as-is (no formatting function needed)
 
 **Acceptance**: API types show human-readable labels, model names display correctly
 
 ---
 
 ### Task 2.3: Implement Token/Duration Display Logic
-- [ ] Create `TokensCell` sub-component:
+- [x] Create `TokensCell` sub-component:
   ```typescript
   interface TokensCellProps {
     record: TokenUsageRow;
@@ -312,14 +312,14 @@
     return <span>-</span>;
   }
   ```
-- [ ] Test logic manually with different record types
+- [x] Test logic manually with different record types
 
 **Acceptance**: Correct values display based on API type, null values show "-"
 
 ---
 
 ### Task 2.4: Build Table Structure with shadcn/ui Components
-- [ ] Replace placeholder div in `CardContent` with shadcn/ui table:
+- [x] Replace placeholder div in `CardContent` with shadcn/ui table:
   ```typescript
   <CardContent>
     <Table>
@@ -348,28 +348,28 @@
     </Table>
   </CardContent>
   ```
-- [ ] Verify table renders with proper borders and spacing
-- [ ] Note: shadcn/ui table components handle styling automatically (borders, hover states, etc.)
+- [x] Verify table renders with proper borders and spacing
+- [x] Note: shadcn/ui table components handle styling automatically (borders, hover states, etc.)
 
 **Acceptance**: Table displays all 4 columns with proper styling, data renders in rows
 
 ---
 
 ### Task 2.5: Integrate Component into Admin Page
-- [ ] Open `app/admin/page.tsx`
-- [ ] Import new component:
+- [x] Open `app/admin/page.tsx`
+- [x] Import new component:
   ```typescript
   import { TodayTokenUsageList } from '@/components/TodayTokenUsageList';
   ```
-- [ ] Add component below `DailyUsageCard`:
+- [x] Add component below `DailyUsageCard`:
   ```typescript
   <div className="space-y-4">
     <DailyUsageCard />
     <TodayTokenUsageList />
   </div>
   ```
-- [ ] Start dev server: `npm run dev`
-- [ ] Visit `http://localhost:3000/admin` and verify component renders
+- [x] Start dev server: `npm run dev`
+- [x] Visit `http://localhost:3000/admin` and verify component renders
 
 **Acceptance**: New component appears on admin page below existing card
 

@@ -168,6 +168,7 @@ When a `requirements.md` file exists in the `specs/[feature_name]/`:
 4. **Do not add features marked as "Out of Scope"**
 5. **Verify against acceptance criteria**
 6. **Create design & task document** before implementation
+7. **Check off completed tasks** in `tasks.md` as you complete them using `[x]` syntax
 
 ### Workflow
 ```
@@ -179,7 +180,22 @@ Create design & task specs
   ↓
 Implement according to spec
   ↓
+Check off tasks as completed in tasks.md
+  ↓
 Verify against acceptance criteria
   ↓
 Run tests and checks
 ```
+
+### Task Tracking
+
+When working with `tasks.md` files in spec directories:
+- **Mark tasks as completed** using `[x]` syntax as soon as each task is done
+- Update all sub-tasks within a task group when completing work
+- This provides clear progress tracking and documentation of completed work
+- Example:
+  ```markdown
+  - [x] Create component file
+  - [x] Add imports
+  - [x] Implement logic
+  ```

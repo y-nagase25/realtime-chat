@@ -3,10 +3,10 @@
 ## Phase 1: Foundation (P0 Requirements)
 
 ### Task 1.1: Extend TypeScript Types
-- [ ] Open `lib/types/usage-stats.ts`
-- [ ] Locate the existing `DailyUsageStats` interface
-- [ ] Add two new fields to the interface:
-  ```typescript
+- [x] Open `lib/types/usage-stats.ts`
+- [x] Locate the existing `DailyUsageStats` interface
+- [x] Add two new fields to the interface:
+  ```typescript {.line-numbers}
   export interface DailyUsageStats {
     date: string;
     timezone: string;
@@ -22,17 +22,17 @@
     totalRecordCount: number;      // ADD THIS
   }
   ```
-- [ ] Verify `TokenUsageRow` is already imported from `@/lib/types/db`
-- [ ] Run TypeScript check: `npx tsc --noEmit`
+- [x] Verify `TokenUsageRow` is already imported from `@/lib/types/db`
+- [x] Run TypeScript check: `npx tsc --noEmit`
 
 **Acceptance**: No TypeScript errors, DailyUsageStats interface includes new fields
 
 ---
 
 ### Task 1.2: Extend API Route Handler
-- [ ] Open `app/api/usage/daily/route.ts`
-- [ ] Locate the `Promise.all` at line 32
-- [ ] Add third query to fetch all records:
+- [x] Open `app/api/usage/daily/route.ts`
+- [x] Locate the `Promise.all` at line 32
+- [x] Add third query to fetch all records:
   ```typescript
   // CHANGE FROM:
   const [transcriptionResult, speakingResult] = await Promise.all([...]);
@@ -66,21 +66,21 @@
       .order('created_at', { ascending: false }),
   ]);
   ```
-- [ ] Add error handling for third query (after line 59):
+- [x] Add error handling for third query (after line 59):
   ```typescript
   if (allRecordsResult.error) {
     throw new Error(`All records query failed: ${allRecordsResult.error.message}`);
   }
   ```
-- [ ] Add import for `TokenUsageRow` type at the top:
+- [x] Add import for `TokenUsageRow` type at the top:
   ```typescript
   import type { DailyUsageStats, UsageTrackingRecord, TokenUsageRow } from '@/lib/types/usage-stats';
   ```
-- [ ] Extract all records data (after line 66):
+- [x] Extract all records data (after line 66):
   ```typescript
   const allRecords = (allRecordsResult.data ?? []) as TokenUsageRow[];
   ```
-- [ ] Extend the response object (modify lines 69-80):
+- [x] Extend the response object (modify lines 69-80):
   ```typescript
   const responseData: DailyUsageStats = {
     date: dateString,
@@ -97,16 +97,16 @@
     totalRecordCount: allRecords.length,    // ADD THIS
   };
   ```
-- [ ] Save file and test API: `curl http://localhost:3000/api/usage/daily`
+- [x] Save file and test API: `curl http://localhost:3000/api/usage/daily`
 
 **Acceptance**: API returns extended response with `records` array and `totalRecordCount`
 
 ---
 
 ### Task 1.3: Extend Custom Hook
-- [ ] Open `lib/hooks/use-daily-usage.ts`
-- [ ] Locate the `UsageDisplayState` interface (if defined in this file) or check `lib/types/usage-stats.ts`
-- [ ] Add new fields to the state interface:
+- [x] Open `lib/hooks/use-daily-usage.ts`
+- [x] Locate the `UsageDisplayState` interface (if defined in this file) or check `lib/types/usage-stats.ts`
+- [x] Add new fields to the state interface:
   ```typescript
   export interface UsageDisplayState {
     transcriptionSeconds: number | null;
@@ -118,7 +118,7 @@
     refetch: () => void;
   }
   ```
-- [ ] Update initial state (line 19-25):
+- [x] Update initial state (line 19-25):
   ```typescript
   const [state, setState] = useState<UsageDisplayState>({
     transcriptionSeconds: null,
@@ -130,7 +130,7 @@
     refetch: () => {},
   });
   ```
-- [ ] Update success state in `fetchUsage` function (line 37-43):
+- [x] Update success state in `fetchUsage` function (line 37-43):
   ```typescript
   setState({
     transcriptionSeconds: data.transcription.totalSeconds,
@@ -142,7 +142,7 @@
     refetch: fetchUsage,
   });
   ```
-- [ ] Update error state (line 46-52) to include default values:
+- [x] Update error state (line 46-52) to include default values:
   ```typescript
   setState({
     transcriptionSeconds: null,
@@ -154,17 +154,17 @@
     refetch: fetchUsage,
   });
   ```
-- [ ] Add import for `TokenUsageRow` type if needed
-- [ ] Run TypeScript check: `npx tsc --noEmit`
+- [x] Add import for `TokenUsageRow` type if needed
+- [x] Run TypeScript check: `npx tsc --noEmit`
 
 **Acceptance**: Hook compiles without errors, returns new fields
 
 ---
 
 ### Task 1.4: Create Table Component Structure
-- [ ] Create file: `components/TodayTokenUsageList.tsx`
-- [ ] Add 'use client' directive at top
-- [ ] Add imports:
+- [x] Create file: `components/TodayTokenUsageList.tsx`
+- [x] Add 'use client' directive at top
+- [x] Add imports:
   ```typescript
   'use client';
 
@@ -189,7 +189,7 @@
   import { ADMIN_REFRESH_INTERVAL } from '@/lib/costants';
   import type { TokenUsageRow } from '@/lib/types/db';
   ```
-- [ ] Create main component `TodayTokenUsageList`:
+- [x] Create main component `TodayTokenUsageList`:
   ```typescript
   export function TodayTokenUsageList() {
     const {
@@ -224,7 +224,7 @@
     );
   }
   ```
-- [ ] Save and verify it compiles without errors
+- [x] Save and verify it compiles without errors
 
 **Acceptance**: Component renders Card with title "Token Usage Records"
 

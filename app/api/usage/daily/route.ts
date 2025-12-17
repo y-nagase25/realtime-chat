@@ -12,7 +12,7 @@ import {
   aggregateSpeakingTokens,
 } from '@/lib/utils/aggregate-usage';
 import type { DailyUsageStats, UsageTrackingRecord } from '@/lib/types/usage-stats';
-import { TABLE_NAME } from '@/lib/types/db';
+import { TABLE_NAME, type TokenUsageRow } from '@/lib/types/db';
 import { audioModel, completionModel } from '@/lib/openai';
 import { env } from '@/lib/environment';
 
@@ -28,9 +28,9 @@ export async function GET() {
     // Calculate JST date range for current day
     const { startOfDay, endOfDay, dateString } = getJSTDayRange();
 
-    // Execute both queries in parallel for better performance
-    const [transcriptionResult, speakingResult] = await Promise.all([
-      // Query transcription data
+    // Execute three queries in parallel for better performance
+    const [transcriptionResult, speakingResult, allRecordsResult] = await Promise.all([
+      // Query 1: transcription data
       supabase
         .from(TABLE_NAME.TOKEN_USAGE)
         .select('audio_duration_seconds')
@@ -39,7 +39,7 @@ export async function GET() {
         .gte('created_at', startOfDay.toISOString())
         .lt('created_at', endOfDay.toISOString()),
 
-      // Query speaking-scoring data
+      // Query 2: speaking-scoring data
       supabase
         .from(TABLE_NAME.TOKEN_USAGE)
         .select('total_tokens')
@@ -47,6 +47,14 @@ export async function GET() {
         .eq('model_name', completionModel)
         .gte('created_at', startOfDay.toISOString())
         .lt('created_at', endOfDay.toISOString()),
+
+      // Query 3: ALL records for today (newest first)
+      supabase
+        .from(TABLE_NAME.TOKEN_USAGE)
+        .select('*')
+        .gte('created_at', startOfDay.toISOString())
+        .lt('created_at', endOfDay.toISOString())
+        .order('created_at', { ascending: false }),
     ]);
 
     // Check for query errors
@@ -58,9 +66,14 @@ export async function GET() {
       throw new Error(`Speaking-scoring query failed: ${speakingResult.error.message}`);
     }
 
+    if (allRecordsResult.error) {
+      throw new Error(`All records query failed: ${allRecordsResult.error.message}`);
+    }
+
     // Aggregate results using utility functions
     const transcriptionData = (transcriptionResult.data ?? []) as UsageTrackingRecord[];
     const speakingData = (speakingResult.data ?? []) as UsageTrackingRecord[];
+    const allRecords = (allRecordsResult.data ?? []) as TokenUsageRow[];
 
     const totalSeconds = aggregateTranscriptionSeconds(transcriptionData);
     const totalTokens = aggregateSpeakingTokens(speakingData);
@@ -77,6 +90,8 @@ export async function GET() {
         totalTokens,
         recordCount: speakingData.length,
       },
+      records: allRecords,
+      totalRecordCount: allRecords.length,
     };
 
     // Return JSON response with cache headers for performance

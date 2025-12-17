@@ -13,12 +13,14 @@ import { useCallback } from 'react';
  * @returns {UsageDisplayState} Current state with usage data, loading, and error flags
  *
  * @example
- * const { transcriptionSeconds, speakingTokens, isLoading, hasError } = useDailyUsage(60000);
+ * const { transcriptionSeconds, speakingTokens, records, totalRecordCount, isLoading, hasError } = useDailyUsage(60000);
  */
 export function useDailyUsage(refreshInterval?: number): UsageDisplayState {
   const [state, setState] = useState<UsageDisplayState>({
     transcriptionSeconds: null,
     speakingTokens: null,
+    records: [],
+    totalRecordCount: 0,
     isLoading: true,
     hasError: false,
     refetch: () => {},
@@ -37,6 +39,8 @@ export function useDailyUsage(refreshInterval?: number): UsageDisplayState {
       setState({
         transcriptionSeconds: data.transcription.totalSeconds,
         speakingTokens: data.speakingScoring.totalTokens,
+        records: data.records,
+        totalRecordCount: data.totalRecordCount,
         isLoading: false,
         hasError: false,
         refetch: fetchUsage,
@@ -46,6 +50,8 @@ export function useDailyUsage(refreshInterval?: number): UsageDisplayState {
       setState({
         transcriptionSeconds: null,
         speakingTokens: null,
+        records: [],
+        totalRecordCount: 0,
         isLoading: false,
         hasError: true,
         refetch: fetchUsage,

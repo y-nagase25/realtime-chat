@@ -12,6 +12,8 @@ import type {
   ScoringRequest,
   ScoringResponse,
 } from '@/lib/types/speaking';
+import { toast } from 'sonner';
+import { EXCEEDED_USAGE_LIMIT_MSG } from '../costants';
 
 export interface UseSpeakingScoringOptions {
   questionId: number;
@@ -96,6 +98,11 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries: number = 3): Promi
   throw new Error('Unexpected state: retry loop completed without result');
 }
 
+async function checkUsageLimit() {
+  const res = await fetch('/api/usage/limit');
+  return res.json();
+}
+
 /**
  * Main hook for speaking practice scoring
  */
@@ -118,6 +125,12 @@ export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeak
         type: audioBlob.type || 'audio/webm',
       });
       formData.append('file', audioFile);
+
+      const result = await checkUsageLimit();
+      if (result.exceeded) {
+        toast.warning(EXCEEDED_USAGE_LIMIT_MSG);
+        throw new Error(EXCEEDED_USAGE_LIMIT_MSG);
+      }
 
       const response = await withRetry(async () => {
         const res = await fetch('/api/transcribe', {

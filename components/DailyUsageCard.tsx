@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { WHISPER_LIMIT_SECONDS_PER_DAY } from '@/lib/costants';
 import { formatNumber } from '@/lib/utils/date-jst';
 
 /**
@@ -51,13 +52,15 @@ export function DailyUsageCard({
     <Card>
       <CardHeader>
         <CardTitle>Daily Usage (Today)</CardTitle>
-        <CardDescription>Your daily usage statistics</CardDescription>
+        <CardDescription>
+          Whisper API limit: {WHISPER_LIMIT_SECONDS_PER_DAY} seconds
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <UsageStat
           label="Transcription"
           value={transcriptionSeconds}
-          unit="sec"
+          unit="seconds"
           isLoading={isLoading}
           hasError={hasError}
         />

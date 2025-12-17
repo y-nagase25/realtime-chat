@@ -38,6 +38,12 @@ export interface DailyUsageStats {
   totalRecordCount: number; // Total count of all records
 }
 
+export interface DailyUsageLimit {
+  date: string; // YYYY-MM-DD format
+  timezone: 'JST';
+  exceeded: boolean;
+}
+
 /**
  * API error response
  */

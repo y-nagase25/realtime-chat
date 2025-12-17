@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/card';
 import { formatNumber } from '@/lib/utils/date-jst';
 import { RefreshCwIcon } from 'lucide-react';
+import { ADMIN_REFRESH_INTERVAL } from '@/lib/costants';
 
 /**
  * Props for the UsageStat sub-component
@@ -59,9 +60,8 @@ function UsageStat({ label, value, unit, isLoading, hasError }: UsageStatProps) 
  */
 export function DailyUsageCard() {
   // Fetch usage data with 60-second auto-refresh
-  const { transcriptionSeconds, speakingTokens, isLoading, hasError, refetch } = useDailyUsage(
-    60 * 1000
-  );
+  const { transcriptionSeconds, speakingTokens, isLoading, hasError, refetch } =
+    useDailyUsage(ADMIN_REFRESH_INTERVAL);
 
   return (
     <Card>

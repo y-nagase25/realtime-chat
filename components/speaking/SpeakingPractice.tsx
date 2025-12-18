@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
+import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 
 interface SpeakingPracticeProps {
   question: Question;
@@ -75,7 +76,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
           <AlertDescription>
             <div className="font-medium">Error: {error}</div>
             <Button variant="outline" size="sm" className="mt-2" onClick={reset}>
-              Try Again
+              {SPEAKING_LABELS.tryAgain}
             </Button>
           </AlertDescription>
         </Alert>
@@ -91,7 +92,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <Spinner className="mx-auto mb-4 h-8 w-8" />
-            <p className="text-sm text-muted-foreground">Transcribing your response...</p>
+            <p className="text-sm text-muted-foreground">{SPEAKING_LABELS.transcribing}</p>
           </div>
         </div>
       )}
@@ -113,7 +114,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
 
           {/* Try Again Button */}
           <Button variant="outline" onClick={handleTryAgain} className="w-full">
-            Try Another Question
+            {SPEAKING_LABELS.tryAnotherQuestion}
           </Button>
         </div>
       )}

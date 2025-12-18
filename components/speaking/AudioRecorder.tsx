@@ -10,6 +10,7 @@ import { useRecording } from '@/lib/hooks/use-recording';
 import { formatDuration } from '@/lib/utils/audio';
 import { AudioLines, Pause } from 'lucide-react';
 import { useEffect } from 'react';
+import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 
 interface AudioRecorderProps {
   onRecordingComplete: (audioBlob: Blob) => void;
@@ -36,7 +37,7 @@ export function AudioRecorder({ onRecordingComplete, disabled, maxDuration }: Au
         {!isRecording ? (
           <Button onClick={startRecording} disabled={disabled} size="lg" className="w-full">
             <AudioLines className="mr-2 h-5 w-5" />
-            Start Recording
+            {SPEAKING_LABELS.startRecording}
           </Button>
         ) : (
           <Button
@@ -47,7 +48,7 @@ export function AudioRecorder({ onRecordingComplete, disabled, maxDuration }: Au
             className="w-full"
           >
             <Pause className="mr-2 h-5 w-5" />
-            Stop Recording
+            {SPEAKING_LABELS.stopRecording}
           </Button>
         )}
       </div>
@@ -57,7 +58,7 @@ export function AudioRecorder({ onRecordingComplete, disabled, maxDuration }: Au
         <div className="flex items-center justify-between rounded-lg border bg-muted p-4">
           <div className="flex items-center gap-3">
             <div className="h-3 w-3 animate-pulse rounded-full bg-red-500" />
-            <span className="text-sm font-medium">Recording...</span>
+            <span className="text-sm font-medium">{SPEAKING_LABELS.recording}</span>
           </div>
           <div className="font-mono text-sm font-medium">{formatDuration(duration)}</div>
         </div>

@@ -31,9 +31,9 @@ export default function RootLayout({
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="min-h-screen bg-background">
-          <div className="mx-auto max-w-4xl px-4 py-8">
+          <div className="mx-auto max-w-[1480px] px-4 py-8">
             <Header />
-            {children}
+            <div className="container mx-auto space-y-6 p-6">{children}</div>
           </div>
         </div>
         <Toaster />

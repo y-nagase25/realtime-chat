@@ -22,23 +22,25 @@ export function SpeakingPracticeContainer({ questions }: SpeakingPracticeContain
   const { selectedQuestion, selectQuestion } = useQuestionSelection(questions);
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-10">
-      {/* Left Column: Questions List and Speaking Practice (60% on desktop) */}
-      <div className="space-y-6 lg:col-span-6">
-        {/* Questions List with Search and Filter */}
-        <QuestionsList
-          questions={questions}
-          onQuestionSelect={selectQuestion}
-          selectedQuestionId={selectedQuestion?.id}
-        />
-        {/* Speaking Practice Component with Selected Question */}
-        {selectedQuestion && <SpeakingPractice question={selectedQuestion} />}
-      </div>
+    <>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-10">
+        {/* Left Column */}
+        <div className="space-y-6 lg:col-span-6">
+          {/* Questions List with Search and Filter */}
+          <QuestionsList
+            questions={questions}
+            onQuestionSelect={selectQuestion}
+            selectedQuestionId={selectedQuestion?.id}
+          />
+        </div>
 
-      {/* Right Column: Attempt History (40% on desktop) */}
-      <div className="lg:col-span-4">
-        <AttemptHistoryMemo />
+        {/* Right Column */}
+        <div className="lg:col-span-4">
+          {/* Speaking Practice Component with Selected Question */}
+          {selectedQuestion && <SpeakingPractice question={selectedQuestion} />}
+        </div>
       </div>
-    </div>
+      <AttemptHistoryMemo />
+    </>
   );
 }

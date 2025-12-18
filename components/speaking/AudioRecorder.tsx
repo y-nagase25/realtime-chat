@@ -14,11 +14,12 @@ import { useEffect } from 'react';
 interface AudioRecorderProps {
   onRecordingComplete: (audioBlob: Blob) => void;
   disabled: boolean;
+  maxDuration?: number;
 }
 
-export function AudioRecorder({ onRecordingComplete, disabled }: AudioRecorderProps) {
+export function AudioRecorder({ onRecordingComplete, disabled, maxDuration }: AudioRecorderProps) {
   const { isRecording, duration, audioBlob, error, startRecording, stopRecording, resetRecording } =
-    useRecording();
+    useRecording({ maxDuration });
 
   // Call callback when recording is complete
   useEffect(() => {

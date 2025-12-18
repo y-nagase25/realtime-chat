@@ -15,21 +15,21 @@ function getLevelBadgeConfig(level?: Question['level']): LevelBadgeConfig | null
   if (!level) return null;
 
   switch (level) {
-    case 'beginner':
+    case 1:
       return {
-        label: 'Beginner',
+        label: '初級',
         variant: 'outline',
         className: 'border-green-500 text-green-700 dark:text-green-400',
       };
-    case 'intermediate':
+    case 2:
       return {
-        label: 'Intermediate',
+        label: '中級',
         variant: 'outline',
         className: 'border-yellow-500 text-yellow-700 dark:text-yellow-400',
       };
-    case 'advanced':
+    case 3:
       return {
-        label: 'Advanced',
+        label: '上級',
         variant: 'outline',
         className: 'border-red-500 text-red-700 dark:text-red-400',
       };

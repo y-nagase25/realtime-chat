@@ -6,6 +6,7 @@
 
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { createAudioBlob } from '@/lib/utils/audio';
+import { RECORDING_MAX_DURATION } from '../costants';
 
 export interface UseRecordingReturn {
   isRecording: boolean;
@@ -18,7 +19,12 @@ export interface UseRecordingReturn {
   resetRecording: () => void;
 }
 
-export function useRecording(): UseRecordingReturn {
+export interface UseRecordingOptions {
+  maxDuration?: number;
+}
+
+export function useRecording(options?: UseRecordingOptions): UseRecordingReturn {
+  const maxDuration = options?.maxDuration ?? RECORDING_MAX_DURATION;
   const [isRecording, setIsRecording] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -31,11 +37,24 @@ export function useRecording(): UseRecordingReturn {
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  }, [isRecording]);
+
   // Update duration timer
   useEffect(() => {
     if (isRecording) {
       timerRef.current = setInterval(() => {
-        setDuration(Date.now() - startTimeRef.current);
+        const elapsed = Date.now() - startTimeRef.current;
+        setDuration(elapsed);
+
+        // Auto-stop when max duration is reached
+        if (elapsed >= maxDuration) {
+          stopRecording();
+        }
       }, 100);
     } else {
       if (timerRef.current) {
@@ -49,7 +68,7 @@ export function useRecording(): UseRecordingReturn {
         clearInterval(timerRef.current);
       }
     };
-  }, [isRecording]);
+  }, [isRecording, maxDuration, stopRecording]);
 
   const startRecording = useCallback(async () => {
     setError(null);
@@ -126,13 +145,6 @@ export function useRecording(): UseRecordingReturn {
       console.error('Error starting recording:', err);
     }
   }, []);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  }, [isRecording]);
 
   const resetRecording = useCallback(() => {
     setAudioBlob(null);

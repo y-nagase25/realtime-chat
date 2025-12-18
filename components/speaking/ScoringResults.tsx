@@ -10,13 +10,15 @@ import { CheckIcon, AlertTriangleIcon } from 'lucide-react';
 import type { ScoringResult } from '@/lib/types/speaking';
 import { getScoreBadgeClass } from '@/lib/utils/scoring';
 import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
+import type { Question } from '@/lib/types/db';
 
 interface ScoringResultsProps {
   result: ScoringResult;
   transcript: string;
+  question: Question;
 }
 
-export function ScoringResults({ result, transcript }: ScoringResultsProps) {
+export function ScoringResults({ result, transcript, question }: ScoringResultsProps) {
   return (
     <div className="space-y-4">
       {/* Transcript Reference */}
@@ -34,6 +36,18 @@ export function ScoringResults({ result, transcript }: ScoringResultsProps) {
             className={`inline-flex items-center rounded-full border-2 px-3 py-2 font-bold ${getScoreBadgeClass(result.score)}`}
           >
             {result.score}/10
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Model Answer */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{SPEAKING_LABELS.answer}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg bg-muted p-4">
+            <p className="text-sm leading-relaxed">{question.answer}</p>
           </div>
         </CardContent>
       </Card>

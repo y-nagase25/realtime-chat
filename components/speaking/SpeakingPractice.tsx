@@ -110,7 +110,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
       {/* Results Display Phase */}
       {state === 'completed' && scoringResult && transcript && (
         <div className="space-y-4">
-          <ScoringResults result={scoringResult} transcript={transcript} />
+          <ScoringResults result={scoringResult} transcript={transcript} question={question} />
 
           {/* Try Again Button */}
           <Button variant="outline" onClick={handleTryAgain} className="w-full">

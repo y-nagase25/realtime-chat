@@ -8,8 +8,8 @@ export interface Question {
   id?: number;
   question: string;
   answer: string;
-  type?: 'reading' | 'listening' | 'speaking' | 'writing';
-  level?: 'beginner' | 'intermediate' | 'advanced';
+  type?: number;
+  level?: number;
   created_at?: string;
 }
 

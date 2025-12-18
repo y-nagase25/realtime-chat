@@ -52,6 +52,8 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
     if (scoringResult && transcript) {
       addAttempt({
         question_id: question.id ?? 0,
+        questionText: question.question,
+        modelAnswer: question.answer,
         transcript,
         score: scoringResult.score,
         areas_for_improvement: scoringResult.areasForImprovement,
@@ -59,7 +61,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
         processing_time_ms: scoringResult.processingTime,
       });
     }
-  }, [scoringResult, transcript, question.id, addAttempt]);
+  }, [scoringResult, transcript, question.id, question.question, question.answer, addAttempt]);
 
   // Save and reset for new attempt
   const handleTryAgain = useCallback(() => {

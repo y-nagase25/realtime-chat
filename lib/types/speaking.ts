@@ -8,6 +8,8 @@
 export interface SpeakingAttempt {
   id: string; // UUID generated client-side
   question_id: number;
+  questionText: string;
+  modelAnswer: string;
   transcript: string;
   score: number; // 0-10
   areas_for_improvement: string[];

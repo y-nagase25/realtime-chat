@@ -86,7 +86,11 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
 
       {/* Recording Phase */}
       {(state === 'idle' || state === 'recording') && (
-        <AudioRecorder onRecordingComplete={handleRecordingComplete} disabled={state !== 'idle'} />
+        <AudioRecorder
+          onRecordingComplete={handleRecordingComplete}
+          disabled={state !== 'idle'}
+          question={question}
+        />
       )}
 
       {/* Transcribing Phase */}

@@ -25,8 +25,6 @@ export const SPEAKING_LABELS = {
   latestScore: '最新スコア',
 
   // AudioRecorder
-  startRecording: '録音を開始',
-  stopRecording: '録音を停止',
   recording: '録音中...',
 
   // SpeakingPractice

@@ -15,6 +15,7 @@ export const SPEAKING_LABELS = {
 
   // Attempt
   transcript: '書き起こしテキスト',
+  history: '会話履歴',
 
   // SessionStatistics
   sessionStatistics: 'セッション統計',
@@ -34,6 +35,11 @@ export const SPEAKING_LABELS = {
   tryAnotherQuestion: '別の質問を試す',
 
   // Page
-  speakingPractice: 'スピーキング練習',
+  speakingPractice: 'AI Speaking Practice',
   noQuestionsAvailable: '利用可能な質問がありません。',
+  phrase: '日常会話フレーズ',
+  description: 'スピーキング練習したい日常会話フレーズを選択してください。',
+  difficultyLevel: 'レベル',
+  noQuestionsFound: '該当するフレーズが見つかりませんでした。',
+  clear: 'リセット',
 } as const;

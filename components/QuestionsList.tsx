@@ -18,6 +18,7 @@ import { QuestionBadge } from '@/components/QuestionBadge';
 import { Search } from 'lucide-react';
 import type { Question } from '@/lib/types/db';
 import { applyFilters } from '@/lib/utils/question-filters';
+import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 
 interface QuestionsListProps {
   questions: Question[];
@@ -26,7 +27,7 @@ interface QuestionsListProps {
 }
 
 const DIFFICULTY_OPTIONS = [
-  { value: 'all', label: 'All', level: null },
+  { value: 'all', label: '全て', level: null },
   { value: 'beginner', label: '初級', level: 1 },
   { value: 'intermediate', label: '中級', level: 2 },
   { value: 'advanced', label: '上級', level: 3 },
@@ -89,8 +90,8 @@ export function QuestionsList({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Questions</CardTitle>
-        <CardDescription>Select a question to practice</CardDescription>
+        <CardTitle>{SPEAKING_LABELS.phrase}</CardTitle>
+        <CardDescription>{SPEAKING_LABELS.description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Search Input */}
@@ -98,7 +99,7 @@ export function QuestionsList({
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search questions..."
+            placeholder="Search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
@@ -108,7 +109,7 @@ export function QuestionsList({
 
         {/* Difficulty Filter */}
         <div className="space-y-2">
-          <Label>Difficulty Level</Label>
+          <Label>{SPEAKING_LABELS.difficultyLevel}</Label>
           <RadioGroup
             value={
               selectedLevel === null
@@ -136,7 +137,7 @@ export function QuestionsList({
           </span>
           {hasFilters && (
             <Button variant="link" size="sm" onClick={handleClearFilters} className="h-auto p-0">
-              Clear filters
+              {SPEAKING_LABELS.clear}
             </Button>
           )}
         </div>
@@ -144,9 +145,9 @@ export function QuestionsList({
         {/* No Results State */}
         {filteredQuestions.length === 0 ? (
           <div className="py-8 text-center text-muted-foreground">
-            <p>No questions found matching your criteria.</p>
+            <p>{SPEAKING_LABELS.noQuestionsFound}</p>
             <Button variant="link" onClick={handleClearFilters} className="mt-2">
-              Clear filters
+              {SPEAKING_LABELS.clear}
             </Button>
           </div>
         ) : (
@@ -156,8 +157,8 @@ export function QuestionsList({
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-16 text-right">#</TableHead>
-                  <TableHead>Question</TableHead>
-                  <TableHead className="w-24">Level</TableHead>
+                  <TableHead>{SPEAKING_LABELS.phrase}</TableHead>
+                  <TableHead className="w-24">{SPEAKING_LABELS.difficultyLevel}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

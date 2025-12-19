@@ -4,9 +4,9 @@ import { prodNotFound } from '@/lib/environment';
 export default function RealtimeChatPage() {
   prodNotFound();
   return (
-    <div className="container mx-auto max-w-4xl space-y-6 p-6">
+    <>
       <h1 className="text-3xl font-bold">Realtime API (WebRTC)</h1>
       <SessionControl />
-    </div>
+    </>
   );
 }

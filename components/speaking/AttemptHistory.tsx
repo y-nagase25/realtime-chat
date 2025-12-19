@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { Attempt } from './Attempt';
 import { InfoIcon, TrashIcon } from 'lucide-react';
+import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 
 export function AttemptHistory() {
   const { attempts, clearHistory } = useAttemptHistory();
@@ -32,7 +33,9 @@ export function AttemptHistory() {
   return (
     <Card>
       <CardHeader className="flex items-center justify-between">
-        <CardTitle className="text-lg">Past Attempts ({attempts.length})</CardTitle>
+        <CardTitle className="text-lg">
+          {SPEAKING_LABELS.history} ({attempts.length})
+        </CardTitle>
         <TrashIcon
           size={20}
           onClick={() => clearHistory()}

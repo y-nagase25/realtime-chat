@@ -9,19 +9,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckIcon, AlertTriangleIcon } from 'lucide-react';
 import type { ScoringResult } from '@/lib/types/speaking';
 import { getScoreBadgeClass } from '@/lib/utils/scoring';
+import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
+import type { Question } from '@/lib/types/db';
 
 interface ScoringResultsProps {
   result: ScoringResult;
   transcript: string;
+  question: Question;
 }
 
-export function ScoringResults({ result, transcript }: ScoringResultsProps) {
+export function ScoringResults({ result, transcript, question }: ScoringResultsProps) {
   return (
     <div className="space-y-4">
       {/* Transcript Reference */}
       <Card>
         <CardHeader>
-          <CardTitle>Result</CardTitle>
+          <CardTitle>{SPEAKING_LABELS.result}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg bg-muted p-4">
@@ -37,13 +40,25 @@ export function ScoringResults({ result, transcript }: ScoringResultsProps) {
         </CardContent>
       </Card>
 
+      {/* Model Answer */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{SPEAKING_LABELS.answer}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg bg-muted p-4">
+            <p className="text-sm leading-relaxed">{question.answer}</p>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Good Points */}
       {result.goodPoints.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
               <CheckIcon className="h-5 w-5 text-green-600" />
-              Good Points
+              {SPEAKING_LABELS.goodPoints}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -65,7 +80,7 @@ export function ScoringResults({ result, transcript }: ScoringResultsProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
               <AlertTriangleIcon className="h-5 w-5 text-yellow-600" />
-              Areas for Improvement
+              {SPEAKING_LABELS.areasForImprovement}
             </CardTitle>
           </CardHeader>
           <CardContent>

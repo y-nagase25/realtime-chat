@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
+import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 
 interface SpeakingPracticeProps {
   question: Question;
@@ -51,6 +52,8 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
     if (scoringResult && transcript) {
       addAttempt({
         question_id: question.id ?? 0,
+        questionText: question.question,
+        modelAnswer: question.answer,
         transcript,
         score: scoringResult.score,
         areas_for_improvement: scoringResult.areasForImprovement,
@@ -58,7 +61,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
         processing_time_ms: scoringResult.processingTime,
       });
     }
-  }, [scoringResult, transcript, question.id, addAttempt]);
+  }, [scoringResult, transcript, question.id, question.question, question.answer, addAttempt]);
 
   // Save and reset for new attempt
   const handleTryAgain = useCallback(() => {
@@ -75,7 +78,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
           <AlertDescription>
             <div className="font-medium">Error: {error}</div>
             <Button variant="outline" size="sm" className="mt-2" onClick={reset}>
-              Try Again
+              {SPEAKING_LABELS.tryAgain}
             </Button>
           </AlertDescription>
         </Alert>
@@ -83,7 +86,11 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
 
       {/* Recording Phase */}
       {(state === 'idle' || state === 'recording') && (
-        <AudioRecorder onRecordingComplete={handleRecordingComplete} disabled={state !== 'idle'} />
+        <AudioRecorder
+          onRecordingComplete={handleRecordingComplete}
+          disabled={state !== 'idle'}
+          question={question}
+        />
       )}
 
       {/* Transcribing Phase */}
@@ -91,7 +98,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <Spinner className="mx-auto mb-4 h-8 w-8" />
-            <p className="text-sm text-muted-foreground">Transcribing your response...</p>
+            <p className="text-sm text-muted-foreground">{SPEAKING_LABELS.transcribing}</p>
           </div>
         </div>
       )}
@@ -109,11 +116,11 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
       {/* Results Display Phase */}
       {state === 'completed' && scoringResult && transcript && (
         <div className="space-y-4">
-          <ScoringResults result={scoringResult} transcript={transcript} />
+          <ScoringResults result={scoringResult} transcript={transcript} question={question} />
 
           {/* Try Again Button */}
           <Button variant="outline" onClick={handleTryAgain} className="w-full">
-            Try Another Question
+            {SPEAKING_LABELS.tryAnotherQuestion}
           </Button>
         </div>
       )}

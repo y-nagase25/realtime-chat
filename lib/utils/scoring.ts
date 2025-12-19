@@ -12,22 +12,22 @@ export function buildScoringPrompt(
   modelAnswer: string,
   userTranscript: string
 ): string {
-  return `You are an English speaking tutor evaluating a student's spoken response by comparing their transcribed text with the model answer.
+  return `あなたは英語スピーキング指導者として、ユーザーの音声回答を書き起こしたテキストを評価します。
 
-Question: ${questionText}
-Model Answer: ${modelAnswer}
-Student's Transcribed Response: ${userTranscript}
+質問: ${questionText}
+模範解答: ${modelAnswer}
+ユーザーの書き起こし回答: ${userTranscript}
 
-Your task is to compare the student's response text with the model answer text and evaluate based on:
-1. Grammar accuracy - Are there grammatical errors in the student's response?
-2. Content relevance - Does the student's answer match the meaning of the model answer?
-3. Vocabulary usage - Is the vocabulary appropriate and similar to the model answer?
+ユーザーの回答テキストと模範解答テキストを比較し、以下の観点で評価してください:
+1. 文法の正確性 - ユーザーの回答に文法的な誤りはないか?
+2. 内容の関連性 - ユーザーの回答は模範解答の意味と一致しているか?
+3. 語彙の使用 - 適切で模範解答に近い語彙が使われているか?
 
-Provide your evaluation in the following JSON format:
+評価は必ず以下のJSON形式で日本語で提供してください:
 {
-  "score": <number 0-10>,
-  "areasForImprovement": ["specific improvement 1", "specific improvement 2", ...],
-  "goodPoints": ["positive aspect 1", "positive aspect 2", ...]
+  "score": <0から10までの数値>,
+  "areasForImprovement": ["具体的な改善点1", "具体的な改善点2", ...],
+  "goodPoints": ["良かった点1", "良かった点2", ...]
 }`;
 }
 

@@ -5,25 +5,19 @@
 
 import { getQuestions } from '@/lib/loaders';
 import { SpeakingPracticeContainer } from '@/components/speaking/SpeakingPracticeContainer';
+import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 
 export default async function SpeakingPracticePage() {
   const { data: questions } = await getQuestions();
 
-  if (!questions || questions.length === 0) {
-    return (
-      <div className="container mx-auto max-w-4xl p-6">
-        <h1 className="mb-4 text-3xl font-bold">Speaking Practice</h1>
-        <p className="text-muted-foreground">No questions available.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto max-w-4xl space-y-6 p-6">
-      <h1 className="text-3xl font-bold">Speaking Practice</h1>
-
-      {/* Speaking Practice Container manages shared question state */}
-      <SpeakingPracticeContainer questions={questions} />
-    </div>
+    <>
+      <h1 className="text-3xl font-bold">{SPEAKING_LABELS.speakingPractice}</h1>
+      {!questions || questions.length === 0 ? (
+        <p className="text-muted-foreground">{SPEAKING_LABELS.noQuestionsAvailable}</p>
+      ) : (
+        <SpeakingPracticeContainer questions={questions} />
+      )}
+    </>
   );
 }

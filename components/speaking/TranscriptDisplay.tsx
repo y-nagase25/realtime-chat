@@ -8,6 +8,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 
 interface TranscriptDisplayProps {
   transcript: string;
@@ -25,7 +26,7 @@ export function TranscriptDisplay({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Your Response</CardTitle>
+        <CardTitle className="text-lg">{SPEAKING_LABELS.yourResponse}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Transcript Text */}
@@ -38,10 +39,10 @@ export function TranscriptDisplay({
           {isScoring ? (
             <>
               <Spinner className="mr-2" />
-              Evaluating...
+              {SPEAKING_LABELS.evaluating}
             </>
           ) : (
-            'Score My Response'
+            SPEAKING_LABELS.scoreMyResponse
           )}
         </Button>
       </CardContent>

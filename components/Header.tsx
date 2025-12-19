@@ -1,14 +1,29 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { env } from '@/lib/environment';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
-export async function Header() {
-  const isDev = env.isDevelopment;
+const ROUTES = {
+  HOME: '/',
+  SPEAKING: '/speaking',
+} as const;
+
+export function Header() {
+  const isDev = process.env.NODE_ENV === 'development';
+  const pathname = usePathname();
+
+  const isActiveLink = (href: string): boolean => {
+    if (href === ROUTES.HOME) return pathname === ROUTES.HOME;
+    return pathname.startsWith(href);
+  };
+
   return (
-    <header className={`mx-auto px-4 ${isDev ? 'bg-muted-foreground' : ''}`}>
+    <header className={cn('mx-auto rounded-md border px-4', isDev && 'bg-muted-foreground')}>
       <nav className="flex items-center justify-between py-4">
         <div className="flex items-center space-x-8">
-          <Link href="/">
+          <Link href={ROUTES.HOME}>
             <Image
               src="/aigo-header.png"
               alt="AI-GO Logo"
@@ -24,9 +39,15 @@ export async function Header() {
             />
           </Link>
           <div className="flex items-center space-x-8">
-            <Link href="/speaking">Speaking</Link>
-            {isDev && <Link href="/realtime-chat">Realtime Chat</Link>}
-            {isDev && <Link href="/admin">Admin</Link>}
+            <Link
+              href={ROUTES.SPEAKING}
+              className={cn(
+                'transition-colors',
+                isActiveLink(ROUTES.SPEAKING) && 'border-b border-primary'
+              )}
+            >
+              Speaking
+            </Link>
           </div>
         </div>
       </nav>

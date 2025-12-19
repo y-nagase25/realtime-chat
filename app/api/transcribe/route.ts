@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
     const transcription = await openai.audio.transcriptions.create({
       model: audioModel,
       file: audioFile,
+      language: 'en',
       response_format: 'json',
       temperature: 0.1,
     });

@@ -24,18 +24,24 @@ export default function ClientPage() {
         <RefreshCwIcon className="size-4" />
         Refresh
       </Button>
-      <DailyUsageCard
-        transcriptionSeconds={transcriptionSeconds}
-        speakingTokens={speakingTokens}
-        isLoading={isLoading}
-        hasError={hasError}
-      />
-      <TodayTokenUsageList
-        records={records}
-        totalRecordCount={totalRecordCount}
-        isLoading={isLoading}
-        hasError={hasError}
-      />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-10">
+        <div className="lg:col-span-3">
+          <DailyUsageCard
+            transcriptionSeconds={transcriptionSeconds}
+            speakingTokens={speakingTokens}
+            isLoading={isLoading}
+            hasError={hasError}
+          />
+        </div>
+        <div className="lg:col-span-7">
+          <TodayTokenUsageList
+            records={records}
+            totalRecordCount={totalRecordCount}
+            isLoading={isLoading}
+            hasError={hasError}
+          />
+        </div>
+      </div>
     </>
   );
 }

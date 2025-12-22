@@ -16,6 +16,7 @@ export const SPEAKING_LABELS = {
   // Attempt
   transcript: '書き起こしテキスト',
   history: '会話履歴',
+  noAttempts: '会話履歴がありません。',
 
   // SessionStatistics
   sessionStatistics: 'セッション統計',

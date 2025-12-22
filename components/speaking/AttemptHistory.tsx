@@ -58,14 +58,12 @@ function EmptyAttemptHistory() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Attempt History</CardTitle>
+        <CardTitle className="text-lg">{SPEAKING_LABELS.history}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <InfoIcon className="mb-2 h-12 w-12 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
-            No attempts yet. Record your first response to get started!
-          </p>
+          <p className="text-sm text-muted-foreground">{SPEAKING_LABELS.noAttempts}</p>
         </div>
       </CardContent>
     </Card>

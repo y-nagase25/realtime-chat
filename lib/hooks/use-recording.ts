@@ -136,13 +136,17 @@ export function useRecording(options?: UseRecordingOptions): UseRecordingReturn 
       const errorMessage = err instanceof Error ? err.message : 'Failed to access microphone';
 
       // Check for specific permission error
-      if (errorMessage.includes('Permission denied') || errorMessage.includes('NotAllowedError')) {
-        setError('Microphone access denied. Please allow microphone access in your browser.');
+      const PERMISSION_DENIED = [
+        'Permission denied',
+        'NotAllowedError',
+        'not allowed',
+        'denied permission',
+      ];
+      if (PERMISSION_DENIED.some((message) => errorMessage.includes(message))) {
+        setError('マイクへのアクセス権限が許可されていません。ブラウザの設定をご確認ください。');
       } else {
         setError(errorMessage);
       }
-
-      console.error('Error starting recording:', err);
     }
   }, []);
 

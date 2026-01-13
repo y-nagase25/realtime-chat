@@ -9,18 +9,16 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-      - name: Install dependencies
-        run: npm install -g pnpm && pnpm install
-      - name: Build application
-        run: pnpm build
-      - name: Run tests
-        run: pnpm test
-
-
-        
-
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      run: npm install -g pnpm && pnpm install
+    - name: Build application
+      run: pnpm build
+    - name: Run tests
+      run: pnpm test

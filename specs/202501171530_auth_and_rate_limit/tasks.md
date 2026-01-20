@@ -28,46 +28,46 @@
 ## Phase 2: Core Features (P0 - コア機能)
 
 ### 2.1 CSRF トークン発行 API
-- [ ] `app/api/csrf/route.ts` を作成
-  - [ ] GET ハンドラを実装
-  - [ ] トークン生成と Cookie 設定
-  - [ ] 204 No Content レスポンス
+- [x] `app/api/csrf/route.ts` を作成
+  - [x] GET ハンドラを実装
+  - [x] トークン生成と Cookie 設定
+  - [x] 204 No Content レスポンス
 
 ### 2.2 Next.js Middleware
-- [ ] `middleware.ts` を作成
-  - [ ] matcher 設定（保護対象エンドポイント）
-  - [ ] IP アドレス取得ロジック（x-forwarded-for 対応）
-  - [ ] レート制限チェックの統合
-  - [ ] CSRF 検証の統合
-  - [ ] 403/429 エラーレスポンスの実装
-  - [ ] X-RateLimit-* ヘッダーの設定
+- [x] `middleware.ts` を作成
+  - [x] matcher 設定（保護対象エンドポイント）
+  - [x] IP アドレス取得ロジック（x-forwarded-for 対応）
+  - [x] レート制限チェックの統合
+  - [x] CSRF 検証の統合
+  - [x] 403/429 エラーレスポンスの実装
+  - [x] X-RateLimit-* ヘッダーの設定
 
 ### 2.3 API クライアント
-- [ ] `lib/api-client.ts` を作成
-  - [ ] `fetchCsrfToken()` 関数を実装
-  - [ ] `apiPost()` 関数を実装
-  - [ ] `apiPostFormData()` 関数を実装
-  - [ ] Cookie からトークン読み取りロジック
+- [x] `lib/api-client.ts` を作成
+  - [x] `fetchCsrfToken()` 関数を実装
+  - [x] `apiPost()` 関数を実装
+  - [x] `apiPostFormData()` 関数を実装
+  - [x] Cookie からトークン読み取りロジック
 
 ### 2.4 カスタムエラークラス
-- [ ] `lib/errors.ts` を作成
-  - [ ] `CsrfError` クラスを定義
-  - [ ] `RateLimitError` クラスを定義
-  - [ ] `ApiError` クラスを定義
+- [x] `lib/errors.ts` を作成
+  - [x] `CsrfError` クラスを定義
+  - [x] `RateLimitError` クラスを定義
+  - [x] `ApiError` クラスを定義
 
 ### 2.5 CSRF Provider
-- [ ] `components/providers/CsrfProvider.tsx` を作成
-  - [ ] 初回マウント時に CSRF トークン取得
-  - [ ] エラーハンドリング
-- [ ] `app/layout.tsx` を更新
-  - [ ] CsrfProvider でラップ
+- [x] `components/providers/CsrfProvider.tsx` を作成
+  - [x] 初回マウント時に CSRF トークン取得
+  - [x] エラーハンドリング
+- [x] `app/layout.tsx` を更新
+  - [x] CsrfProvider でラップ
 
 ### 2.6 既存コードの更新
-- [ ] 既存の API 呼び出し箇所を `apiPost` / `apiPostFormData` に置き換え
-  - [ ] `/api/realtime/session` の呼び出し箇所
-  - [ ] `/api/transcribe` の呼び出し箇所
-  - [ ] `/api/text` の呼び出し箇所
-  - [ ] `/api/speaking/score` の呼び出し箇所
+- [x] 既存の API 呼び出し箇所を `apiPost` / `apiPostFormData` に置き換え
+  - [x] `/api/realtime/session` の呼び出し箇所
+  - [x] `/api/transcribe` の呼び出し箇所
+  - [x] `/api/text` の呼び出し箇所 (未使用のため対応不要)
+  - [x] `/api/speaking/score` の呼び出し箇所
 
 ## Phase 3: Polish (P1 - 改善)
 

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { apiPost } from '@/lib/api-client';
 
 type ConnectionState =
   | 'idle'
@@ -51,16 +52,7 @@ export function useRealtimeSession(): UseRealtimeSessionReturn {
     try {
       // Get a session token for OpenAI Realtime API
       setConnectionState('fetching-token');
-      const tokenResponse = await fetch('/api/realtime/session', {
-        method: 'POST',
-      });
-
-      if (!tokenResponse.ok) {
-        throw new Error(`Failed to fetch token: ${tokenResponse.statusText}`);
-      }
-
-      // EPHEMERAL_KEY
-      const { clientSecret } = await tokenResponse.json();
+      const { clientSecret } = await apiPost<{ clientSecret: string }>('/api/realtime/session');
 
       // Create a peer connection
       setConnectionState('creating-peer');

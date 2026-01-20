@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/Header';
+import { CsrfProvider } from '@/components/providers/CsrfProvider';
 import { APP_NAME } from '@/lib/costants';
 import { Toaster } from 'sonner';
 
@@ -30,13 +31,15 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className="min-h-screen bg-background">
-          <div className="mx-auto max-w-[1480px] px-4 py-8">
-            <Header />
-            <div className="container mx-auto space-y-6 p-6">{children}</div>
+        <CsrfProvider>
+          <div className="min-h-screen bg-background">
+            <div className="mx-auto max-w-[1480px] px-4 py-8">
+              <Header />
+              <div className="container mx-auto space-y-6 p-6">{children}</div>
+            </div>
           </div>
-        </div>
-        <Toaster />
+          <Toaster />
+        </CsrfProvider>
       </body>
     </html>
   );

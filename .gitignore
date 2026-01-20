@@ -43,3 +43,10 @@ next-env.d.ts
 *.mp3
 *.wav
 *.csv
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     // Check usage limit
     const limitData = await checkUsageLimit(request);
     if (limitData.exceeded) {
-      return NextResponse.json({ error: 'Daily usage limit exceeded' }, { status: 403 });
+      return NextResponse.json({ error: 'Daily usage limit exceeded' }, { status: 429 });
     }
 
     // Transcribe audio with OpenAI Whisper

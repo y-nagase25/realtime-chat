@@ -12,6 +12,8 @@ import type {
   ScoringRequest,
   ScoringResponse,
 } from '@/lib/types/speaking';
+import { apiPost, apiPostFormData } from '@/lib/api-client';
+import { RateLimitError } from '@/lib/errors';
 import { toast } from 'sonner';
 import { EXCEEDED_USAGE_LIMIT_MSG } from '../costants';
 
@@ -122,21 +124,18 @@ export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeak
       formData.append('file', audioFile);
 
       const response = await withRetry(async () => {
-        const res = await fetch('/api/transcribe', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (res.status === 403) {
-          toast.warning(EXCEEDED_USAGE_LIMIT_MSG);
-          throw new Error(EXCEEDED_USAGE_LIMIT_MSG);
+        try {
+          return await apiPostFormData<{ transcription?: { text: string }; text?: string }>(
+            '/api/transcribe',
+            formData
+          );
+        } catch (err) {
+          if (err instanceof RateLimitError) {
+            toast.warning(EXCEEDED_USAGE_LIMIT_MSG);
+            throw new Error(EXCEEDED_USAGE_LIMIT_MSG);
+          }
+          throw err;
         }
-
-        if (!res.ok) {
-          throw new Error('Transcription request failed');
-        }
-
-        return res.json();
       });
 
       // Handle response format: { transcription: { text: string } }
@@ -172,19 +171,7 @@ export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeak
         };
 
         const response = await withRetry(async () => {
-          const res = await fetch('/api/speaking/score', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-          });
-
-          if (!res.ok) {
-            throw new Error('Scoring request failed');
-          }
-
-          return res.json() as Promise<ScoringResponse>;
+          return await apiPost<ScoringResponse>('/api/speaking/score', requestBody);
         });
 
         if (response.success && response.data) {

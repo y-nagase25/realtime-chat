@@ -7,6 +7,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { completionModel, openai } from '@/lib/openai';
 import { trackChatCompletion } from '@/lib/utils/track-usage';
 import type { ValidationResult } from '@/lib/types/validation';
+import type { ApiType } from '@/lib/types/db';
 
 /**
  * Configuration for reading API handler
@@ -88,7 +89,11 @@ export function createReadingApiHandler<TRequest, TResponse>(
  * console.log(result.title);
  * ```
  */
-export async function getJsonCompletion<T>(systemPrompt: string, maxTokens: number): Promise<T> {
+export async function getJsonCompletion<T>(
+  systemPrompt: string,
+  maxTokens: number,
+  apiType: ApiType = 'reading'
+): Promise<T> {
   const completion = await openai.chat.completions.create({
     model: completionModel,
     messages: [{ role: 'system', content: systemPrompt }],
@@ -96,7 +101,7 @@ export async function getJsonCompletion<T>(systemPrompt: string, maxTokens: numb
     max_completion_tokens: maxTokens,
   });
 
-  void trackChatCompletion(completion, 'reading');
+  void trackChatCompletion(completion, apiType);
 
   const content = completion.choices[0]?.message?.content;
   if (!content) {

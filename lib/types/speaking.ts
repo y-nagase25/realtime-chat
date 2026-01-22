@@ -93,16 +93,18 @@ export interface ScoringRequest {
   userTranscript: string;
 }
 
+export interface Scoring {
+  score: number;
+  areasForImprovement: string[];
+  goodPoints: string[];
+  processingTime: number;
+}
+
 /**
  * API response for scoring
  */
 export interface ScoringResponse {
   success: boolean;
-  data?: {
-    score: number;
-    areasForImprovement: string[];
-    goodPoints: string[];
-    processingTime: number;
-  };
+  data?: Scoring;
   error?: string;
 }

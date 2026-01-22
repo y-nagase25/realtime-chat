@@ -9,6 +9,7 @@ import { validateGenerateQuestionsRequest } from '@/lib/utils/reading-validation
 import { READING_LEVELS } from '@/lib/constants/reading';
 import type { GenerateQuestionsRequest, ComprehensionQuestion } from '@/lib/types/reading';
 import { v4 as uuidv4 } from 'uuid';
+import { trackChatCompletion } from '@/lib/utils/track-usage';
 
 /**
  * Build the prompt for question generation
@@ -120,6 +121,7 @@ export async function POST(request: NextRequest) {
       response_format: { type: 'json_object' },
       max_completion_tokens: 2000,
     });
+    trackChatCompletion(completion, 'reading');
 
     // Parse response
     const content = completion.choices[0]?.message?.content;

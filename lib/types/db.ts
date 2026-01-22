@@ -14,7 +14,7 @@ export interface Question {
 }
 
 // 'public.token_usage' table
-export type ApiType = 'text_generation' | 'transcription' | 'realtime_session';
+export type ApiType = 'text_generation' | 'transcription' | 'reading' | 'realtime_session';
 
 export interface TokenUsageInsert {
   api_type: ApiType;

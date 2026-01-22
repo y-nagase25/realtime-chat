@@ -8,6 +8,7 @@ import { completionModel, openai } from '@/lib/openai';
 import { validateVocabularyLookupRequest } from '@/lib/utils/reading-validation';
 import { lookupWaseiEigo } from '@/lib/data/wasei-eigo';
 import type { VocabularyLookupRequest, VocabularyEntry } from '@/lib/types/reading';
+import { trackChatCompletion } from '@/lib/utils/track-usage';
 
 /**
  * Build the prompt for vocabulary lookup
@@ -87,6 +88,7 @@ export async function POST(request: NextRequest) {
       response_format: { type: 'json_object' },
       max_completion_tokens: 500,
     });
+    trackChatCompletion(completion, 'reading');
 
     // Parse response
     const content = completion.choices[0]?.message?.content;

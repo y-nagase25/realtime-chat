@@ -13,6 +13,7 @@ import {
   calculateEstimatedReadingTime,
 } from '@/lib/constants/reading';
 import type { GeneratePassageRequest, Passage } from '@/lib/types/reading';
+import { trackChatCompletion } from '@/lib/utils/track-usage';
 
 /**
  * Count words in a text
@@ -108,6 +109,7 @@ export async function POST(request: NextRequest) {
       response_format: { type: 'json_object' },
       max_completion_tokens: 1500,
     });
+    trackChatCompletion(completion, 'reading');
 
     // Parse response
     const content = completion.choices[0]?.message?.content;

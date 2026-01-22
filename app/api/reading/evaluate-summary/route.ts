@@ -7,6 +7,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { completionModel, openai } from '@/lib/openai';
 import { validateEvaluateSummaryRequest } from '@/lib/utils/reading-validation';
 import type { EvaluateSummaryRequest, SummaryFeedback } from '@/lib/types/reading';
+import { trackChatCompletion } from '@/lib/utils/track-usage';
 
 /**
  * Build the prompt for summary evaluation
@@ -85,6 +86,7 @@ export async function POST(request: NextRequest) {
       response_format: { type: 'json_object' },
       max_completion_tokens: 1500,
     });
+    trackChatCompletion(completion, 'reading');
 
     // Parse response
     const content = completion.choices[0]?.message?.content;

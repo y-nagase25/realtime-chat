@@ -27,6 +27,27 @@ export const RATE_LIMIT_CONFIGS: RateLimitConfig[] = [
     limit: 30,
     windowMs: ONE_MINUTE_MS,
   },
+  // Reading Practice API endpoints
+  {
+    endpoint: '/api/reading/generate',
+    limit: 10,
+    windowMs: ONE_MINUTE_MS,
+  },
+  {
+    endpoint: '/api/reading/questions',
+    limit: 20,
+    windowMs: ONE_MINUTE_MS,
+  },
+  {
+    endpoint: '/api/reading/vocabulary',
+    limit: 60,
+    windowMs: ONE_MINUTE_MS,
+  },
+  {
+    endpoint: '/api/reading/evaluate-summary',
+    limit: 10,
+    windowMs: ONE_MINUTE_MS,
+  },
 ];
 
 /**

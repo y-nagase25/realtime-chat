@@ -3,9 +3,8 @@
  * Generates a reading passage based on level and topic using GPT-5
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { completionModel, openai } from '@/lib/openai';
 import { validateGeneratePassageRequest } from '@/lib/utils/reading-validation';
+import { createReadingApiHandler, getJsonCompletion } from '@/lib/utils/reading-api';
 import {
   READING_LEVELS,
   getTopicById,
@@ -13,7 +12,6 @@ import {
   calculateEstimatedReadingTime,
 } from '@/lib/constants/reading';
 import type { GeneratePassageRequest, Passage } from '@/lib/types/reading';
-import { trackChatCompletion } from '@/lib/utils/track-usage';
 
 /**
  * Count words in a text
@@ -75,92 +73,33 @@ Do not include any text outside of the JSON object. The content should be a sing
   return prompt;
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    // Parse request body
-    const body = await request.json();
+type PassageResponse = {
+  title: string;
+  content: string;
+};
 
-    // Validate request
-    const validation = validateGeneratePassageRequest(body);
-    if (!validation.valid) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: validation.error,
-        },
-        { status: 400 }
-      );
-    }
+export const POST = createReadingApiHandler<GeneratePassageRequest, Passage>({
+  validate: validateGeneratePassageRequest,
+  errorMessage: 'Failed to generate passage. Please try again.',
+  handler: async (request) => {
+    const prompt = buildPassagePrompt(request);
+    const parsed = await getJsonCompletion<PassageResponse>(prompt, 1500);
 
-    const passageRequest = body as GeneratePassageRequest;
-
-    // Build prompt
-    const prompt = buildPassagePrompt(passageRequest);
-
-    // Call OpenAI API
-    const completion = await openai.chat.completions.create({
-      model: completionModel,
-      messages: [
-        {
-          role: 'system',
-          content: prompt,
-        },
-      ],
-      response_format: { type: 'json_object' },
-      max_completion_tokens: 1500,
-    });
-    trackChatCompletion(completion, 'reading');
-
-    // Parse response
-    const content = completion.choices[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('No response from AI');
-    }
-
-    const parsed = JSON.parse(content);
-
-    // Validate response structure
     if (!parsed.title || !parsed.content) {
       throw new Error('Invalid response format from AI');
     }
 
     const wordCount = countWords(parsed.content);
-    const estimatedReadingTime = calculateEstimatedReadingTime(wordCount, passageRequest.level);
+    const estimatedReadingTime = calculateEstimatedReadingTime(wordCount, request.level);
 
-    const passage: Passage = {
+    return {
       title: parsed.title,
       content: parsed.content,
-      level: passageRequest.level,
-      topic: passageRequest.topic,
+      level: request.level,
+      topic: request.topic,
       wordCount,
       estimatedReadingTimeMinutes: estimatedReadingTime,
-      grammarFocus: passageRequest.grammarFocus,
+      grammarFocus: request.grammarFocus,
     };
-
-    return NextResponse.json({
-      success: true,
-      data: passage,
-    });
-  } catch (error) {
-    console.error('Passage generation error:', error);
-
-    if (error instanceof SyntaxError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid JSON in request body',
-        },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to generate passage. Please try again.',
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+});

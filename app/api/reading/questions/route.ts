@@ -3,13 +3,11 @@
  * Generates comprehension questions for a given passage using GPT-5
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { completionModel, openai } from '@/lib/openai';
 import { validateGenerateQuestionsRequest } from '@/lib/utils/reading-validation';
+import { createReadingApiHandler, getJsonCompletion } from '@/lib/utils/reading-api';
 import { READING_LEVELS } from '@/lib/constants/reading';
 import type { GenerateQuestionsRequest, ComprehensionQuestion } from '@/lib/types/reading';
 import { v4 as uuidv4 } from 'uuid';
-import { trackChatCompletion } from '@/lib/utils/track-usage';
 
 /**
  * Build the prompt for question generation
@@ -87,91 +85,33 @@ function addQuestionIds(questions: Omit<ComprehensionQuestion, 'id'>[]): Compreh
   })) as ComprehensionQuestion[];
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    // Parse request body
-    const body = await request.json();
+type QuestionsResponse = {
+  questions: Omit<ComprehensionQuestion, 'id'>[];
+};
 
-    // Validate request
-    const validation = validateGenerateQuestionsRequest(body);
-    if (!validation.valid) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: validation.error,
-        },
-        { status: 400 }
-      );
-    }
+type QuestionsData = {
+  questions: ComprehensionQuestion[];
+};
 
-    const questionsRequest = body as GenerateQuestionsRequest;
+export const POST = createReadingApiHandler<GenerateQuestionsRequest, QuestionsData>({
+  validate: validateGenerateQuestionsRequest,
+  errorMessage: 'Failed to generate questions. Please try again.',
+  handler: async (request) => {
+    const prompt = buildQuestionsPrompt(request);
+    const parsed = await getJsonCompletion<QuestionsResponse>(prompt, 2000);
 
-    // Build prompt
-    const prompt = buildQuestionsPrompt(questionsRequest);
-
-    // Call OpenAI API
-    const completion = await openai.chat.completions.create({
-      model: completionModel,
-      messages: [
-        {
-          role: 'system',
-          content: prompt,
-        },
-      ],
-      response_format: { type: 'json_object' },
-      max_completion_tokens: 2000,
-    });
-    trackChatCompletion(completion, 'reading');
-
-    // Parse response
-    const content = completion.choices[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('No response from AI');
-    }
-
-    const parsed = JSON.parse(content);
-
-    // Validate response structure
     if (!parsed.questions || !Array.isArray(parsed.questions)) {
       throw new Error('Invalid response format from AI');
     }
 
-    // Validate each question has required fields
     for (const q of parsed.questions) {
       if (!q.type || !q.question || !q.explanation || !q.explanationJa) {
         throw new Error('Invalid question format from AI');
       }
     }
 
-    // Add IDs to questions
     const questionsWithIds = addQuestionIds(parsed.questions);
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        questions: questionsWithIds,
-      },
-    });
-  } catch (error) {
-    console.error('Question generation error:', error);
-
-    if (error instanceof SyntaxError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid JSON in request body',
-        },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to generate questions. Please try again.',
-      },
-      { status: 500 }
-    );
-  }
-}
+    return { questions: questionsWithIds };
+  },
+});

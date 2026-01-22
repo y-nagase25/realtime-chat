@@ -3,12 +3,10 @@
  * Looks up a word and provides definition with Japanese translation
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { completionModel, openai } from '@/lib/openai';
 import { validateVocabularyLookupRequest } from '@/lib/utils/reading-validation';
+import { createReadingApiHandler, getJsonCompletion } from '@/lib/utils/reading-api';
 import { lookupWaseiEigo } from '@/lib/data/wasei-eigo';
 import type { VocabularyLookupRequest, VocabularyEntry } from '@/lib/types/reading';
-import { trackChatCompletion } from '@/lib/utils/track-usage';
 
 /**
  * Build the prompt for vocabulary lookup
@@ -54,52 +52,22 @@ Important:
   return prompt;
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    // Parse request body
-    const body = await request.json();
+type VocabularyResponse = {
+  word: string;
+  pronunciation?: string;
+  partOfSpeech: string;
+  definitionEn: string;
+  definitionJa: string;
+  exampleSentence: string;
+};
 
-    // Validate request
-    const validation = validateVocabularyLookupRequest(body);
-    if (!validation.valid) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: validation.error,
-        },
-        { status: 400 }
-      );
-    }
+export const POST = createReadingApiHandler<VocabularyLookupRequest, VocabularyEntry>({
+  validate: validateVocabularyLookupRequest,
+  errorMessage: 'Failed to look up word. Please try again.',
+  handler: async (request) => {
+    const prompt = buildVocabularyPrompt(request);
+    const parsed = await getJsonCompletion<VocabularyResponse>(prompt, 500);
 
-    const vocabRequest = body as VocabularyLookupRequest;
-
-    // Build prompt
-    const prompt = buildVocabularyPrompt(vocabRequest);
-
-    // Call OpenAI API
-    const completion = await openai.chat.completions.create({
-      model: completionModel,
-      messages: [
-        {
-          role: 'system',
-          content: prompt,
-        },
-      ],
-      response_format: { type: 'json_object' },
-      max_completion_tokens: 500,
-    });
-    trackChatCompletion(completion, 'reading');
-
-    // Parse response
-    const content = completion.choices[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('No response from AI');
-    }
-
-    const parsed = JSON.parse(content);
-
-    // Validate response structure
     if (
       !parsed.word ||
       !parsed.partOfSpeech ||
@@ -110,10 +78,9 @@ export async function POST(request: NextRequest) {
       throw new Error('Invalid response format from AI');
     }
 
-    // Check for Wasei-Eigo warning
-    const waseiEigoWarning = lookupWaseiEigo(vocabRequest.word);
+    const waseiEigoWarning = lookupWaseiEigo(request.word);
 
-    const vocabularyEntry: VocabularyEntry = {
+    return {
       word: parsed.word,
       pronunciation: parsed.pronunciation,
       partOfSpeech: parsed.partOfSpeech,
@@ -122,30 +89,5 @@ export async function POST(request: NextRequest) {
       exampleSentence: parsed.exampleSentence,
       waseiEigoWarning: waseiEigoWarning,
     };
-
-    return NextResponse.json({
-      success: true,
-      data: vocabularyEntry,
-    });
-  } catch (error) {
-    console.error('Vocabulary lookup error:', error);
-
-    if (error instanceof SyntaxError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid JSON in request body',
-        },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to look up word. Please try again.',
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+});

@@ -3,11 +3,9 @@
  * Evaluates a user's summary of a passage using GPT-5
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { completionModel, openai } from '@/lib/openai';
 import { validateEvaluateSummaryRequest } from '@/lib/utils/reading-validation';
+import { createReadingApiHandler, getJsonCompletion } from '@/lib/utils/reading-api';
 import type { EvaluateSummaryRequest, SummaryFeedback } from '@/lib/types/reading';
-import { trackChatCompletion } from '@/lib/utils/track-usage';
 
 /**
  * Build the prompt for summary evaluation
@@ -52,52 +50,23 @@ Important:
 - If the summary is good, acknowledge it positively`;
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    // Parse request body
-    const body = await request.json();
+type EvaluationResponse = {
+  keyPointsCaptured: string[];
+  keyPointsMissed: string[];
+  grammarFeedbackJa: string;
+  vocabularyFeedbackJa: string;
+  overallFeedbackJa: string;
+  modelSummary: string;
+  score: number;
+};
 
-    // Validate request
-    const validation = validateEvaluateSummaryRequest(body);
-    if (!validation.valid) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: validation.error,
-        },
-        { status: 400 }
-      );
-    }
+export const POST = createReadingApiHandler<EvaluateSummaryRequest, SummaryFeedback>({
+  validate: validateEvaluateSummaryRequest,
+  errorMessage: 'Failed to evaluate summary. Please try again.',
+  handler: async (request) => {
+    const prompt = buildEvaluationPrompt(request);
+    const parsed = await getJsonCompletion<EvaluationResponse>(prompt, 1500);
 
-    const evalRequest = body as EvaluateSummaryRequest;
-
-    // Build prompt
-    const prompt = buildEvaluationPrompt(evalRequest);
-
-    // Call OpenAI API
-    const completion = await openai.chat.completions.create({
-      model: completionModel,
-      messages: [
-        {
-          role: 'system',
-          content: prompt,
-        },
-      ],
-      response_format: { type: 'json_object' },
-      max_completion_tokens: 1500,
-    });
-    trackChatCompletion(completion, 'reading');
-
-    // Parse response
-    const content = completion.choices[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('No response from AI');
-    }
-
-    const parsed = JSON.parse(content);
-
-    // Validate response structure
     if (
       !Array.isArray(parsed.keyPointsCaptured) ||
       !Array.isArray(parsed.keyPointsMissed) ||
@@ -110,10 +79,9 @@ export async function POST(request: NextRequest) {
       throw new Error('Invalid response format from AI');
     }
 
-    // Ensure score is within range
     const score = Math.max(0, Math.min(100, parsed.score));
 
-    const feedback: SummaryFeedback = {
+    return {
       keyPointsCaptured: parsed.keyPointsCaptured,
       keyPointsMissed: parsed.keyPointsMissed,
       grammarFeedbackJa: parsed.grammarFeedbackJa,
@@ -122,30 +90,5 @@ export async function POST(request: NextRequest) {
       modelSummary: parsed.modelSummary,
       score,
     };
-
-    return NextResponse.json({
-      success: true,
-      data: feedback,
-    });
-  } catch (error) {
-    console.error('Summary evaluation error:', error);
-
-    if (error instanceof SyntaxError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid JSON in request body',
-        },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to evaluate summary. Please try again.',
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+});

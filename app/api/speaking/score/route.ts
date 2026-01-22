@@ -7,8 +7,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { completionModel, openai } from '@/lib/openai';
 import { buildScoringPrompt } from '@/lib/utils/scoring';
 import { validateScoringRequest } from '@/lib/utils/validation';
-import type { CompletionUsage } from 'openai/resources';
-import { trackSpeakingScore } from '@/lib/utils/track-usage';
+import { trackChatCompletion } from '@/lib/utils/track-usage';
 import type { ScoringRequest } from '@/lib/types/speaking';
 
 export async function POST(request: NextRequest) {
@@ -48,8 +47,7 @@ export async function POST(request: NextRequest) {
       temperature: 0.3,
       max_completion_tokens: 500,
     });
-    const usage = completion.usage as CompletionUsage;
-    trackSpeakingScore(completionModel, usage);
+    trackChatCompletion(completion, 'transcription');
 
     // Parse response
     const content = completion.choices[0]?.message?.content;

@@ -10,6 +10,11 @@ const PROTECTED_ENDPOINTS = [
   '/api/transcribe',
   '/api/text',
   '/api/speaking/score',
+  // Reading Practice API endpoints
+  '/api/reading/generate',
+  '/api/reading/questions',
+  '/api/reading/vocabulary',
+  '/api/reading/evaluate-summary',
 ];
 
 /**
@@ -60,7 +65,7 @@ function createErrorResponse(
   return response;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only process protected endpoints with POST method
@@ -112,5 +117,14 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/realtime/session', '/api/transcribe', '/api/text', '/api/speaking/score'],
+  matcher: [
+    '/api/realtime/session',
+    '/api/transcribe',
+    '/api/text',
+    '/api/speaking/score',
+    '/api/reading/generate',
+    '/api/reading/questions',
+    '/api/reading/vocabulary',
+    '/api/reading/evaluate-summary',
+  ],
 };

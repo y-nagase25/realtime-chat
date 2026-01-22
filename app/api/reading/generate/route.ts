@@ -95,7 +95,6 @@ export async function POST(request: NextRequest) {
 
     // Build prompt
     const prompt = buildPassagePrompt(passageRequest);
-    console.log('prompt', prompt);
 
     // Call OpenAI API
     const completion = await openai.chat.completions.create({

@@ -2,7 +2,8 @@
  * Validation utility functions
  */
 
-import type { SpeakingAttempt } from '@/lib/types/speaking';
+import type { ScoringRequest, SpeakingAttempt } from '@/lib/types/speaking';
+import type { ValidationResult } from '@/lib/types/validation';
 
 const MAX_AUDIO_SIZE = 25 * 1024 * 1024; // 25MB (Whisper limit)
 const ALLOWED_MIME_TYPES = ['audio/webm', 'audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/ogg'];
@@ -31,31 +32,36 @@ export function validateAudioBlob(blob: Blob): void {
 
 /**
  * Validate scoring request data
- * @throws Error if validation fails
  */
-export function validateScoringRequest(data: unknown): void {
-  if (typeof data !== 'object' || data === null) {
-    throw new Error('Invalid request format');
+export function validateScoringRequest(body: unknown): ValidationResult {
+  if (!body || typeof body !== 'object') {
+    return { valid: false, error: 'Request body is required' };
   }
 
-  const { questionText, modelAnswer, userTranscript } = data as Record<string, unknown>;
+  const { questionText, modelAnswer, userTranscript } = body as Partial<ScoringRequest>;
+
+  if (!questionText || !modelAnswer || !userTranscript) {
+    return { valid: false, error: 'Missing required fields' };
+  }
 
   if (typeof questionText !== 'string' || questionText.length === 0) {
-    throw new Error('Invalid question text');
+    return { valid: false, error: 'Invalid question text' };
   }
 
   if (typeof modelAnswer !== 'string' || modelAnswer.length === 0) {
-    throw new Error('Invalid model answer');
+    return { valid: false, error: 'Invalid model answer' };
   }
 
   if (typeof userTranscript !== 'string' || userTranscript.length === 0) {
-    throw new Error('Invalid user transcript');
+    return { valid: false, error: 'Invalid user transcript' };
   }
 
   // Prevent excessively long inputs
   if (userTranscript.length > 5000) {
-    throw new Error('Transcript too long (max 5000 characters)');
+    return { valid: false, error: 'Transcript too long (max 5000 characters)' };
   }
+
+  return { valid: true };
 }
 
 /**

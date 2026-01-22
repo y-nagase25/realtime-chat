@@ -9,7 +9,7 @@ import { buildScoringPrompt } from '@/lib/utils/scoring';
 import { validateScoringRequest } from '@/lib/utils/validation';
 import type { CompletionUsage } from 'openai/resources';
 import { trackSpeakingScore } from '@/lib/utils/track-usage';
-import { env } from '@/lib/environment';
+import type { ScoringRequest } from '@/lib/types/speaking';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -18,13 +18,22 @@ export async function POST(request: NextRequest) {
     // Parse and validate request body
     const body = await request.json();
 
-    validateScoringRequest(body);
+    const { valid, error } = validateScoringRequest(body);
 
-    const { questionText, modelAnswer, userTranscript } = body;
+    if (!valid) {
+      return NextResponse.json(
+        {
+          success: false,
+          error,
+        },
+        { status: 400 }
+      );
+    }
+
+    const { questionText, modelAnswer, userTranscript } = body as ScoringRequest;
 
     // Build scoring prompt
     const prompt = buildScoringPrompt(questionText, modelAnswer, userTranscript);
-    if (env.isDevelopment) console.log(prompt);
 
     // Call OpenAI Chat Completion API
     const completion = await openai.chat.completions.create({

@@ -12,6 +12,7 @@ import type {
   EvaluateSummaryRequest,
 } from '@/lib/types/reading';
 import { READING_LEVEL_OPTIONS, READING_TOPICS, GRAMMAR_PATTERNS } from '@/lib/constants/reading';
+import type { ValidationResult } from '@/lib/types/validation';
 
 /**
  * Check if a value is a valid ReadingLevel
@@ -38,14 +39,6 @@ export function isValidGrammarPattern(pattern: unknown): pattern is GrammarPatte
     GRAMMAR_PATTERNS.some((p) => p.id === (pattern as GrammarPatternId))
   );
 }
-
-/**
- * Validation result type
- */
-export type ValidationResult = {
-  valid: boolean;
-  error?: string;
-};
 
 /**
  * Validate GeneratePassageRequest

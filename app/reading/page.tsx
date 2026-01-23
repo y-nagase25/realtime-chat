@@ -7,11 +7,16 @@
 
 import { useState } from 'react';
 import { ReadingSettings, type ReadingSettingsValue } from '@/components/reading/ReadingSettings';
+import { PassageDisplay } from '@/components/reading/PassageDisplay';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Passage } from '@/lib/types/reading';
+
+type ReadingPhase = 'settings' | 'reading' | 'questions' | 'results' | 'summary';
 
 export default function ReadingPage() {
+  const [phase, setPhase] = useState<ReadingPhase>('settings');
   const [isLoading, setIsLoading] = useState(false);
-  const [_passage, setPassage] = useState<unknown>(null);
+  const [passage, setPassage] = useState<Passage | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
@@ -34,11 +39,20 @@ export default function ReadingPage() {
       }
 
       setPassage(data.data);
+      setPhase('reading');
     } catch (err) {
       setError(err instanceof Error ? err.message : '文章の生成に失敗しました');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleWordClick = (_word: string, _context: string) => {
+    // Will be wired up with VocabularyPopup in a later task
+  };
+
+  const handleFinishReading = () => {
+    setPhase('questions');
   };
 
   return (
@@ -48,16 +62,27 @@ export default function ReadingPage() {
         <p className="mt-2 text-muted-foreground">AIが生成した英文を読んで、理解力を高めましょう</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>設定</CardTitle>
-          <CardDescription>難易度とトピックを選んで文章を生成</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ReadingSettings onSubmit={handleSubmit} isLoading={isLoading} />
-          {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
-        </CardContent>
-      </Card>
+      {phase === 'settings' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>設定</CardTitle>
+            <CardDescription>難易度とトピックを選んで文章を生成</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ReadingSettings onSubmit={handleSubmit} isLoading={isLoading} />
+            {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
+          </CardContent>
+        </Card>
+      )}
+
+      {phase === 'reading' && passage && (
+        <PassageDisplay
+          passage={passage}
+          onWordClick={handleWordClick}
+          onFinishReading={handleFinishReading}
+          highlightGrammar={!!passage.grammarFocus}
+        />
+      )}
     </div>
   );
 }

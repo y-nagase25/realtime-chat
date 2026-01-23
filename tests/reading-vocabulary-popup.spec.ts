@@ -7,11 +7,10 @@ import type { Passage, VocabularyEntry } from '../lib/types/reading';
  * VocabularyPopup コンポーネントのテスト:
  * 1. 単語・発音・品詞の表示
  * 2. 英語定義と日本語訳の表示
- * 3. 和製英語警告の表示
- * 4. 例文の表示
- * 5. 単語保存ボタン
- * 6. ポップアップの閉じる機能
- * 7. ローディング状態
+ * 3. 例文の表示
+ * 4. 単語保存ボタン
+ * 5. ポップアップの閉じる機能
+ * 6. ローディング状態
  */
 
 const MOCK_PASSAGE: Passage = {
@@ -31,23 +30,6 @@ const MOCK_VOCAB_ENTRY: VocabularyEntry = {
   definitionEn: 'A hot drink made from roasted beans',
   definitionJa: 'コーヒー',
   exampleSentence: 'She ordered a cup of coffee every morning.',
-};
-
-const MOCK_WASEI_EIGO_ENTRY: VocabularyEntry = {
-  word: 'mansion',
-  pronunciation: '/ˈmænʃən/',
-  partOfSpeech: 'noun',
-  definitionEn: 'A large impressive house',
-  definitionJa: '豪邸、大邸宅',
-  exampleSentence: 'They live in a mansion with 20 rooms.',
-  waseiEigoWarning: {
-    word: 'mansion',
-    japaneseUsage: 'マンション',
-    japaneseUsageMeaning: 'apartment',
-    actualEnglishMeaning: '豪邸、大邸宅',
-    warningJa:
-      '日本語の「マンション」は英語では "apartment" や "condominium" です。英語の "mansion" は大きな豪邸を意味します。',
-  },
 };
 
 test.describe('VocabularyPopup Component', () => {
@@ -185,57 +167,6 @@ test.describe('VocabularyPopup Component', () => {
 
       const example = page.getByTestId('vocab-example');
       await expect(example).toContainText('She ordered a cup of coffee every morning.');
-    });
-  });
-
-  test.describe('Wasei-Eigo Warning', () => {
-    test('和製英語の場合、警告が表示される', async ({ page }) => {
-      await page.route('/api/reading/vocabulary', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ success: true, data: MOCK_WASEI_EIGO_ENTRY }),
-        });
-      });
-
-      await page.locator('[data-testid="word-mansion"]').first().click();
-      await page.waitForSelector('[data-testid="vocabulary-popup"]');
-
-      const warning = page.getByTestId('vocab-wasei-eigo-warning');
-      await expect(warning).toBeVisible();
-    });
-
-    test('和製英語警告に日本語の説明が表示される', async ({ page }) => {
-      await page.route('/api/reading/vocabulary', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ success: true, data: MOCK_WASEI_EIGO_ENTRY }),
-        });
-      });
-
-      await page.locator('[data-testid="word-mansion"]').first().click();
-      await page.waitForSelector('[data-testid="vocabulary-popup"]');
-
-      const warning = page.getByTestId('vocab-wasei-eigo-warning');
-      await expect(warning).toContainText('和製英語注意');
-      await expect(warning).toContainText('apartment');
-    });
-
-    test('和製英語でない場合、警告は表示されない', async ({ page }) => {
-      await page.route('/api/reading/vocabulary', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ success: true, data: MOCK_VOCAB_ENTRY }),
-        });
-      });
-
-      await page.locator('[data-testid="word-coffee"]').first().click();
-      await page.waitForSelector('[data-testid="vocabulary-popup"]');
-
-      const warning = page.getByTestId('vocab-wasei-eigo-warning');
-      await expect(warning).not.toBeVisible();
     });
   });
 

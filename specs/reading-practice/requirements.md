@@ -46,16 +46,7 @@ An AI-powered English reading practice feature designed specifically for Japanes
   - Example sentence
 - Popup should be dismissible by clicking outside
 
-#### FR-2.2: Wasei-Eigo (和製英語) Alerts
-- Automatically detect and highlight words commonly misunderstood by Japanese learners
-- Examples:
-  - "mansion" (EN: 豪邸, JP usage: マンション = apartment)
-  - "claim" (EN: 主張する, JP usage: クレーム = complaint)
-  - "smart" (EN: 賢い, JP usage: スマート = slim/stylish)
-  - "naive" (EN: 世間知らず, JP usage: ナイーブ = sensitive)
-- Display warning icon and explanation when hovered/clicked
-
-#### FR-2.3: Vocabulary List
+#### FR-2.2: Vocabulary List
 - Users can save words to a personal vocabulary list
 - Saved words persist across sessions
 - View all saved words in a dedicated vocabulary page
@@ -213,7 +204,6 @@ An AI-powered English reading practice feature designed specifically for Japanes
 │─────────────────────────────────────────────│
 │                                             │
 │  [Passage text with clickable words]        │
-│  Words with ⚠️ icon = Wasei-Eigo warnings   │
 │  Highlighted text = Grammar patterns        │
 │                                             │
 ├─────────────────────────────────────────────┤
@@ -244,10 +234,6 @@ An AI-powered English reading practice feature designed specifically for Japanes
 │  EN: A large impressive house  │
 │  JP: 豪邸、大邸宅               │
 ├────────────────────────────────┤
-│  ⚠️ 和製英語注意                │
-│  日本語の「マンション」は        │
-│  英語では "apartment" です      │
-├────────────────────────────────┤
 │  Example:                      │
 │  "They live in a mansion       │
 │   with 20 rooms."              │
@@ -261,7 +247,6 @@ An AI-powered English reading practice feature designed specifically for Japanes
 - [x] Difficulty and topic selection
 - [x] AI passage generation
 - [x] Basic vocabulary lookup with Japanese translation
-- [x] Wasei-Eigo alerts for common words
 - [x] Comprehension question generation and evaluation
 - [x] Reading time tracking with WPM calculation
 - [x] Basic progress display (current session only)
@@ -290,7 +275,6 @@ An AI-powered English reading practice feature designed specifically for Japanes
 
 ### AC-2: Vocabulary Support
 - [ ] Clicking a word shows popup with definition and Japanese translation
-- [ ] Wasei-Eigo words display warning indicator
 - [ ] Popup can be dismissed by clicking outside
 
 ### AC-3: Comprehension Assessment
@@ -309,23 +293,6 @@ An AI-powered English reading practice feature designed specifically for Japanes
 - [ ] UI labels are in Japanese
 - [ ] Loading states shown during AI generation
 - [ ] Error states handled gracefully
-
-## Wasei-Eigo Dictionary (Initial Set)
-
-| English Word | Japanese Usage | Actual English Meaning |
-|-------------|----------------|----------------------|
-| mansion | マンション (apartment) | 豪邸、大邸宅 |
-| claim | クレーム (complaint) | 主張する、請求する |
-| smart | スマート (slim) | 賢い、頭が良い |
-| naive | ナイーブ (sensitive) | 世間知らず、単純 |
-| tension | テンション (excitement) | 緊張、張力 |
-| fight | ファイト (encouragement) | 戦い、喧嘩 |
-| service | サービス (free/bonus) | サービス、接客 |
-| consent | コンセント (electrical outlet) | 同意、承諾 |
-| handle | ハンドル (steering wheel) | 取っ手、対処する |
-| cunning | カンニング (cheating) | ずる賢い |
-| viking | バイキング (buffet) | バイキング（北欧の海賊）|
-| feminist | フェミニスト (gentleman) | フェミニスト（女性権利主義者）|
 
 ## Dependencies
 

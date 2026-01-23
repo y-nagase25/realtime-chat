@@ -326,30 +326,6 @@ test.describe('Vocabulary Lookup API', () => {
       expect(body.data.exampleSentence).toBeDefined();
     });
 
-    test('Wasei-Eigo単語で警告を含む', async ({ page }) => {
-      const token = await setupCsrfToken(page);
-
-      const response = await page.request.post('/api/reading/vocabulary', {
-        headers: {
-          'Content-Type': 'application/json',
-          [CSRF_HEADER_NAME]: token,
-        },
-        data: {
-          word: 'mansion',
-          context: 'They live in a large mansion.',
-        },
-      });
-
-      expect(response.status()).toBe(200);
-
-      const body = await response.json();
-      expect(body.success).toBe(true);
-      expect(body.data.word).toBe('mansion');
-      expect(body.data.waseiEigoWarning).toBeDefined();
-      expect(body.data.waseiEigoWarning.japaneseUsage).toBe('マンション');
-      expect(body.data.waseiEigoWarning.warningJa).toBeDefined();
-    });
-
     test('contextなしでも単語検索できる', async ({ page }) => {
       const token = await setupCsrfToken(page);
 

@@ -1,14 +1,13 @@
 /**
  * PassageDisplay Component
- * Renders a reading passage with interactive word clicking,
- * Wasei-Eigo highlighting, and grammar pattern highlighting.
+ * Renders a reading passage with interactive word clicking
+ * and grammar pattern highlighting.
  */
 
 'use client';
 
 import { useState } from 'react';
 import type { Passage } from '@/lib/types/reading';
-import { isWaseiEigo } from '@/lib/data/wasei-eigo';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
@@ -95,8 +94,6 @@ export function PassageDisplay({
     onWordClick(cleanWord, context);
   };
 
-  const hasWaseiEigo = words.some((w) => isWaseiEigo(stripPunctuation(w)));
-
   return (
     <Card data-testid="passage-display">
       <CardHeader className="space-y-2">
@@ -119,7 +116,6 @@ export function PassageDisplay({
         <article data-testid="passage-content" className="leading-relaxed text-lg">
           {words.map((word, index) => {
             const cleanWord = stripPunctuation(word);
-            const waseiEigo = cleanWord ? isWaseiEigo(cleanWord) : false;
             const grammarMatch = highlightGrammar && isGrammarWord(word, passage.grammarFocus);
             const isClicked = clickedWord === cleanWord.toLowerCase();
 
@@ -130,7 +126,6 @@ export function PassageDisplay({
               'px-0.5',
               'transition-colors',
               'hover:bg-blue-100',
-              waseiEigo ? 'wasei-eigo bg-amber-50 text-amber-900 border-b-2 border-amber-400' : '',
               grammarMatch
                 ? 'grammar-highlight bg-purple-50 text-purple-900 border-b border-purple-300'
                 : '',
@@ -144,7 +139,6 @@ export function PassageDisplay({
                 <button
                   type="button"
                   data-testid={cleanWord ? `word-${cleanWord.toLowerCase()}` : undefined}
-                  data-wasei-eigo={waseiEigo ? 'true' : undefined}
                   data-grammar-highlight={grammarMatch ? 'true' : undefined}
                   data-clicked={isClicked ? 'true' : undefined}
                   className={wordClasses}
@@ -152,32 +146,12 @@ export function PassageDisplay({
                   aria-label={cleanWord}
                 >
                   {word}
-                  {waseiEigo && (
-                    <span
-                      data-testid={`wasei-eigo-icon-${cleanWord.toLowerCase()}`}
-                      className="ml-0.5 text-amber-600"
-                      role="img"
-                      aria-label="和製英語注意"
-                    >
-                      ⚠️
-                    </span>
-                  )}
                 </button>
                 {index < words.length - 1 && ' '}
               </span>
             );
           })}
         </article>
-
-        {hasWaseiEigo && (
-          <div
-            data-testid="wasei-eigo-legend"
-            className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 rounded-md px-3 py-2"
-          >
-            <span>⚠️</span>
-            <span>= 和製英語注意 (Wasei-Eigo warning)</span>
-          </div>
-        )}
 
         <div className="pt-4">
           <Button

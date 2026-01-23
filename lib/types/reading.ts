@@ -109,18 +109,6 @@ export type VocabularyEntry = {
   definitionEn: string;
   definitionJa: string;
   exampleSentence: string;
-  waseiEigoWarning?: WaseiEigoEntry;
-};
-
-/**
- * Wasei-Eigo (Japanese-English loanword) entry
- */
-export type WaseiEigoEntry = {
-  word: string;
-  japaneseUsage: string;
-  japaneseUsageMeaning: string;
-  actualEnglishMeaning: string;
-  warningJa: string;
 };
 
 /**

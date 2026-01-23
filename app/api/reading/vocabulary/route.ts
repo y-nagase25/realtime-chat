@@ -5,7 +5,6 @@
 
 import { validateVocabularyLookupRequest } from '@/lib/utils/reading-validation';
 import { createReadingApiHandler, getJsonCompletion } from '@/lib/utils/reading-api';
-import { lookupWaseiEigo } from '@/lib/data/wasei-eigo';
 import type { VocabularyLookupRequest, VocabularyEntry } from '@/lib/types/reading';
 
 /**
@@ -78,8 +77,6 @@ export const POST = createReadingApiHandler<VocabularyLookupRequest, VocabularyE
       throw new Error('Invalid response format from AI');
     }
 
-    const waseiEigoWarning = lookupWaseiEigo(request.word);
-
     return {
       word: parsed.word,
       pronunciation: parsed.pronunciation,
@@ -87,7 +84,6 @@ export const POST = createReadingApiHandler<VocabularyLookupRequest, VocabularyE
       definitionEn: parsed.definitionEn,
       definitionJa: parsed.definitionJa,
       exampleSentence: parsed.exampleSentence,
-      waseiEigoWarning: waseiEigoWarning,
     };
   },
 });

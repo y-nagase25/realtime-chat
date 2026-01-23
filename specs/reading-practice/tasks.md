@@ -31,7 +31,6 @@ This document outlines the implementation tasks for the Reading Practice feature
 - [x] Define request schema (word, context sentence)
 - [x] Implement GPT-5 prompt for definition and translation
 - [x] Return definition, Japanese translation, part of speech, example
-- [x] Check against Wasei-Eigo dictionary and include warning if applicable
 
 ### Task 1.4: Create API Endpoint for Summary Evaluation
 
@@ -54,16 +53,7 @@ This document outlines the implementation tasks for the Reading Practice feature
 - [x] Define `ComprehensionQuestion` interface
 - [x] Define `VocabularyEntry` interface
 - [x] Define `ReadingSession` interface for progress tracking
-- [x] Define `WaseiEigoEntry` interface
-
-### Task 2.2: Create Wasei-Eigo Dictionary
-
-- [x] Create `/lib/data/wasei-eigo.ts`
-- [x] Add initial 12 entries from requirements
-- [x] Export lookup function by word
-- [x] Add type safety for entries
-
-### Task 2.3: Create Constants and Configuration
+### Task 2.2: Create Constants and Configuration
 
 - [x] Create `/lib/constants/reading.ts`
 - [x] Define difficulty levels with metadata (wordCount range, WPM targets)
@@ -88,7 +78,6 @@ This document outlines the implementation tasks for the Reading Practice feature
 - [x] Create `/components/reading/PassageDisplay.tsx`
 - [x] Display title and metadata (level, word count, estimated time)
 - [x] Render passage text with clickable words
-- [x] Highlight Wasei-Eigo words with warning icon
 - [x] Highlight grammar patterns (if selected)
 - [x] Handle word click to trigger vocabulary popup
 
@@ -97,7 +86,6 @@ This document outlines the implementation tasks for the Reading Practice feature
 - [x] Create `/components/reading/VocabularyPopup.tsx`
 - [x] Display word, pronunciation, part of speech
 - [x] Display English definition and Japanese translation
-- [x] Display Wasei-Eigo warning if applicable
 - [x] Display example sentence
 - [x] Add "Save to List" button
 - [x] Implement click-outside to dismiss
@@ -248,7 +236,6 @@ This document outlines the implementation tasks for the Reading Practice feature
 - [ ] Test all difficulty levels
 - [ ] Test all topics
 - [ ] Test vocabulary lookup for various words
-- [ ] Test Wasei-Eigo detection
 - [ ] Test comprehension question flow
 - [ ] Test timer accuracy
 - [ ] Test summary evaluation

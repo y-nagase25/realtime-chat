@@ -1,7 +1,7 @@
 /**
  * VocabularyPopup Component
  * Displays word definition, pronunciation, part of speech,
- * Wasei-Eigo warning, and save functionality in a floating popup.
+ * and save functionality in a floating popup.
  */
 
 'use client';
@@ -125,23 +125,6 @@ export function VocabularyPopup({
                   <span className="text-muted-foreground">JP:</span> {entry.definitionJa}
                 </p>
               </div>
-
-              {entry.waseiEigoWarning && (
-                <>
-                  <Separator />
-                  <div
-                    data-testid="vocab-wasei-eigo-warning"
-                    className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900"
-                  >
-                    <p className="font-medium">⚠️ 和製英語注意</p>
-                    <p className="mt-1 text-xs">{entry.waseiEigoWarning.warningJa}</p>
-                  </div>
-                </>
-              )}
-
-              {!entry.waseiEigoWarning && (
-                <div data-testid="vocab-wasei-eigo-warning" className="hidden" />
-              )}
 
               <Separator />
 

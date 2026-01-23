@@ -18,7 +18,6 @@
 AI-powered English reading practice for Japanese learners featuring:
 - Adaptive difficulty (CEFR A1-C1)
 - Interactive vocabulary lookup with Japanese translations
-- Wasei-Eigo (和製英語) alerts
 - Comprehension assessments
 - Reading speed tracking
 
@@ -167,7 +166,6 @@ graph TD
         RS --> BTN1[Button: Generate]
 
         PD --> VP[VocabularyPopup]
-        PD --> WE[WaseiEigoWarning]
         PD --> GH[GrammarHighlight]
 
         CQ --> MCQ[MultipleChoiceQuestion]
@@ -261,11 +259,9 @@ graph TD
 │  playing with their dogs. Sarah sat on a bench and watched      │
 │  the children playing on the swings.                            │
 │                                                                 │
-│  In the afternoon, Sarah visited her friend's [mansion]⚠️. It   │
+│  In the afternoon, Sarah visited her friend's mansion. It       │
 │  was a beautiful apartment in the city center. They had tea     │
 │  and talked about their plans for the summer vacation.          │
-│                                                                 │
-│  └── ⚠️ = 和製英語注意 (Wasei-Eigo warning)                     │
 │                                                                 │
 ├─────────────────────────────────────────────────────────────────┤
 │  ⏱️ 読書時間: 2:34                                              │
@@ -286,15 +282,12 @@ graph TD
         DEF_EN["EN: A large impressive house"]
         DEF_JA["JP: 豪邸、大邸宅"]
         DIVIDER2["─────────────────"]
-        WARNING["⚠️ 和製英語注意<br/>日本語の「マンション」は<br/>英語では apartment です"]
-        DIVIDER3["─────────────────"]
         EXAMPLE["Example:<br/>They live in a mansion<br/>with 20 rooms."]
-        DIVIDER4["─────────────────"]
+        DIVIDER3["─────────────────"]
         SAVE_BTN["[ 保存 ]"]
     end
 
     style Popup fill:#ffffff,stroke:#e0e0e0,stroke-width:2px
-    style WARNING fill:#fff3e0,stroke:#ff9800
 ```
 
 **Popup Design Details:**
@@ -306,11 +299,6 @@ graph TD
 ├────────────────────────────────────┤
 │  EN: A large impressive house      │  ← English definition
 │  JP: 豪邸、大邸宅                   │  ← Japanese translation
-├────────────────────────────────────┤
-│  ⚠️ 和製英語注意                    │  ← Warning section (if applicable)
-│  ─────────────────────────────────  │
-│  日本語の「マンション」は           │
-│  英語では "apartment" です          │
 ├────────────────────────────────────┤
 │  Example:                          │  ← Example sentence
 │  "They live in a mansion           │
@@ -433,7 +421,7 @@ sequenceDiagram
         V->>AI: Definition prompt
         AI-->>V: Definition JSON
         V-->>C: {success: true, data: VocabularyEntry}
-        C->>U: Show popup with Wasei-Eigo warning
+        C->>U: Show vocabulary popup
     end
 
     rect rgb(232, 245, 233)
@@ -563,7 +551,6 @@ graph LR
 | Secondary text | #6b7280 | #ffffff | 5.0:1 |
 | Error text | #dc2626 | #ffffff | 5.9:1 |
 | Success text | #16a34a | #ffffff | 4.5:1 |
-| Wasei-Eigo warning | #d97706 | #fffbeb | 4.7:1 |
 
 ---
 
@@ -710,7 +697,6 @@ type ComprehensionQuestionsProps = {
 | Primary Hover | #1d4ed8 | Button hover |
 | Success | #16a34a | Correct answers |
 | Error | #dc2626 | Wrong answers |
-| Warning | #d97706 | Wasei-Eigo alerts |
 | Warning BG | #fffbeb | Warning background |
 | Muted | #6b7280 | Secondary text |
 | Border | #e5e7eb | Card borders |

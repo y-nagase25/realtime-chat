@@ -8,9 +8,8 @@ import type { Passage } from '../lib/types/reading';
  * 1. タイトルとメタデータの表示
  * 2. パッセージテキストのレンダリング
  * 3. クリック可能な単語
- * 4. 和製英語のハイライト
- * 5. 文法パターンのハイライト
- * 6. 読了ボタン
+ * 4. 文法パターンのハイライト
+ * 5. 読了ボタン
  */
 
 const MOCK_PASSAGE: Passage = {
@@ -117,25 +116,6 @@ test.describe('PassageDisplay Component', () => {
     });
   });
 
-  test.describe('Wasei-Eigo Highlighting', () => {
-    test('和製英語の単語がハイライトされる', async ({ page }) => {
-      const waseiEigoWord = page.locator('[data-testid="word-mansion"]').first();
-      await expect(waseiEigoWord).toHaveAttribute('data-wasei-eigo', 'true');
-    });
-
-    test('和製英語の単語に警告アイコンが表示される', async ({ page }) => {
-      const warningIcon = page.locator('[data-testid="wasei-eigo-icon-mansion"]').first();
-      await expect(warningIcon).toBeVisible();
-    });
-
-    test('和製英語の単語が警告色でスタイリングされる', async ({ page }) => {
-      const waseiEigoWord = page.locator('[data-testid="word-mansion"]').first();
-      // Should have a warning-style background or text color
-      const classes = await waseiEigoWord.getAttribute('class');
-      expect(classes).toContain('wasei-eigo');
-    });
-  });
-
   test.describe('Grammar Pattern Highlighting', () => {
     test('文法フォーカスがある場合、文法パターンがハイライトされる', async ({ page }) => {
       // The mock passage has grammarFocus: 'articles'
@@ -165,14 +145,6 @@ test.describe('PassageDisplay Component', () => {
       // After clicking finish, the passage should transition
       // (the page state changes, so the passage display may be replaced)
       await expect(page.getByTestId('passage-display')).not.toBeVisible({ timeout: 3000 });
-    });
-  });
-
-  test.describe('Wasei-Eigo Legend', () => {
-    test('和製英語の凡例が表示される', async ({ page }) => {
-      const legend = page.getByTestId('wasei-eigo-legend');
-      await expect(legend).toBeVisible();
-      await expect(legend).toContainText('和製英語注意');
     });
   });
 

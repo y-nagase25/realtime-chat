@@ -13,6 +13,7 @@ import {
   ComprehensionQuestions,
   type UserAnswer,
 } from '@/components/reading/ComprehensionQuestions';
+import { QuestionResults, type QuestionResult } from '@/components/reading/QuestionResults';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Passage, VocabularyEntry, ComprehensionQuestion } from '@/lib/types/reading';
 import { apiPost } from '@/lib/api-client';
@@ -33,6 +34,24 @@ type ApiResponse<T> = {
   error?: string;
 };
 
+/**
+ * Check if user's answer is correct for a given question
+ */
+function checkAnswer(question: ComprehensionQuestion, userAnswer: UserAnswer): boolean {
+  switch (question.type) {
+    case 'multiple-choice':
+      return userAnswer === question.correctAnswer;
+    case 'true-false':
+      return userAnswer === question.correctAnswer;
+    case 'fill-in-blank': {
+      const normalized = String(userAnswer).trim().toLowerCase();
+      const correctNormalized = question.correctAnswer.trim().toLowerCase();
+      if (normalized === correctNormalized) return true;
+      return question.acceptableAnswers.some((a) => a.trim().toLowerCase() === normalized);
+    }
+  }
+}
+
 export default function ReadingPage() {
   const [phase, setPhase] = useState<ReadingPhase>('settings');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,6 +59,7 @@ export default function ReadingPage() {
   const [error, setError] = useState<string | null>(null);
   const [vocabPopup, setVocabPopup] = useState<VocabPopupState | null>(null);
   const [questions, setQuestions] = useState<ComprehensionQuestion[]>([]);
+  const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
@@ -122,11 +142,25 @@ export default function ReadingPage() {
     }
   };
 
-  const handleSubmitAnswers = (_answers: Record<string, UserAnswer>) => {
+  const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
     setIsSubmittingAnswers(true);
-    // Results will be computed in a later task (3.5)
+
+    const results = questions.map((question) => {
+      const userAnswer = answers[question.id];
+      const isCorrect = checkAnswer(question, userAnswer);
+      return { question, userAnswer, isCorrect };
+    });
+
+    setQuestionResults(results);
     setPhase('results');
     setIsSubmittingAnswers(false);
+  };
+
+  const handleNewPassage = () => {
+    setPassage(null);
+    setQuestions([]);
+    setQuestionResults([]);
+    setPhase('settings');
   };
 
   return (
@@ -177,6 +211,10 @@ export default function ReadingPage() {
           onSubmit={handleSubmitAnswers}
           isSubmitting={isSubmittingAnswers}
         />
+      )}
+
+      {phase === 'results' && questionResults.length > 0 && (
+        <QuestionResults results={questionResults} onNewPassage={handleNewPassage} />
       )}
     </div>
   );

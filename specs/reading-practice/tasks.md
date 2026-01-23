@@ -114,11 +114,11 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 3.5: Create Question Results Component
 
-- [ ] Create `/components/reading/QuestionResults.tsx`
-- [ ] Display score as fraction and percentage
-- [ ] Show correct/incorrect status for each question
-- [ ] Display correct answer and explanation
-- [ ] Explanations in Japanese
+- [x] Create `/components/reading/QuestionResults.tsx`
+- [x] Display score as fraction and percentage
+- [x] Show correct/incorrect status for each question
+- [x] Display correct answer and explanation
+- [x] Explanations in Japanese
 
 ### Task 3.6: Create Reading Timer Component
 

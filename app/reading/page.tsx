@@ -15,6 +15,7 @@ import {
 } from '@/components/reading/ComprehensionQuestions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Passage, VocabularyEntry, ComprehensionQuestion } from '@/lib/types/reading';
+import { apiPost } from '@/lib/api-client';
 
 type ReadingPhase = 'settings' | 'reading' | 'questions' | 'results' | 'summary';
 
@@ -24,6 +25,12 @@ type VocabPopupState = {
   isLoading: boolean;
   position: { x: number; y: number };
   isSaved: boolean;
+};
+
+type ApiResponse<T> = {
+  success: boolean;
+  data: T;
+  error?: string;
 };
 
 export default function ReadingPage() {
@@ -40,15 +47,7 @@ export default function ReadingPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/reading/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(settings),
-      });
-
-      const data = await response.json();
+      const data = await apiPost<ApiResponse<Passage>>('/api/reading/generate', settings);
 
       if (!data.success) {
         throw new Error(data.error || '文章の生成に失敗しました');
@@ -77,13 +76,10 @@ export default function ReadingPage() {
     });
 
     try {
-      const response = await fetch('/api/reading/vocabulary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ word, context }),
+      const data = await apiPost<ApiResponse<VocabularyEntry>>('/api/reading/vocabulary', {
+        word,
+        context,
       });
-
-      const data = await response.json();
 
       if (data.success) {
         setVocabPopup((prev) => (prev ? { ...prev, entry: data.data, isLoading: false } : null));
@@ -110,13 +106,13 @@ export default function ReadingPage() {
     if (!passage) return;
 
     try {
-      const response = await fetch('/api/reading/questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passage: passage.content, level: passage.level }),
-      });
-
-      const data = await response.json();
+      const data = await apiPost<ApiResponse<{ questions: ComprehensionQuestion[] }>>(
+        '/api/reading/questions',
+        {
+          passage: passage.content,
+          level: passage.level,
+        }
+      );
 
       if (data.success) {
         setQuestions(data.data.questions);

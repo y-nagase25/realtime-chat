@@ -14,8 +14,7 @@ import type { Passage, ComprehensionQuestion } from '../lib/types/reading';
 
 const MOCK_PASSAGE: Passage = {
   title: 'A Day at the Coffee Shop',
-  content:
-    'Sarah woke up early on Saturday morning. She ordered a cup of coffee and a croissant.',
+  content: 'Sarah woke up early on Saturday morning. She ordered a cup of coffee and a croissant.',
   level: 'A2',
   topic: 'daily-life',
   wordCount: 20,
@@ -27,7 +26,12 @@ const MOCK_QUESTIONS: ComprehensionQuestion[] = [
     id: 'q1',
     type: 'multiple-choice',
     question: 'What did Sarah order at the café?',
-    options: ['Tea and a sandwich', 'Coffee and a croissant', 'Juice and a muffin', 'Water and a cookie'],
+    options: [
+      'Tea and a sandwich',
+      'Coffee and a croissant',
+      'Juice and a muffin',
+      'Water and a cookie',
+    ],
     correctAnswer: 1,
     explanation: 'The passage says "She ordered a cup of coffee and a croissant."',
     explanationJa: '第1段落に「She ordered a cup of coffee and a croissant」と書かれています。',
@@ -217,7 +221,7 @@ test.describe('ComprehensionQuestions Component', () => {
     test('ラジオボタンがフォーカス可能', async ({ page }) => {
       // Radix RadioGroupItem renders as a button
       const firstOption = page.locator(
-        '[data-testid="option-q1-0"] [data-slot="radio-group-item"]',
+        '[data-testid="option-q1-0"] [data-slot="radio-group-item"]'
       );
       await firstOption.focus();
       await expect(firstOption).toBeFocused();

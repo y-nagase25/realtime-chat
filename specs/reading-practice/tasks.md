@@ -144,35 +144,35 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 4.1: Create Reading Page Layout
 
-- [ ] Create `/app/reading/page.tsx`
-- [ ] Set up page metadata with Japanese title
-- [ ] Create responsive layout structure
-- [ ] Add page header with title and description
+- [x] Create `/app/reading/page.tsx`
+- [x] Set up page metadata with Japanese title
+- [x] Create responsive layout structure
+- [x] Add page header with title and description
 
 ### Task 4.2: Implement State Management
 
-- [ ] Define page state (settings, passage, questions, results, timer)
-- [ ] Create state transitions for reading flow
-- [ ] Handle loading states for API calls
-- [ ] Handle error states with Japanese messages
+- [x] Define page state (settings, passage, questions, results, timer)
+- [x] Create state transitions for reading flow
+- [x] Handle loading states for API calls
+- [x] Handle error states with Japanese messages
 
 ### Task 4.3: Implement Reading Flow
 
-- [ ] Step 1: Settings selection → Generate passage
-- [ ] Step 2: Display passage → User reads
-- [ ] Step 3: User clicks "Finished" → Show questions
-- [ ] Step 4: User answers → Show results
-- [ ] Step 5: Optional summary writing
-- [ ] Step 6: Option to generate new passage
+- [x] Step 1: Settings selection → Generate passage
+- [x] Step 2: Display passage → User reads
+- [x] Step 3: User clicks "Finished" → Show questions
+- [x] Step 4: User answers → Show results
+- [x] Step 5: Optional summary writing
+- [x] Step 6: Option to generate new passage
 
 ### Task 4.4: Integrate All Components
 
-- [ ] Wire up ReadingSettings with API call
-- [ ] Wire up PassageDisplay with vocabulary lookup
-- [ ] Wire up ComprehensionQuestions with submission
-- [ ] Wire up QuestionResults display
-- [ ] Wire up SummaryWriting with evaluation API
-- [ ] Add transitions between steps
+- [x] Wire up ReadingSettings with API call
+- [x] Wire up PassageDisplay with vocabulary lookup
+- [x] Wire up ComprehensionQuestions with submission
+- [x] Wire up QuestionResults display
+- [x] Wire up SummaryWriting with evaluation API
+- [x] Add transitions between steps
 
 ---
 

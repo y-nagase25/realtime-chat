@@ -43,6 +43,7 @@ next-env.d.ts
 *.mp3
 *.wav
 *.csv
+sql/
 
 # Playwright
 /test-results/

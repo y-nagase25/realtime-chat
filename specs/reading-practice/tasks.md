@@ -122,12 +122,12 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 3.6: Create Reading Timer Component
 
-- [ ] Create `/components/reading/ReadingTimer.tsx`
-- [ ] Start timer when passage is displayed
-- [ ] Display elapsed time in mm:ss format
-- [ ] Calculate and display WPM when finished
-- [ ] Show target WPM benchmark for current level
-- [ ] Add "Finished Reading" button
+- [x] Create `/components/reading/ReadingTimer.tsx`
+- [x] Start timer when passage is displayed
+- [x] Display elapsed time in mm:ss format
+- [x] Calculate and display WPM when finished
+- [x] Show target WPM benchmark for current level
+- [x] Add "Finished Reading" button
 
 ### Task 3.7: Create Summary Writing Component
 

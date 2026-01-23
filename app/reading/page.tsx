@@ -14,6 +14,7 @@ import {
   type UserAnswer,
 } from '@/components/reading/ComprehensionQuestions';
 import { QuestionResults, type QuestionResult } from '@/components/reading/QuestionResults';
+import { ReadingTimer } from '@/components/reading/ReadingTimer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Passage, VocabularyEntry, ComprehensionQuestion } from '@/lib/types/reading';
 import { apiPost } from '@/lib/api-client';
@@ -191,6 +192,9 @@ export default function ReadingPage() {
             onFinishReading={handleFinishReading}
             highlightGrammar={!!passage.grammarFocus}
           />
+          <div className="mt-4">
+            <ReadingTimer isRunning={true} wordCount={passage.wordCount} level={passage.level} />
+          </div>
           {vocabPopup && (
             <VocabularyPopup
               word={vocabPopup.word}

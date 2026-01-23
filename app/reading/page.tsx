@@ -5,19 +5,29 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ReadingSettings, type ReadingSettingsValue } from '@/components/reading/ReadingSettings';
 import { PassageDisplay } from '@/components/reading/PassageDisplay';
+import { VocabularyPopup } from '@/components/reading/VocabularyPopup';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Passage } from '@/lib/types/reading';
+import type { Passage, VocabularyEntry } from '@/lib/types/reading';
 
 type ReadingPhase = 'settings' | 'reading' | 'questions' | 'results' | 'summary';
+
+type VocabPopupState = {
+  word: string;
+  entry: VocabularyEntry | null;
+  isLoading: boolean;
+  position: { x: number; y: number };
+  isSaved: boolean;
+};
 
 export default function ReadingPage() {
   const [phase, setPhase] = useState<ReadingPhase>('settings');
   const [isLoading, setIsLoading] = useState(false);
   const [passage, setPassage] = useState<Passage | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [vocabPopup, setVocabPopup] = useState<VocabPopupState | null>(null);
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
     setIsLoading(true);
@@ -47,11 +57,49 @@ export default function ReadingPage() {
     }
   };
 
-  const handleWordClick = (_word: string, _context: string) => {
-    // Will be wired up with VocabularyPopup in a later task
+  const handleWordClick = async (word: string, context: string) => {
+    // Get click position from the word element
+    const wordElement = document.querySelector(`[data-testid="word-${word.toLowerCase()}"]`);
+    const rect = wordElement?.getBoundingClientRect();
+    const position = rect ? { x: rect.left, y: rect.bottom } : { x: 100, y: 100 };
+
+    setVocabPopup({
+      word,
+      entry: null,
+      isLoading: true,
+      position,
+      isSaved: false,
+    });
+
+    try {
+      const response = await fetch('/api/reading/vocabulary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ word, context }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setVocabPopup((prev) => (prev ? { ...prev, entry: data.data, isLoading: false } : null));
+      } else {
+        setVocabPopup((prev) => (prev ? { ...prev, isLoading: false } : null));
+      }
+    } catch {
+      setVocabPopup((prev) => (prev ? { ...prev, isLoading: false } : null));
+    }
   };
 
+  const handleClosePopup = useCallback(() => {
+    setVocabPopup(null);
+  }, []);
+
+  const handleSaveWord = useCallback(() => {
+    setVocabPopup((prev) => (prev ? { ...prev, isSaved: true } : null));
+  }, []);
+
   const handleFinishReading = () => {
+    setVocabPopup(null);
     setPhase('questions');
   };
 
@@ -76,12 +124,25 @@ export default function ReadingPage() {
       )}
 
       {phase === 'reading' && passage && (
-        <PassageDisplay
-          passage={passage}
-          onWordClick={handleWordClick}
-          onFinishReading={handleFinishReading}
-          highlightGrammar={!!passage.grammarFocus}
-        />
+        <>
+          <PassageDisplay
+            passage={passage}
+            onWordClick={handleWordClick}
+            onFinishReading={handleFinishReading}
+            highlightGrammar={!!passage.grammarFocus}
+          />
+          {vocabPopup && (
+            <VocabularyPopup
+              word={vocabPopup.word}
+              entry={vocabPopup.entry}
+              isLoading={vocabPopup.isLoading}
+              position={vocabPopup.position}
+              onClose={handleClosePopup}
+              onSave={handleSaveWord}
+              isSaved={vocabPopup.isSaved}
+            />
+          )}
+        </>
       )}
     </div>
   );

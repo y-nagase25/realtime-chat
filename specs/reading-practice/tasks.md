@@ -85,23 +85,23 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 3.2: Create Passage Display Component
 
-- [ ] Create `/components/reading/PassageDisplay.tsx`
-- [ ] Display title and metadata (level, word count, estimated time)
-- [ ] Render passage text with clickable words
-- [ ] Highlight Wasei-Eigo words with warning icon
-- [ ] Highlight grammar patterns (if selected)
-- [ ] Handle word click to trigger vocabulary popup
+- [x] Create `/components/reading/PassageDisplay.tsx`
+- [x] Display title and metadata (level, word count, estimated time)
+- [x] Render passage text with clickable words
+- [x] Highlight Wasei-Eigo words with warning icon
+- [x] Highlight grammar patterns (if selected)
+- [x] Handle word click to trigger vocabulary popup
 
 ### Task 3.3: Create Vocabulary Popup Component
 
-- [ ] Create `/components/reading/VocabularyPopup.tsx`
-- [ ] Display word, pronunciation, part of speech
-- [ ] Display English definition and Japanese translation
-- [ ] Display Wasei-Eigo warning if applicable
-- [ ] Display example sentence
-- [ ] Add "Save to List" button
-- [ ] Implement click-outside to dismiss
-- [ ] Position popup near clicked word
+- [x] Create `/components/reading/VocabularyPopup.tsx`
+- [x] Display word, pronunciation, part of speech
+- [x] Display English definition and Japanese translation
+- [x] Display Wasei-Eigo warning if applicable
+- [x] Display example sentence
+- [x] Add "Save to List" button
+- [x] Implement click-outside to dismiss
+- [x] Position popup near clicked word
 
 ### Task 3.4: Create Comprehension Questions Component
 

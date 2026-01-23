@@ -14,8 +14,7 @@ import type { Passage, ComprehensionQuestion } from '../lib/types/reading';
 
 const MOCK_PASSAGE: Passage = {
   title: 'A Day at the Coffee Shop',
-  content:
-    'Sarah woke up early on Saturday morning. She ordered a cup of coffee and a croissant.',
+  content: 'Sarah woke up early on Saturday morning. She ordered a cup of coffee and a croissant.',
   level: 'A2',
   topic: 'daily-life',
   wordCount: 20,
@@ -27,7 +26,12 @@ const MOCK_QUESTIONS: ComprehensionQuestion[] = [
     id: 'q1',
     type: 'multiple-choice',
     question: 'What did Sarah order at the café?',
-    options: ['Tea and a sandwich', 'Coffee and a croissant', 'Juice and a muffin', 'Water and a cookie'],
+    options: [
+      'Tea and a sandwich',
+      'Coffee and a croissant',
+      'Juice and a muffin',
+      'Water and a cookie',
+    ],
     correctAnswer: 1,
     explanation: 'The passage says "She ordered a cup of coffee and a croissant."',
     explanationJa: '第1段落に「She ordered a cup of coffee and a croissant」と書かれています。',
@@ -149,13 +153,13 @@ test.describe('QuestionResults Component', () => {
 
     test('日本語の解説が表示される', async ({ page }) => {
       await expect(page.getByTestId('result-q1')).toContainText(
-        '第1段落に「She ordered a cup of coffee and a croissant」と書かれています。',
+        '第1段落に「She ordered a cup of coffee and a croissant」と書かれています。'
       );
       await expect(page.getByTestId('result-q2')).toContainText(
-        '文章では「early」と書かれており、「late」ではありません。',
+        '文章では「early」と書かれており、「late」ではありません。'
       );
       await expect(page.getByTestId('result-q3')).toContainText(
-        '文章に「coffee」と明記されています。',
+        '文章に「coffee」と明記されています。'
       );
     });
 

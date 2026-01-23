@@ -131,12 +131,12 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 3.7: Create Summary Writing Component
 
-- [ ] Create `/components/reading/SummaryWriting.tsx`
-- [ ] Text area for user input
-- [ ] Character/word count display
-- [ ] Submit button for evaluation
-- [ ] Display AI feedback in Japanese
-- [ ] Display model summary for comparison
+- [x] Create `/components/reading/SummaryWriting.tsx`
+- [x] Text area for user input
+- [x] Character/word count display
+- [x] Submit button for evaluation
+- [x] Display AI feedback in Japanese
+- [x] Display model summary for comparison
 
 ---
 

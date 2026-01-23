@@ -15,8 +15,14 @@ import {
 } from '@/components/reading/ComprehensionQuestions';
 import { QuestionResults, type QuestionResult } from '@/components/reading/QuestionResults';
 import { ReadingTimer } from '@/components/reading/ReadingTimer';
+import { SummaryWriting } from '@/components/reading/SummaryWriting';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Passage, VocabularyEntry, ComprehensionQuestion } from '@/lib/types/reading';
+import type {
+  Passage,
+  VocabularyEntry,
+  ComprehensionQuestion,
+  SummaryFeedback,
+} from '@/lib/types/reading';
 import { apiPost } from '@/lib/api-client';
 
 type ReadingPhase = 'settings' | 'reading' | 'questions' | 'results' | 'summary';
@@ -62,6 +68,8 @@ export default function ReadingPage() {
   const [questions, setQuestions] = useState<ComprehensionQuestion[]>([]);
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
+  const [summaryFeedback, setSummaryFeedback] = useState<SummaryFeedback | null>(null);
+  const [isEvaluatingSummary, setIsEvaluatingSummary] = useState(false);
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
     setIsLoading(true);
@@ -161,7 +169,33 @@ export default function ReadingPage() {
     setPassage(null);
     setQuestions([]);
     setQuestionResults([]);
+    setSummaryFeedback(null);
     setPhase('settings');
+  };
+
+  const handleWriteSummary = () => {
+    setPhase('summary');
+  };
+
+  const handleSubmitSummary = async (summary: string) => {
+    if (!passage) return;
+
+    setIsEvaluatingSummary(true);
+
+    try {
+      const data = await apiPost<ApiResponse<SummaryFeedback>>('/api/reading/evaluate-summary', {
+        passage: passage.content,
+        userSummary: summary,
+      });
+
+      if (data.success) {
+        setSummaryFeedback(data.data);
+      }
+    } catch {
+      // Evaluation failed silently
+    } finally {
+      setIsEvaluatingSummary(false);
+    }
   };
 
   return (
@@ -218,7 +252,19 @@ export default function ReadingPage() {
       )}
 
       {phase === 'results' && questionResults.length > 0 && (
-        <QuestionResults results={questionResults} onNewPassage={handleNewPassage} />
+        <QuestionResults
+          results={questionResults}
+          onNewPassage={handleNewPassage}
+          onWriteSummary={handleWriteSummary}
+        />
+      )}
+
+      {phase === 'summary' && (
+        <SummaryWriting
+          onSubmit={handleSubmitSummary}
+          isEvaluating={isEvaluatingSummary}
+          feedback={summaryFeedback}
+        />
       )}
     </div>
   );

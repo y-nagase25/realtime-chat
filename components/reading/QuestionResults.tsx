@@ -28,12 +28,14 @@ export type QuestionResultsProps = {
   results: QuestionResult[];
   /** Callback when user wants to generate a new passage */
   onNewPassage: () => void;
+  /** Callback when user wants to write a summary */
+  onWriteSummary?: () => void;
 };
 
 /**
  * QuestionResults - Displays score and explanations for answered questions
  */
-export function QuestionResults({ results, onNewPassage }: QuestionResultsProps) {
+export function QuestionResults({ results, onNewPassage, onWriteSummary }: QuestionResultsProps) {
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
@@ -57,8 +59,18 @@ export function QuestionResults({ results, onNewPassage }: QuestionResultsProps)
           ))}
         </div>
 
-        <div className="pt-4">
-          <Button data-testid="new-passage-button" onClick={onNewPassage} className="w-full">
+        <div className="flex gap-3 pt-4">
+          {onWriteSummary && (
+            <Button
+              data-testid="write-summary-button"
+              onClick={onWriteSummary}
+              variant="outline"
+              className="flex-1"
+            >
+              要約を書く
+            </Button>
+          )}
+          <Button data-testid="new-passage-button" onClick={onNewPassage} className="flex-1">
             新しい文章
           </Button>
         </div>

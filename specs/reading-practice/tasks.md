@@ -76,12 +76,12 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 3.1: Create Reading Settings Component
 
-- [ ] Create `/components/reading/ReadingSettings.tsx`
-- [ ] Implement level selector dropdown (A1-C1)
-- [ ] Implement topic selector dropdown (6 topics)
-- [ ] Implement optional grammar focus selector
-- [ ] Add Japanese labels for all options
-- [ ] Style with Tailwind CSS
+- [x] Create `/components/reading/ReadingSettings.tsx`
+- [x] Implement level selector dropdown (A1-C1)
+- [x] Implement topic selector dropdown (6 topics)
+- [x] Implement optional grammar focus selector
+- [x] Add Japanese labels for all options
+- [x] Style with Tailwind CSS
 
 ### Task 3.2: Create Passage Display Component
 

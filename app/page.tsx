@@ -14,17 +14,30 @@ export default function Page() {
       <h1 className="text-3xl font-bold">AI-GO</h1>
       <p className="text-muted-foreground text-xl">AI-powerd Language Learning</p>
       <div className="max-w-2xl">
-        <Item variant="outline" asChild>
-          <Link href="/speaking">
-            <ItemContent>
-              <ItemTitle>Speaking</ItemTitle>
-              <ItemDescription>AIを活用したスピーキング練習</ItemDescription>
-            </ItemContent>
-            <ItemActions>
-              <ExternalLinkIcon className="size-4" />
-            </ItemActions>
-          </Link>
-        </Item>
+        <div className="space-y-4">
+          <Item variant="outline" asChild>
+            <Link href="/reading">
+              <ItemContent>
+                <ItemTitle>Reading</ItemTitle>
+                <ItemDescription>***</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <ExternalLinkIcon className="size-4" />
+              </ItemActions>
+            </Link>
+          </Item>
+          <Item variant="outline" asChild>
+            <Link href="/speaking">
+              <ItemContent>
+                <ItemTitle>Speaking</ItemTitle>
+                <ItemDescription>AIを活用したスピーキング練習</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <ExternalLinkIcon className="size-4" />
+              </ItemActions>
+            </Link>
+          </Item>
+        </div>
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>このアプリについて</AccordionTrigger>

@@ -105,12 +105,12 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 3.4: Create Comprehension Questions Component
 
-- [ ] Create `/components/reading/ComprehensionQuestions.tsx`
-- [ ] Render multiple choice questions with radio buttons
-- [ ] Render true/false questions
-- [ ] Render fill-in-the-blank questions with text input
-- [ ] Track user answers in state
-- [ ] Add submit button with Japanese label
+- [x] Create `/components/reading/ComprehensionQuestions.tsx`
+- [x] Render multiple choice questions with radio buttons
+- [x] Render true/false questions
+- [x] Render fill-in-the-blank questions with text input
+- [x] Track user answers in state
+- [x] Add submit button with Japanese label
 
 ### Task 3.5: Create Question Results Component
 

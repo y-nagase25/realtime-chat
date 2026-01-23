@@ -9,8 +9,12 @@ import { useState, useCallback } from 'react';
 import { ReadingSettings, type ReadingSettingsValue } from '@/components/reading/ReadingSettings';
 import { PassageDisplay } from '@/components/reading/PassageDisplay';
 import { VocabularyPopup } from '@/components/reading/VocabularyPopup';
+import {
+  ComprehensionQuestions,
+  type UserAnswer,
+} from '@/components/reading/ComprehensionQuestions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Passage, VocabularyEntry } from '@/lib/types/reading';
+import type { Passage, VocabularyEntry, ComprehensionQuestion } from '@/lib/types/reading';
 
 type ReadingPhase = 'settings' | 'reading' | 'questions' | 'results' | 'summary';
 
@@ -28,6 +32,8 @@ export default function ReadingPage() {
   const [passage, setPassage] = useState<Passage | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [vocabPopup, setVocabPopup] = useState<VocabPopupState | null>(null);
+  const [questions, setQuestions] = useState<ComprehensionQuestion[]>([]);
+  const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
     setIsLoading(true);
@@ -58,7 +64,6 @@ export default function ReadingPage() {
   };
 
   const handleWordClick = async (word: string, context: string) => {
-    // Get click position from the word element
     const wordElement = document.querySelector(`[data-testid="word-${word.toLowerCase()}"]`);
     const rect = wordElement?.getBoundingClientRect();
     const position = rect ? { x: rect.left, y: rect.bottom } : { x: 100, y: 100 };
@@ -98,9 +103,34 @@ export default function ReadingPage() {
     setVocabPopup((prev) => (prev ? { ...prev, isSaved: true } : null));
   }, []);
 
-  const handleFinishReading = () => {
+  const handleFinishReading = async () => {
     setVocabPopup(null);
     setPhase('questions');
+
+    if (!passage) return;
+
+    try {
+      const response = await fetch('/api/reading/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passage: passage.content, level: passage.level }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setQuestions(data.data.questions);
+      }
+    } catch {
+      // Questions loading failed silently
+    }
+  };
+
+  const handleSubmitAnswers = (_answers: Record<string, UserAnswer>) => {
+    setIsSubmittingAnswers(true);
+    // Results will be computed in a later task (3.5)
+    setPhase('results');
+    setIsSubmittingAnswers(false);
   };
 
   return (
@@ -143,6 +173,14 @@ export default function ReadingPage() {
             />
           )}
         </>
+      )}
+
+      {phase === 'questions' && questions.length > 0 && (
+        <ComprehensionQuestions
+          questions={questions}
+          onSubmit={handleSubmitAnswers}
+          isSubmitting={isSubmittingAnswers}
+        />
       )}
     </div>
   );

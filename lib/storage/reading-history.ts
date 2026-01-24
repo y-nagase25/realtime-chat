@@ -21,9 +21,7 @@ function writeStorage(sessions: ReadingSession[]): void {
   localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(sessions));
 }
 
-export function saveSession(
-  session: Omit<ReadingSession, 'id' | 'timestamp'>,
-): ReadingSession {
+export function saveSession(session: Omit<ReadingSession, 'id' | 'timestamp'>): ReadingSession {
   const existing = readStorage();
 
   const newSession: ReadingSession = {

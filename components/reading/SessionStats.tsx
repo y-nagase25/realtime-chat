@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getSessionStats, type SessionStats as SessionStatsData } from '@/lib/storage/reading-history';
+import {
+  getSessionStats,
+  type SessionStats as SessionStatsData,
+} from '@/lib/storage/reading-history';
 
 export function SessionStats() {
   const [stats, setStats] = useState<SessionStatsData | null>(null);
@@ -33,7 +36,8 @@ export function SessionStats() {
               data-testid="wpm-change"
               className={stats.wpmChange > 0 ? 'text-green-600' : 'text-red-600'}
             >
-              ({stats.wpmChange > 0 ? '+' : ''}{stats.wpmChange})
+              ({stats.wpmChange > 0 ? '+' : ''}
+              {stats.wpmChange})
             </span>
           )}
         </div>

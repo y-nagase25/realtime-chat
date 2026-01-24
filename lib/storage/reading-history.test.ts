@@ -103,7 +103,7 @@ describe('reading history storage', () => {
           id: `session-${i}`,
           timestamp: Date.now() - (i + 1) * 60000,
           ...mockSessionInput,
-        }),
+        })
       );
       mockStorage[HISTORY_STORAGE_KEY] = JSON.stringify(existingSessions);
 
@@ -123,7 +123,7 @@ describe('reading history storage', () => {
           timestamp: Date.now() - (i + 1) * 60000,
           ...mockSessionInput,
           passageTitle: `Session ${i}`,
-        }),
+        })
       );
       mockStorage[HISTORY_STORAGE_KEY] = JSON.stringify(existingSessions);
 

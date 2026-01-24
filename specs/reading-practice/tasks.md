@@ -193,10 +193,10 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 6.1: Loading States
 
-- [ ] Add skeleton loader for passage generation
-- [ ] Add spinner for vocabulary lookup
-- [ ] Add loading state for question submission
-- [ ] Add loading state for summary evaluation
+- [x] Add skeleton loader for passage generation
+- [x] Add spinner for vocabulary lookup
+- [x] Add loading state for question submission
+- [x] Add loading state for summary evaluation
 
 ### Task 6.2: Error Handling
 

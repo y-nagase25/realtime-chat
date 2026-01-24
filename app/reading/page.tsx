@@ -17,6 +17,7 @@ import { QuestionResults, type QuestionResult } from '@/components/reading/Quest
 import { ReadingTimer } from '@/components/reading/ReadingTimer';
 import { SummaryWriting } from '@/components/reading/SummaryWriting';
 import { SessionStats } from '@/components/reading/SessionStats';
+import { PassageSkeleton } from '@/components/reading/PassageSkeleton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type {
   Passage,
@@ -185,17 +186,22 @@ export default function ReadingPage() {
 
       {phase === 'settings' && (
         <>
-        <SessionStats />
-        <Card className="mt-4">
-          <CardHeader>
-            <CardTitle>設定</CardTitle>
-            <CardDescription>難易度とトピックを選んで文章を生成</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ReadingSettings onSubmit={handleSubmit} isLoading={isLoading} />
-            {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
-          </CardContent>
-        </Card>
+          <SessionStats />
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>設定</CardTitle>
+              <CardDescription>難易度とトピックを選んで文章を生成</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ReadingSettings onSubmit={handleSubmit} isLoading={isLoading} />
+              {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
+            </CardContent>
+          </Card>
+          {isLoading && (
+            <div className="mt-4">
+              <PassageSkeleton />
+            </div>
+          )}
         </>
       )}
 

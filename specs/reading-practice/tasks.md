@@ -176,11 +176,11 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 5.2: Implement Session History Storage
 
-- [ ] Create `/lib/storage/reading-history.ts`
-- [ ] Implement save session to local storage
-- [ ] Implement get session history
-- [ ] Store: date, topic, level, score, WPM
-- [ ] Limit history to last 50 sessions
+- [x] Create `/lib/storage/reading-history.ts`
+- [x] Implement save session to local storage
+- [x] Implement get session history
+- [x] Store: date, topic, level, score, WPM
+- [x] Limit history to last 50 sessions
 
 ### Task 5.3: Display Current Session Stats
 

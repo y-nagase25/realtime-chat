@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import type { Passage, VocabularyEntry } from '../lib/types/reading';
+import type { Passage, VocabularyEntry } from '@/lib/types/reading';
 
 /**
  * E2E テストスイート: VocabularyPopup Component

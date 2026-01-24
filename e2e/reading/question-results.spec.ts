@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import type { Passage, ComprehensionQuestion } from '../lib/types/reading';
+import type { Passage, ComprehensionQuestion } from '@/lib/types/reading';
 
 /**
  * E2E テストスイート: QuestionResults Component
@@ -9,7 +9,7 @@ import type { Passage, ComprehensionQuestion } from '../lib/types/reading';
  * 2. 正解/不正解の表示
  * 3. 解説の表示（日本語）
  * 4. ユーザーの誤答表示
- * 5. 新しい文章ボタン
+ * 5. 完了ボタン
  */
 
 const MOCK_QUESTIONS: ComprehensionQuestion[] = [
@@ -218,13 +218,13 @@ test.describe('QuestionResults Component', () => {
   });
 
   test.describe('Action Buttons', () => {
-    test('「新しい文章」ボタンが表示される', async ({ page }) => {
+    test('「完了」ボタンが表示される', async ({ page }) => {
       const newPassageButton = page.getByTestId('new-passage-button');
       await expect(newPassageButton).toBeVisible();
-      await expect(newPassageButton).toContainText('新しい文章');
+      await expect(newPassageButton).toContainText('完了');
     });
 
-    test('「新しい文章」ボタンをクリックすると設定画面に戻る', async ({ page }) => {
+    test('「完了」ボタンをクリックすると設定画面に戻る', async ({ page }) => {
       await page.getByTestId('new-passage-button').click();
 
       // Should go back to settings phase

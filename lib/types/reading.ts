@@ -47,6 +47,7 @@ export type Passage = {
   wordCount: number;
   estimatedReadingTimeMinutes: number;
   grammarFocus?: GrammarPatternId;
+  questions: ComprehensionQuestion[];
 };
 
 /**
@@ -143,19 +144,6 @@ export type GeneratePassageRequest = {
 export type GeneratePassageResponse = {
   success: true;
   data: Passage;
-};
-
-// Comprehension Questions
-export type GenerateQuestionsRequest = {
-  passage: string;
-  level: ReadingLevel;
-};
-
-export type GenerateQuestionsResponse = {
-  success: true;
-  data: {
-    questions: ComprehensionQuestion[];
-  };
 };
 
 // Vocabulary Lookup

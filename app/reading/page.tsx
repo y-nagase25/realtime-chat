@@ -83,6 +83,7 @@ export default function ReadingPage() {
       }
 
       setPassage(data.data);
+      setQuestions(data.data.questions);
       setPhase('reading');
     } catch (err) {
       setError(err instanceof Error ? err.message : '文章の生成に失敗しました');
@@ -128,27 +129,9 @@ export default function ReadingPage() {
     setVocabPopup((prev) => (prev ? { ...prev, isSaved: true } : null));
   }, []);
 
-  const handleFinishReading = async () => {
+  const handleFinishReading = () => {
     setVocabPopup(null);
     setPhase('questions');
-
-    if (!passage) return;
-
-    try {
-      const data = await apiPost<ApiResponse<{ questions: ComprehensionQuestion[] }>>(
-        '/api/reading/questions',
-        {
-          passage: passage.content,
-          level: passage.level,
-        }
-      );
-
-      if (data.success) {
-        setQuestions(data.data.questions);
-      }
-    } catch {
-      // Questions loading failed silently
-    }
   };
 
   const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {

@@ -4,10 +4,9 @@ import { test, expect, type Page } from '@playwright/test';
  * E2E テストスイート: Reading Practice API
  *
  * リーディング練習機能のAPIエンドポイントをテスト:
- * 1. POST /api/reading/generate - 文章生成
- * 2. POST /api/reading/questions - 理解度確認問題生成
- * 3. POST /api/reading/vocabulary - 単語検索
- * 4. POST /api/reading/evaluate-summary - 要約評価
+ * 1. POST /api/reading/generate - 文章・問題生成
+ * 2. POST /api/reading/vocabulary - 単語検索
+ * 3. POST /api/reading/evaluate-summary - 要約評価
  */
 
 const CSRF_COOKIE_NAME = 'csrf_token';
@@ -182,119 +181,6 @@ test.describe('Reading Passage Generation API', () => {
       });
 
       expect(response.status()).toBe(403);
-    });
-  });
-});
-
-test.describe('Comprehension Questions API', () => {
-  test.describe('POST /api/reading/questions', () => {
-    test('有効なリクエストで問題を生成する', async ({ page }) => {
-      const token = await setupCsrfToken(page);
-
-      const passage = `
-        Sarah woke up early on Saturday morning. She had a busy day ahead.
-        First, she went to the local café for breakfast. She ordered a cup of coffee
-        and a croissant. The café was quiet, and she enjoyed reading the newspaper.
-        After breakfast, she walked to the park nearby. The weather was perfect for a walk.
-      `;
-
-      const response = await page.request.post('/api/reading/questions', {
-        headers: {
-          'Content-Type': 'application/json',
-          [CSRF_HEADER_NAME]: token,
-        },
-        data: {
-          passage,
-          level: 'A2',
-        },
-      });
-
-      expect(response.status()).toBe(200);
-
-      const body = await response.json();
-      expect(body.success).toBe(true);
-      expect(body.data.questions).toBeDefined();
-      expect(Array.isArray(body.data.questions)).toBe(true);
-      expect(body.data.questions.length).toBeGreaterThanOrEqual(3);
-      expect(body.data.questions.length).toBeLessThanOrEqual(5);
-
-      // 各問題の構造を検証
-      for (const question of body.data.questions) {
-        expect(question.id).toBeDefined();
-        expect(question.type).toMatch(/^(multiple-choice|true-false|fill-in-blank)$/);
-        expect(question.question).toBeDefined();
-        expect(question.explanation).toBeDefined();
-        expect(question.explanationJa).toBeDefined();
-      }
-    });
-
-    test('multiple-choice問題が正しい構造を持つ', async ({ page }) => {
-      const token = await setupCsrfToken(page);
-
-      const passage = `Tom loves playing soccer. He plays every weekend with his friends at the local park.`;
-
-      const response = await page.request.post('/api/reading/questions', {
-        headers: {
-          'Content-Type': 'application/json',
-          [CSRF_HEADER_NAME]: token,
-        },
-        data: {
-          passage,
-          level: 'A1',
-        },
-      });
-
-      expect(response.status()).toBe(200);
-
-      const body = await response.json();
-      const mcQuestion = body.data.questions.find(
-        (q: { type: string }) => q.type === 'multiple-choice'
-      );
-
-      if (mcQuestion) {
-        expect(mcQuestion.options).toBeDefined();
-        expect(Array.isArray(mcQuestion.options)).toBe(true);
-        expect(mcQuestion.options.length).toBe(4);
-        expect([0, 1, 2, 3]).toContain(mcQuestion.correctAnswer);
-      }
-    });
-
-    test('passageが欠落している場合400エラーを返す', async ({ page }) => {
-      const token = await setupCsrfToken(page);
-
-      const response = await page.request.post('/api/reading/questions', {
-        headers: {
-          'Content-Type': 'application/json',
-          [CSRF_HEADER_NAME]: token,
-        },
-        data: {
-          level: 'A1',
-        },
-      });
-
-      expect(response.status()).toBe(400);
-
-      const body = await response.json();
-      expect(body.success).toBe(false);
-    });
-
-    test('levelが欠落している場合400エラーを返す', async ({ page }) => {
-      const token = await setupCsrfToken(page);
-
-      const response = await page.request.post('/api/reading/questions', {
-        headers: {
-          'Content-Type': 'application/json',
-          [CSRF_HEADER_NAME]: token,
-        },
-        data: {
-          passage: 'Some test passage here.',
-        },
-      });
-
-      expect(response.status()).toBe(400);
-
-      const body = await response.json();
-      expect(body.success).toBe(false);
     });
   });
 });

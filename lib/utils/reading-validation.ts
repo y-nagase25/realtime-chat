@@ -7,7 +7,6 @@ import type {
   ReadingTopicId,
   GrammarPatternId,
   GeneratePassageRequest,
-  GenerateQuestionsRequest,
   VocabularyLookupRequest,
   EvaluateSummaryRequest,
 } from '@/lib/types/reading';
@@ -74,31 +73,6 @@ export function validateGeneratePassageRequest(body: unknown): ValidationResult 
       valid: false,
       error: `Invalid grammarFocus: ${grammarFocus}`,
     };
-  }
-
-  return { valid: true };
-}
-
-/**
- * Validate GenerateQuestionsRequest
- */
-export function validateGenerateQuestionsRequest(body: unknown): ValidationResult {
-  if (!body || typeof body !== 'object') {
-    return { valid: false, error: 'Request body is required' };
-  }
-
-  const { passage, level } = body as Partial<GenerateQuestionsRequest>;
-
-  if (!passage || typeof passage !== 'string' || passage.trim().length === 0) {
-    return { valid: false, error: 'passage is required and must be a non-empty string' };
-  }
-
-  if (!level) {
-    return { valid: false, error: 'level is required' };
-  }
-
-  if (!isValidReadingLevel(level)) {
-    return { valid: false, error: `Invalid level: ${level}. Must be one of: A1, A2, B1, B2, C1` };
   }
 
   return { valid: true };

@@ -34,11 +34,6 @@ export const RATE_LIMIT_CONFIGS: RateLimitConfig[] = [
     windowMs: ONE_MINUTE_MS,
   },
   {
-    endpoint: '/api/reading/questions',
-    limit: 20,
-    windowMs: ONE_MINUTE_MS,
-  },
-  {
     endpoint: '/api/reading/vocabulary',
     limit: 60,
     windowMs: ONE_MINUTE_MS,

@@ -12,7 +12,6 @@ const PROTECTED_ENDPOINTS = [
   '/api/speaking/score',
   // Reading Practice API endpoints
   '/api/reading/generate',
-  '/api/reading/questions',
   '/api/reading/vocabulary',
   '/api/reading/evaluate-summary',
 ];
@@ -123,7 +122,6 @@ export const config = {
     '/api/text',
     '/api/speaking/score',
     '/api/reading/generate',
-    '/api/reading/questions',
     '/api/reading/vocabulary',
     '/api/reading/evaluate-summary',
   ],

@@ -21,6 +21,7 @@ const MOCK_PASSAGE: Passage = {
   wordCount: 50,
   estimatedReadingTimeMinutes: 2,
   grammarFocus: 'articles',
+  questions: [],
 };
 
 test.describe('PassageDisplay Component', () => {

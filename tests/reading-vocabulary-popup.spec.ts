@@ -21,6 +21,7 @@ const MOCK_PASSAGE: Passage = {
   topic: 'daily-life',
   wordCount: 30,
   estimatedReadingTimeMinutes: 1,
+  questions: [],
 };
 
 const MOCK_VOCAB_ENTRY: VocabularyEntry = {

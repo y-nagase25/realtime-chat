@@ -18,6 +18,7 @@ const MOCK_PASSAGE: Passage = {
   topic: 'daily-life',
   wordCount: 20,
   estimatedReadingTimeMinutes: 1,
+  questions: [],
 };
 
 test.describe('ReadingTimer Component', () => {

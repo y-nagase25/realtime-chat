@@ -12,15 +12,6 @@ import type { Passage, ComprehensionQuestion } from '../lib/types/reading';
  * 5. 送信ボタンの動作
  */
 
-const MOCK_PASSAGE: Passage = {
-  title: 'A Day at the Coffee Shop',
-  content: 'Sarah woke up early on Saturday morning. She ordered a cup of coffee and a croissant.',
-  level: 'A2',
-  topic: 'daily-life',
-  wordCount: 20,
-  estimatedReadingTimeMinutes: 1,
-};
-
 const MOCK_QUESTIONS: ComprehensionQuestion[] = [
   {
     id: 'q1',
@@ -55,6 +46,16 @@ const MOCK_QUESTIONS: ComprehensionQuestion[] = [
   },
 ];
 
+const MOCK_PASSAGE: Passage = {
+  title: 'A Day at the Coffee Shop',
+  content: 'Sarah woke up early on Saturday morning. She ordered a cup of coffee and a croissant.',
+  level: 'A2',
+  topic: 'daily-life',
+  wordCount: 20,
+  estimatedReadingTimeMinutes: 1,
+  questions: MOCK_QUESTIONS,
+};
+
 test.describe('ComprehensionQuestions Component', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/reading');
@@ -65,15 +66,6 @@ test.describe('ComprehensionQuestions Component', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ success: true, data: MOCK_PASSAGE }),
-      });
-    });
-
-    // Mock questions API
-    await page.route('/api/reading/questions', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true, data: { questions: MOCK_QUESTIONS } }),
       });
     });
 

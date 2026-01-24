@@ -12,15 +12,6 @@ import type { Passage, ComprehensionQuestion, SummaryFeedback } from '../lib/typ
  * 5. モデル要約の表示
  */
 
-const MOCK_PASSAGE: Passage = {
-  title: 'A Day at the Coffee Shop',
-  content: 'Sarah woke up early on Saturday morning. She ordered a cup of coffee and a croissant.',
-  level: 'A2',
-  topic: 'daily-life',
-  wordCount: 20,
-  estimatedReadingTimeMinutes: 1,
-};
-
 const MOCK_QUESTIONS: ComprehensionQuestion[] = [
   {
     id: 'q1',
@@ -32,6 +23,16 @@ const MOCK_QUESTIONS: ComprehensionQuestion[] = [
     explanationJa: 'コーヒーとクロワッサンを注文しました。',
   },
 ];
+
+const MOCK_PASSAGE: Passage = {
+  title: 'A Day at the Coffee Shop',
+  content: 'Sarah woke up early on Saturday morning. She ordered a cup of coffee and a croissant.',
+  level: 'A2',
+  topic: 'daily-life',
+  wordCount: 20,
+  estimatedReadingTimeMinutes: 1,
+  questions: MOCK_QUESTIONS,
+};
 
 const MOCK_FEEDBACK: SummaryFeedback = {
   keyPointsCaptured: ['Sarah woke up early', 'She ordered coffee'],
@@ -55,15 +56,6 @@ test.describe('SummaryWriting Component', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ success: true, data: MOCK_PASSAGE }),
-      });
-    });
-
-    // Mock questions API
-    await page.route('/api/reading/questions', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true, data: { questions: MOCK_QUESTIONS } }),
       });
     });
 

@@ -127,7 +127,29 @@ Return a valid JSON object with exactly this structure:
 - For fill-in-blank, include the main answer and acceptable alternatives
 - Generate a mix of question types (at least 2 different types)
 - All explanationJa fields must be in Japanese
-- Do not include any text outside of the JSON object`;
+- Do not include any text outside of the JSON object
+
+---
+
+## SUMMARY QUESTION REQUIREMENT
+
+After the comprehension questions, add exactly 1 summary-type question. This question asks the learner to write a short summary of the passage.
+
+**Summary question format:**
+{
+  "type": "summary",
+  "question": "Summarize the main idea of the passage in 2-3 sentences.",
+  "questionJa": "この文章の主なアイデアを2〜3文で英語で要約してください。",
+  "minLength": 50,
+  "explanation": "A good summary captures the central theme and key supporting details.",
+  "explanationJa": "良い要約は中心的なテーマと主要な裏付けの詳細を捉えます。"
+}
+
+**Summary question guidelines:**
+- The question should ask the learner to summarize or paraphrase the passage
+- questionJa must be in Japanese (instruction for the learner)
+- minLength should be 30-80 depending on passage length
+- The summary question should ALWAYS be the last item in the questions array`;
 
   return prompt;
 }
@@ -139,8 +161,10 @@ type CombinedPassageResponse = {
     type: string;
     question: string;
     options?: string[];
-    correctAnswer: number | boolean | string;
+    correctAnswer?: number | boolean | string;
     acceptableAnswers?: string[];
+    questionJa?: string;
+    minLength?: number;
     explanation: string;
     explanationJa: string;
   }>;
@@ -195,6 +219,18 @@ function extractValidQuestions(
         ...q,
         acceptableAnswers: q.acceptableAnswers || [q.correctAnswer as string],
       } as unknown as Omit<ComprehensionQuestion, 'id'>);
+    } else if (q.type === 'summary') {
+      if (!q.question) {
+        continue;
+      }
+      validQuestions.push({
+        type: 'summary',
+        question: q.question,
+        questionJa: q.questionJa || '要約を書いてください',
+        minLength: q.minLength || 50,
+        explanation: q.explanation,
+        explanationJa: q.explanationJa,
+      } as unknown as Omit<ComprehensionQuestion, 'id'>);
     }
   }
 
@@ -206,7 +242,7 @@ export const POST = createReadingApiHandler<GeneratePassageRequest, Passage>({
   errorMessage: 'Failed to generate passage. Please try again.',
   handler: async (request) => {
     const prompt = buildCombinedPrompt(request);
-    const parsed = await getJsonCompletion<CombinedPassageResponse>(prompt, 3500);
+    const parsed = await getJsonCompletion<CombinedPassageResponse>(prompt, 4000);
 
     if (!parsed.title || !parsed.content) {
       throw new Error('Invalid response format from AI');

@@ -28,14 +28,12 @@ export type QuestionResultsProps = {
   results: QuestionResult[];
   /** Callback when user wants to generate a new passage */
   onNewPassage: () => void;
-  /** Callback when user wants to write a summary */
-  onWriteSummary?: () => void;
 };
 
 /**
  * QuestionResults - Displays score and explanations for answered questions
  */
-export function QuestionResults({ results, onNewPassage, onWriteSummary }: QuestionResultsProps) {
+export function QuestionResults({ results, onNewPassage }: QuestionResultsProps) {
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
@@ -60,18 +58,8 @@ export function QuestionResults({ results, onNewPassage, onWriteSummary }: Quest
         </div>
 
         <div className="flex gap-3 pt-4">
-          {onWriteSummary && (
-            <Button
-              data-testid="write-summary-button"
-              onClick={onWriteSummary}
-              variant="outline"
-              className="flex-1"
-            >
-              要約を書く
-            </Button>
-          )}
           <Button data-testid="new-passage-button" onClick={onNewPassage} className="flex-1">
-            新しい文章
+            完了
           </Button>
         </div>
       </CardContent>
@@ -149,6 +137,8 @@ function formatUserAnswer(question: ComprehensionQuestion, answer: UserAnswer): 
       return answer === true ? 'True' : 'False';
     case 'fill-in-blank':
       return String(answer);
+    case 'summary':
+      return String(answer);
   }
 }
 
@@ -163,5 +153,7 @@ function formatCorrectAnswer(question: ComprehensionQuestion): string {
       return question.correctAnswer ? 'True' : 'False';
     case 'fill-in-blank':
       return question.correctAnswer;
+    case 'summary':
+      return '';
   }
 }

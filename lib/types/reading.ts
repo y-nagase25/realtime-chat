@@ -53,7 +53,7 @@ export type Passage = {
 /**
  * Types of comprehension questions
  */
-export type QuestionType = 'multiple-choice' | 'true-false' | 'fill-in-blank';
+export type QuestionType = 'multiple-choice' | 'true-false' | 'fill-in-blank' | 'summary';
 
 /**
  * Base question interface
@@ -93,12 +93,22 @@ export type FillInBlankQuestion = BaseQuestion & {
 };
 
 /**
+ * Summary question (optional, free-form text evaluated by AI)
+ */
+export type SummaryQuestion = BaseQuestion & {
+  type: 'summary';
+  questionJa: string;
+  minLength?: number;
+};
+
+/**
  * Union type for all question types
  */
 export type ComprehensionQuestion =
   | MultipleChoiceQuestion
   | TrueFalseQuestion
-  | FillInBlankQuestion;
+  | FillInBlankQuestion
+  | SummaryQuestion;
 
 /**
  * Vocabulary entry with Japanese translation

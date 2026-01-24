@@ -56,6 +56,8 @@ function checkAnswer(question: ComprehensionQuestion, userAnswer: UserAnswer): b
       if (normalized === correctNormalized) return true;
       return question.acceptableAnswers.some((a) => a.trim().toLowerCase() === normalized);
     }
+    case 'summary':
+      return false;
   }
 }
 
@@ -132,7 +134,8 @@ export default function ReadingPage() {
   const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
     setIsSubmittingAnswers(true);
 
-    const results = questions.map((question) => {
+    const regularQuestions = questions.filter((q) => q.type !== 'summary');
+    const results = regularQuestions.map((question) => {
       const userAnswer = answers[question.id];
       const isCorrect = checkAnswer(question, userAnswer);
       return { question, userAnswer, isCorrect };
@@ -149,10 +152,6 @@ export default function ReadingPage() {
     setQuestionResults([]);
     setSummaryFeedback(null);
     setPhase('settings');
-  };
-
-  const handleWriteSummary = () => {
-    setPhase('summary');
   };
 
   const handleSubmitSummary = async (summary: string) => {
@@ -212,6 +211,7 @@ export default function ReadingPage() {
                 questions={questions}
                 onSubmit={handleSubmitAnswers}
                 isSubmitting={isSubmittingAnswers}
+                passageContent={passage.content}
               />
             </div>
           )}
@@ -230,11 +230,7 @@ export default function ReadingPage() {
       )}
 
       {phase === 'results' && questionResults.length > 0 && (
-        <QuestionResults
-          results={questionResults}
-          onNewPassage={handleNewPassage}
-          onWriteSummary={handleWriteSummary}
-        />
+        <QuestionResults results={questionResults} onNewPassage={handleNewPassage} />
       )}
 
       {phase === 'summary' && (

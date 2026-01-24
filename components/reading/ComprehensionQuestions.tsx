@@ -12,12 +12,14 @@ import type {
   MultipleChoiceQuestion,
   TrueFalseQuestion,
   FillInBlankQuestion,
+  SummaryQuestion,
 } from '@/lib/types/reading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { SummaryQuestionInput } from '@/components/reading/SummaryQuestionInput';
 
 /**
  * User answer type - supports all question types
@@ -34,6 +36,8 @@ export type ComprehensionQuestionsProps = {
   onSubmit: (answers: Record<string, UserAnswer>) => void;
   /** Whether the form is currently submitting */
   isSubmitting: boolean;
+  /** Passage content for summary question evaluation */
+  passageContent: string;
 };
 
 /**
@@ -43,14 +47,20 @@ export function ComprehensionQuestions({
   questions,
   onSubmit,
   isSubmitting,
+  passageContent,
 }: ComprehensionQuestionsProps) {
   const [answers, setAnswers] = useState<Record<string, UserAnswer>>({});
+
+  const regularQuestions = questions.filter((q) => q.type !== 'summary');
+  const summaryQuestions = questions.filter((q): q is SummaryQuestion => q.type === 'summary');
 
   const handleAnswerChange = (questionId: string, value: UserAnswer) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
-  const allAnswered = questions.every((q) => answers[q.id] !== undefined && answers[q.id] !== '');
+  const allAnswered = regularQuestions.every(
+    (q) => answers[q.id] !== undefined && answers[q.id] !== ''
+  );
 
   const handleSubmit = () => {
     onSubmit(answers);
@@ -66,7 +76,7 @@ export function ComprehensionQuestions({
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {questions.map((question, index) => (
+        {regularQuestions.map((question, index) => (
           <div key={question.id} data-testid={`question-${question.id}`} className="space-y-3">
             <p className="font-medium">
               <span className="text-muted-foreground">Q{index + 1}.</span> {question.question}
@@ -109,6 +119,21 @@ export function ComprehensionQuestions({
             {isSubmitting ? '送信中...' : '答え合わせ'}
           </Button>
         </div>
+
+        {summaryQuestions.length > 0 && (
+          <>
+            <div className="border-t pt-6">
+              <h3 className="mb-4 text-lg font-semibold">要約問題</h3>
+            </div>
+            {summaryQuestions.map((question) => (
+              <SummaryQuestionInput
+                key={question.id}
+                question={question}
+                passageContent={passageContent}
+              />
+            ))}
+          </>
+        )}
       </CardContent>
     </Card>
   );

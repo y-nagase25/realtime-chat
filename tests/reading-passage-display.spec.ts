@@ -131,29 +131,4 @@ test.describe('PassageDisplay Component', () => {
       expect(classes).toContain('grammar-highlight');
     });
   });
-
-  test.describe('Finish Reading Button', () => {
-    test('読み終わりましたボタンが表示される', async ({ page }) => {
-      const finishButton = page.getByTestId('finish-reading-button');
-      await expect(finishButton).toBeVisible();
-      await expect(finishButton).toContainText('読み終わりました');
-    });
-
-    test('読み終わりましたボタンをクリックするとコールバックが呼ばれる', async ({ page }) => {
-      const finishButton = page.getByTestId('finish-reading-button');
-      await finishButton.click();
-
-      // After clicking finish, the passage should transition
-      // (the page state changes, so the passage display may be replaced)
-      await expect(page.getByTestId('passage-display')).not.toBeVisible({ timeout: 3000 });
-    });
-  });
-
-  test.describe('Accessibility', () => {
-    test('読み終わりましたボタンがフォーカス可能である', async ({ page }) => {
-      const finishButton = page.getByTestId('finish-reading-button');
-      await finishButton.focus();
-      await expect(finishButton).toBeFocused();
-    });
-  });
 });

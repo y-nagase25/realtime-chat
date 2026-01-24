@@ -8,7 +8,6 @@
 
 import { useState } from 'react';
 import type { Passage } from '@/lib/types/reading';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 /**
@@ -19,8 +18,6 @@ export type PassageDisplayProps = {
   passage: Passage;
   /** Callback when a word is clicked */
   onWordClick: (word: string, context: string) => void;
-  /** Callback when the user finishes reading */
-  onFinishReading: () => void;
   /** Whether to highlight grammar patterns in the passage */
   highlightGrammar?: boolean;
 };
@@ -78,7 +75,6 @@ function findContextSentence(content: string, wordIndex: number): string {
 export function PassageDisplay({
   passage,
   onWordClick,
-  onFinishReading,
   highlightGrammar = false,
 }: PassageDisplayProps) {
   const [clickedWord, setClickedWord] = useState<string | null>(null);
@@ -152,17 +148,6 @@ export function PassageDisplay({
             );
           })}
         </article>
-
-        <div className="pt-4">
-          <Button
-            data-testid="finish-reading-button"
-            onClick={onFinishReading}
-            className="w-full"
-            variant="default"
-          >
-            読み終わりました
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );

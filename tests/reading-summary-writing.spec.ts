@@ -63,8 +63,7 @@ test.describe('SummaryWriting Component', () => {
     await page.getByTestId('generate-button').click();
     await page.waitForSelector('[data-testid="passage-display"]');
 
-    // Move to questions
-    await page.getByTestId('finish-reading-button').click();
+    // Questions are visible in the reading phase
     await page.waitForSelector('[data-testid="comprehension-questions"]');
 
     // Answer question and submit

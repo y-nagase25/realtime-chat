@@ -72,9 +72,6 @@ test.describe('QuestionResults Component', () => {
     // Generate passage
     await page.getByTestId('generate-button').click();
     await page.waitForSelector('[data-testid="passage-display"]');
-
-    // Click "finished reading" to move to questions phase
-    await page.getByTestId('finish-reading-button').click();
     await page.waitForSelector('[data-testid="comprehension-questions"]');
 
     // Answer all questions
@@ -182,9 +179,6 @@ test.describe('QuestionResults Component', () => {
       // Generate passage
       await page.getByTestId('generate-button').click();
       await page.waitForSelector('[data-testid="passage-display"]');
-
-      // Move to questions
-      await page.getByTestId('finish-reading-button').click();
       await page.waitForSelector('[data-testid="comprehension-questions"]');
 
       // Answer Q1 incorrectly (index 0: Tea and a sandwich)

@@ -25,7 +25,7 @@ import type {
 } from '@/lib/types/reading';
 import { apiPost } from '@/lib/api-client';
 
-type ReadingPhase = 'settings' | 'reading' | 'questions' | 'results' | 'summary';
+type ReadingPhase = 'settings' | 'reading' | 'results' | 'summary';
 
 type VocabPopupState = {
   word: string;
@@ -129,11 +129,6 @@ export default function ReadingPage() {
     setVocabPopup((prev) => (prev ? { ...prev, isSaved: true } : null));
   }, []);
 
-  const handleFinishReading = () => {
-    setVocabPopup(null);
-    setPhase('questions');
-  };
-
   const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
     setIsSubmittingAnswers(true);
 
@@ -206,12 +201,20 @@ export default function ReadingPage() {
           <PassageDisplay
             passage={passage}
             onWordClick={handleWordClick}
-            onFinishReading={handleFinishReading}
             highlightGrammar={!!passage.grammarFocus}
           />
           <div className="mt-4">
             <ReadingTimer isRunning={true} wordCount={passage.wordCount} level={passage.level} />
           </div>
+          {questions.length > 0 && (
+            <div className="mt-6">
+              <ComprehensionQuestions
+                questions={questions}
+                onSubmit={handleSubmitAnswers}
+                isSubmitting={isSubmittingAnswers}
+              />
+            </div>
+          )}
           {vocabPopup && (
             <VocabularyPopup
               word={vocabPopup.word}
@@ -224,14 +227,6 @@ export default function ReadingPage() {
             />
           )}
         </>
-      )}
-
-      {phase === 'questions' && questions.length > 0 && (
-        <ComprehensionQuestions
-          questions={questions}
-          onSubmit={handleSubmitAnswers}
-          isSubmitting={isSubmittingAnswers}
-        />
       )}
 
       {phase === 'results' && questionResults.length > 0 && (

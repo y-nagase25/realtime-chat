@@ -84,12 +84,9 @@ test.describe('Reading Page - Full Flow', () => {
     await page.getByTestId('generate-button').click();
     await page.waitForSelector('[data-testid="passage-display"]');
 
-    // Phase 2: Reading → Finish
+    // Phase 2: Reading (questions visible below passage)
     await expect(page.getByTestId('reading-timer')).toBeVisible();
-    await page.getByTestId('finish-reading-button').click();
-
-    // Phase 3: Questions → Submit
-    await page.waitForSelector('[data-testid="comprehension-questions"]');
+    await expect(page.getByTestId('comprehension-questions')).toBeVisible();
     await page.locator('[data-testid="option-q1-1"] [data-slot="radio-group-item"]').click();
     await page.getByTestId('submit-answers-button').click();
 
@@ -122,11 +119,9 @@ test.describe('Reading Page - Full Flow', () => {
       });
     });
 
-    // Generate → Read → Questions → Results
+    // Generate → Read (questions visible) → Results
     await page.getByTestId('generate-button').click();
     await page.waitForSelector('[data-testid="passage-display"]');
-    await page.getByTestId('finish-reading-button').click();
-    await page.waitForSelector('[data-testid="comprehension-questions"]');
     await page.locator('[data-testid="option-q1-1"] [data-slot="radio-group-item"]').click();
     await page.getByTestId('submit-answers-button').click();
     await page.waitForSelector('[data-testid="question-results"]');

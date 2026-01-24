@@ -123,6 +123,14 @@ export type VocabularyEntry = {
 };
 
 /**
+ * Vocabulary entry saved to local storage
+ */
+export type StoredVocabularyEntry = VocabularyEntry & {
+  savedAt: number;
+  context?: string;
+};
+
+/**
  * Reading session record for progress tracking
  */
 export type ReadingSession = {

@@ -168,11 +168,11 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 5.1: Implement Vocabulary Storage
 
-- [ ] Create `/lib/storage/vocabulary.ts`
-- [ ] Implement save word to local storage
-- [ ] Implement get all saved words
-- [ ] Implement remove word from list
-- [ ] Add TypeScript types for stored data
+- [x] Create `/lib/storage/vocabulary.ts`
+- [x] Implement save word to local storage
+- [x] Implement get all saved words
+- [x] Implement remove word from list
+- [x] Add TypeScript types for stored data
 
 ### Task 5.2: Implement Session History Storage
 
@@ -185,7 +185,6 @@ This document outlines the implementation tasks for the Reading Practice feature
 ### Task 5.3: Display Current Session Stats
 
 - [ ] Show session count on page
-- [ ] Show average score (current session)
 - [ ] Show reading speed comparison to previous
 
 ---

@@ -184,8 +184,8 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 5.3: Display Current Session Stats
 
-- [ ] Show session count on page
-- [ ] Show reading speed comparison to previous
+- [x] Show session count on page
+- [x] Show reading speed comparison to previous
 
 ---
 

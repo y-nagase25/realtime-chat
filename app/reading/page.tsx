@@ -16,6 +16,7 @@ import {
 import { QuestionResults, type QuestionResult } from '@/components/reading/QuestionResults';
 import { ReadingTimer } from '@/components/reading/ReadingTimer';
 import { SummaryWriting } from '@/components/reading/SummaryWriting';
+import { SessionStats } from '@/components/reading/SessionStats';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type {
   Passage,
@@ -183,7 +184,9 @@ export default function ReadingPage() {
       </div>
 
       {phase === 'settings' && (
-        <Card>
+        <>
+        <SessionStats />
+        <Card className="mt-4">
           <CardHeader>
             <CardTitle>設定</CardTitle>
             <CardDescription>難易度とトピックを選んで文章を生成</CardDescription>
@@ -193,6 +196,7 @@ export default function ReadingPage() {
             {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
           </CardContent>
         </Card>
+        </>
       )}
 
       {phase === 'reading' && passage && (

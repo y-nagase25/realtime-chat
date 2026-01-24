@@ -41,3 +41,30 @@ export function saveSession(
 export function getSessionHistory(): ReadingSession[] {
   return readStorage();
 }
+
+export type SessionStats = {
+  sessionCount: number;
+  lastWpm: number | null;
+  previousWpm: number | null;
+  wpmChange: number | null;
+};
+
+export function getSessionStats(): SessionStats {
+  const sessions = readStorage();
+  const sessionCount = sessions.length;
+
+  if (sessionCount === 0) {
+    return { sessionCount: 0, lastWpm: null, previousWpm: null, wpmChange: null };
+  }
+
+  const lastWpm = sessions[0].wordsPerMinute;
+
+  if (sessionCount === 1) {
+    return { sessionCount, lastWpm, previousWpm: null, wpmChange: null };
+  }
+
+  const previousWpm = sessions[1].wordsPerMinute;
+  const wpmChange = lastWpm - previousWpm;
+
+  return { sessionCount, lastWpm, previousWpm, wpmChange };
+}

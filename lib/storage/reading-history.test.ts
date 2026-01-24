@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   saveSession,
   getSessionHistory,
+  getSessionStats,
   HISTORY_STORAGE_KEY,
   MAX_HISTORY_SIZE,
 } from './reading-history';
@@ -166,6 +167,78 @@ describe('reading history storage', () => {
 
       const result = getSessionHistory();
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getSessionStats', () => {
+    it('should return zero count and null wpm values when no sessions exist', () => {
+      const stats = getSessionStats();
+
+      expect(stats.sessionCount).toBe(0);
+      expect(stats.lastWpm).toBeNull();
+      expect(stats.previousWpm).toBeNull();
+      expect(stats.wpmChange).toBeNull();
+    });
+
+    it('should return session count', () => {
+      saveSession(mockSessionInput);
+      saveSession(mockSessionInput2);
+
+      const stats = getSessionStats();
+
+      expect(stats.sessionCount).toBe(2);
+    });
+
+    it('should return lastWpm from the most recent session', () => {
+      saveSession({ ...mockSessionInput, wordsPerMinute: 80 });
+      saveSession({ ...mockSessionInput2, wordsPerMinute: 120 });
+
+      const stats = getSessionStats();
+
+      expect(stats.lastWpm).toBe(120);
+    });
+
+    it('should return null wpmChange when only one session exists', () => {
+      saveSession({ ...mockSessionInput, wordsPerMinute: 100 });
+
+      const stats = getSessionStats();
+
+      expect(stats.lastWpm).toBe(100);
+      expect(stats.previousWpm).toBeNull();
+      expect(stats.wpmChange).toBeNull();
+    });
+
+    it('should calculate positive wpmChange when speed improved', () => {
+      // First session (older, will be at index 1)
+      saveSession({ ...mockSessionInput, wordsPerMinute: 80 });
+      // Second session (newer, will be at index 0)
+      saveSession({ ...mockSessionInput2, wordsPerMinute: 100 });
+
+      const stats = getSessionStats();
+
+      expect(stats.lastWpm).toBe(100);
+      expect(stats.previousWpm).toBe(80);
+      expect(stats.wpmChange).toBe(20);
+    });
+
+    it('should calculate negative wpmChange when speed decreased', () => {
+      saveSession({ ...mockSessionInput, wordsPerMinute: 120 });
+      saveSession({ ...mockSessionInput2, wordsPerMinute: 90 });
+
+      const stats = getSessionStats();
+
+      expect(stats.lastWpm).toBe(90);
+      expect(stats.previousWpm).toBe(120);
+      expect(stats.wpmChange).toBe(-30);
+    });
+
+    it('should return zero wpmChange when speed unchanged', () => {
+      saveSession({ ...mockSessionInput, wordsPerMinute: 100 });
+      saveSession({ ...mockSessionInput2, wordsPerMinute: 100 });
+
+      const stats = getSessionStats();
+
+      expect(stats.wpmChange).toBe(0);
     });
   });
 });

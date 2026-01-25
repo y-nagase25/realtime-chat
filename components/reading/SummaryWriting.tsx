@@ -90,7 +90,7 @@ export function SummaryWriting({
             data-testid="submit-summary-button"
             onClick={handleSubmit}
             disabled={isEmpty || isEvaluating}
-            className="w-full"
+            className="w-full min-h-11"
           >
             {isEvaluating ? '評価中...' : '評価する'}
           </Button>

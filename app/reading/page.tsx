@@ -140,6 +140,7 @@ export default function ReadingPage() {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: handleWordClick depends on state and doesn't need to be in deps
   const handleRetryVocabulary = useCallback(() => {
     if (vocabPopup) {
       handleWordClick(vocabPopup.word, vocabPopup.context);

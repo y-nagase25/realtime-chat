@@ -114,7 +114,7 @@ export function ComprehensionQuestions({
             data-submitting={isSubmitting ? 'true' : undefined}
             onClick={handleSubmit}
             disabled={!allAnswered || isSubmitting}
-            className="w-full"
+            className="w-full min-h-11"
           >
             {isSubmitting ? '送信中...' : '答え合わせ'}
           </Button>
@@ -161,7 +161,7 @@ function MultipleChoiceInput({
         <div
           key={option}
           data-testid={`option-${question.id}-${index}`}
-          className="flex items-center gap-2"
+          className="flex items-center gap-3 min-h-11 py-2"
         >
           <RadioGroupItem value={String(index)} id={`${question.id}-${index}`} />
           <Label htmlFor={`${question.id}-${index}`} className="cursor-pointer">
@@ -191,13 +191,19 @@ function TrueFalseInput({
       onValueChange={(val) => onChange(val === 'true')}
       className="space-y-2"
     >
-      <div data-testid={`option-${question.id}-true`} className="flex items-center gap-2">
+      <div
+        data-testid={`option-${question.id}-true`}
+        className="flex items-center gap-3 min-h-11 py-2"
+      >
         <RadioGroupItem value="true" id={`${question.id}-true`} />
         <Label htmlFor={`${question.id}-true`} className="cursor-pointer">
           True
         </Label>
       </div>
-      <div data-testid={`option-${question.id}-false`} className="flex items-center gap-2">
+      <div
+        data-testid={`option-${question.id}-false`}
+        className="flex items-center gap-3 min-h-11 py-2"
+      >
         <RadioGroupItem value="false" id={`${question.id}-false`} />
         <Label htmlFor={`${question.id}-false`} className="cursor-pointer">
           False

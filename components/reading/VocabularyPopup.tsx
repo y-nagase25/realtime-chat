@@ -98,7 +98,7 @@ export function VocabularyPopup({
               type="button"
               data-testid="vocab-close-button"
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors text-xl leading-none"
+              className="text-muted-foreground hover:text-foreground transition-colors text-xl leading-none min-w-11 min-h-11 flex items-center justify-center"
               aria-label="閉じる"
             >
               ×
@@ -153,8 +153,7 @@ export function VocabularyPopup({
                 onClick={onSave}
                 disabled={isSaved}
                 variant={isSaved ? 'secondary' : 'default'}
-                className="w-full"
-                size="sm"
+                className="w-full min-h-11"
               >
                 {isSaved ? '保存済み' : '単語を保存'}
               </Button>

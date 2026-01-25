@@ -20,7 +20,7 @@ export function SessionStats() {
   return (
     <div
       data-testid="session-stats"
-      className="flex items-center gap-4 rounded-lg border bg-muted/50 px-4 py-2 text-sm"
+      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border bg-muted/50 px-4 py-2 text-sm"
     >
       <div className="flex items-center gap-1.5">
         <span className="text-muted-foreground">セッション数:</span>

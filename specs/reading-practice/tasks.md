@@ -207,10 +207,10 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 6.3: Responsive Design
 
-- [ ] Test and adjust layout for mobile (320px)
-- [ ] Test and adjust layout for tablet (768px)
-- [ ] Test and adjust layout for desktop (1024px+)
-- [ ] Ensure touch targets are 44px minimum
+- [x] Test and adjust layout for mobile (320px)
+- [x] Test and adjust layout for tablet (768px)
+- [x] Test and adjust layout for desktop (1024px+)
+- [x] Ensure touch targets are 44px minimum
 
 ### Task 6.4: Accessibility
 

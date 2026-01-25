@@ -58,7 +58,7 @@ export function ReadingTimer({ isRunning, wordCount: _wordCount, level }: Readin
   return (
     <div
       data-testid="reading-timer"
-      className="flex items-center justify-between text-sm"
+      className="flex flex-wrap items-center justify-between gap-2 text-sm"
       role="timer"
       aria-label="読書時間"
     >

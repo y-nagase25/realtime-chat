@@ -58,7 +58,11 @@ export function QuestionResults({ results, onNewPassage }: QuestionResultsProps)
         </div>
 
         <div className="flex gap-3 pt-4">
-          <Button data-testid="new-passage-button" onClick={onNewPassage} className="flex-1">
+          <Button
+            data-testid="new-passage-button"
+            onClick={onNewPassage}
+            className="flex-1 min-h-11"
+          >
             完了
           </Button>
         </div>

@@ -8,6 +8,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { VocabularyEntry } from '@/lib/types/reading';
+import { ErrorMessage } from '@/components/reading/ErrorMessage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -30,6 +31,10 @@ export type VocabularyPopupProps = {
   onSave: () => void;
   /** Whether the word has been saved */
   isSaved?: boolean;
+  /** Error message to display */
+  error?: string;
+  /** Callback when user clicks retry after an error */
+  onRetry?: () => void;
 };
 
 /**
@@ -43,6 +48,8 @@ export function VocabularyPopup({
   onClose,
   onSave,
   isSaved = false,
+  error,
+  onRetry,
 }: VocabularyPopupProps) {
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -108,14 +115,20 @@ export function VocabularyPopup({
         </CardHeader>
 
         <CardContent className="px-4 pb-4 pt-0">
-          {isLoading && (
+          {error && (
+            <div data-testid="vocab-error" className="py-4">
+              <ErrorMessage message={error} onRetry={onRetry} />
+            </div>
+          )}
+
+          {!error && isLoading && (
             <div data-testid="vocab-loading" className="flex items-center justify-center py-6">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               <span className="ml-2 text-sm text-muted-foreground">読み込み中...</span>
             </div>
           )}
 
-          {!isLoading && entry && (
+          {!error && !isLoading && entry && (
             <div className="space-y-3">
               <div className="space-y-1">
                 <p data-testid="vocab-definition-en" className="text-sm">

@@ -200,10 +200,10 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 6.2: Error Handling
 
-- [ ] Display error message if passage generation fails
-- [ ] Display error message if vocabulary lookup fails
-- [ ] Add retry buttons where appropriate
-- [ ] All error messages in Japanese
+- [x] Display error message if passage generation fails
+- [x] Display error message if vocabulary lookup fails
+- [x] Add retry buttons where appropriate
+- [x] All error messages in Japanese
 
 ### Task 6.3: Responsive Design
 

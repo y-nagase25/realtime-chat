@@ -18,6 +18,7 @@ import { ReadingTimer } from '@/components/reading/ReadingTimer';
 import { SummaryWriting } from '@/components/reading/SummaryWriting';
 import { SessionStats } from '@/components/reading/SessionStats';
 import { PassageSkeleton } from '@/components/reading/PassageSkeleton';
+import { ErrorMessage } from '@/components/reading/ErrorMessage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type {
   Passage,
@@ -35,6 +36,8 @@ type VocabPopupState = {
   isLoading: boolean;
   position: { x: number; y: number };
   isSaved: boolean;
+  error: string | null;
+  context: string;
 };
 
 type ApiResponse<T> = {
@@ -68,16 +71,20 @@ export default function ReadingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [passage, setPassage] = useState<Passage | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [lastSettings, setLastSettings] = useState<ReadingSettingsValue | null>(null);
   const [vocabPopup, setVocabPopup] = useState<VocabPopupState | null>(null);
   const [questions, setQuestions] = useState<ComprehensionQuestion[]>([]);
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
   const [summaryFeedback, setSummaryFeedback] = useState<SummaryFeedback | null>(null);
   const [isEvaluatingSummary, setIsEvaluatingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [lastSummary, setLastSummary] = useState<string | null>(null);
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
     setIsLoading(true);
     setError(null);
+    setLastSettings(settings);
 
     try {
       const data = await apiPost<ApiResponse<Passage>>('/api/reading/generate', settings);
@@ -107,6 +114,8 @@ export default function ReadingPage() {
       isLoading: true,
       position,
       isSaved: false,
+      error: null,
+      context,
     });
 
     try {
@@ -118,12 +127,24 @@ export default function ReadingPage() {
       if (data.success) {
         setVocabPopup((prev) => (prev ? { ...prev, entry: data.data, isLoading: false } : null));
       } else {
-        setVocabPopup((prev) => (prev ? { ...prev, isLoading: false } : null));
+        setVocabPopup((prev) =>
+          prev
+            ? { ...prev, isLoading: false, error: data.error || '単語の検索に失敗しました' }
+            : null
+        );
       }
     } catch {
-      setVocabPopup((prev) => (prev ? { ...prev, isLoading: false } : null));
+      setVocabPopup((prev) =>
+        prev ? { ...prev, isLoading: false, error: '単語の検索に失敗しました' } : null
+      );
     }
   };
+
+  const handleRetryVocabulary = useCallback(() => {
+    if (vocabPopup) {
+      handleWordClick(vocabPopup.word, vocabPopup.context);
+    }
+  }, [vocabPopup]);
 
   const handleClosePopup = useCallback(() => {
     setVocabPopup(null);
@@ -148,6 +169,12 @@ export default function ReadingPage() {
     setIsSubmittingAnswers(false);
   };
 
+  const handleRetryGenerate = () => {
+    if (lastSettings) {
+      handleSubmit(lastSettings);
+    }
+  };
+
   const handleNewPassage = () => {
     setPassage(null);
     setQuestions([]);
@@ -160,6 +187,8 @@ export default function ReadingPage() {
     if (!passage) return;
 
     setIsEvaluatingSummary(true);
+    setSummaryError(null);
+    setLastSummary(summary);
 
     try {
       const data = await apiPost<ApiResponse<SummaryFeedback>>('/api/reading/evaluate-summary', {
@@ -169,11 +198,19 @@ export default function ReadingPage() {
 
       if (data.success) {
         setSummaryFeedback(data.data);
+      } else {
+        setSummaryError(data.error || '要約の評価に失敗しました');
       }
     } catch {
-      // Evaluation failed silently
+      setSummaryError('要約の評価に失敗しました');
     } finally {
       setIsEvaluatingSummary(false);
+    }
+  };
+
+  const handleRetrySummary = () => {
+    if (lastSummary) {
+      handleSubmitSummary(lastSummary);
     }
   };
 
@@ -194,7 +231,11 @@ export default function ReadingPage() {
             </CardHeader>
             <CardContent>
               <ReadingSettings onSubmit={handleSubmit} isLoading={isLoading} />
-              {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
+              {error && (
+                <div className="mt-4">
+                  <ErrorMessage message={error} onRetry={handleRetryGenerate} />
+                </div>
+              )}
             </CardContent>
           </Card>
           {isLoading && (
@@ -234,6 +275,8 @@ export default function ReadingPage() {
               onClose={handleClosePopup}
               onSave={handleSaveWord}
               isSaved={vocabPopup.isSaved}
+              error={vocabPopup.error ?? undefined}
+              onRetry={handleRetryVocabulary}
             />
           )}
         </>
@@ -248,6 +291,8 @@ export default function ReadingPage() {
           onSubmit={handleSubmitSummary}
           isEvaluating={isEvaluatingSummary}
           feedback={summaryFeedback}
+          error={summaryError ?? undefined}
+          onRetry={handleRetrySummary}
         />
       )}
     </div>

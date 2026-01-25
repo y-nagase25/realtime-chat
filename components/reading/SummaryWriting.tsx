@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import type { SummaryFeedback } from '@/lib/types/reading';
+import { ErrorMessage } from '@/components/reading/ErrorMessage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +23,10 @@ export type SummaryWritingProps = {
   isEvaluating: boolean;
   /** AI feedback result (null before submission) */
   feedback: SummaryFeedback | null;
+  /** Error message to display */
+  error?: string;
+  /** Callback when user clicks retry after an error */
+  onRetry?: () => void;
 };
 
 /**
@@ -36,7 +41,13 @@ function countWords(text: string): number {
 /**
  * SummaryWriting - Text area with AI evaluation feedback
  */
-export function SummaryWriting({ onSubmit, isEvaluating, feedback }: SummaryWritingProps) {
+export function SummaryWriting({
+  onSubmit,
+  isEvaluating,
+  feedback,
+  error,
+  onRetry,
+}: SummaryWritingProps) {
   const [summary, setSummary] = useState('');
   const wordCount = countWords(summary);
   const isEmpty = summary.trim() === '';
@@ -71,6 +82,8 @@ export function SummaryWriting({ onSubmit, isEvaluating, feedback }: SummaryWrit
             <span data-testid="summary-word-count">{wordCount} 語</span>
           </div>
         </div>
+
+        {error && <ErrorMessage message={error} onRetry={onRetry} />}
 
         {!feedback && (
           <Button

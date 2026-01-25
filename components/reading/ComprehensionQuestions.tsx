@@ -78,7 +78,7 @@ export function ComprehensionQuestions({
       <CardContent className="space-y-6">
         {regularQuestions.map((question, index) => (
           <div key={question.id} data-testid={`question-${question.id}`} className="space-y-3">
-            <p className="font-medium">
+            <p id={`question-label-${question.id}`} className="font-medium">
               <span className="text-muted-foreground">Q{index + 1}.</span> {question.question}
             </p>
 
@@ -155,6 +155,7 @@ function MultipleChoiceInput({
     <RadioGroup
       value={value !== undefined ? String(value) : undefined}
       onValueChange={(val) => onChange(Number(val))}
+      aria-labelledby={`question-label-${question.id}`}
       className="space-y-2"
     >
       {question.options.map((option, index) => (
@@ -189,6 +190,7 @@ function TrueFalseInput({
     <RadioGroup
       value={value !== undefined ? String(value) : undefined}
       onValueChange={(val) => onChange(val === 'true')}
+      aria-labelledby={`question-label-${question.id}`}
       className="space-y-2"
     >
       <div

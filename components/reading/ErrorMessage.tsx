@@ -9,6 +9,7 @@ export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
   return (
     <div
       data-testid="error-message"
+      role="alert"
       className="flex flex-wrap items-center gap-3 text-sm text-destructive"
     >
       <span>{message}</span>

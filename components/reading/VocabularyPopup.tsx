@@ -85,20 +85,23 @@ export function VocabularyPopup({
     <div
       ref={popupRef}
       data-testid="vocabulary-popup"
+      role="dialog"
+      aria-labelledby="vocab-word-heading"
+      aria-modal="true"
       className="fixed z-50 w-72 sm:w-80 animate-in fade-in-0 zoom-in-95"
       style={popupStyle}
     >
       <Card className="shadow-lg border-border">
         <CardHeader className="pb-2 pt-3 px-4">
           <div className="flex items-center justify-between">
-            <span data-testid="vocab-word" className="text-lg font-bold">
+            <span id="vocab-word-heading" data-testid="vocab-word" className="text-lg font-bold">
               {word}
             </span>
             <button
               type="button"
               data-testid="vocab-close-button"
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors text-xl leading-none min-w-11 min-h-11 flex items-center justify-center"
+              className="text-muted-foreground hover:text-foreground transition-colors text-xl leading-none min-w-11 min-h-11 flex items-center justify-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="閉じる"
             >
               ×
@@ -122,8 +125,15 @@ export function VocabularyPopup({
           )}
 
           {!error && isLoading && (
-            <div data-testid="vocab-loading" className="flex items-center justify-center py-6">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <div
+              data-testid="vocab-loading"
+              aria-live="polite"
+              className="flex items-center justify-center py-6"
+            >
+              <div
+                className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent"
+                aria-hidden="true"
+              />
               <span className="ml-2 text-sm text-muted-foreground">読み込み中...</span>
             </div>
           )}

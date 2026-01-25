@@ -84,7 +84,7 @@ function ScoreCard({
   percentage: number;
 }) {
   return (
-    <div className="rounded-lg bg-muted/50 p-6 text-center">
+    <div aria-live="polite" className="rounded-lg bg-muted/50 p-6 text-center">
       <p data-testid="results-score" className="text-2xl font-bold">
         {correctCount} / {totalCount} 正解
       </p>

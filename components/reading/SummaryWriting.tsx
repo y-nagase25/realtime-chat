@@ -74,6 +74,7 @@ export function SummaryWriting({
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
             placeholder="英語で要約を書いてください..."
+            aria-label="英語で要約を入力"
             rows={4}
             disabled={!!feedback}
             className="resize-none"
@@ -90,6 +91,7 @@ export function SummaryWriting({
             data-testid="submit-summary-button"
             onClick={handleSubmit}
             disabled={isEmpty || isEvaluating}
+            aria-busy={isEvaluating}
             className="w-full min-h-11"
           >
             {isEvaluating ? '評価中...' : '評価する'}

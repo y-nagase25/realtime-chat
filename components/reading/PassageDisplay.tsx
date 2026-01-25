@@ -122,6 +122,9 @@ export function PassageDisplay({
               'px-0.5',
               'transition-colors',
               'hover:bg-blue-100',
+              'focus-visible:outline-none',
+              'focus-visible:ring-2',
+              'focus-visible:ring-ring',
               grammarMatch
                 ? 'grammar-highlight bg-purple-50 text-purple-900 border-b border-purple-300'
                 : '',

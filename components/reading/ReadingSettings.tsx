@@ -179,6 +179,7 @@ export function ReadingSettings({
         disabled={isLoading}
         data-testid="generate-button"
         data-loading={isLoading}
+        aria-busy={isLoading}
         className="w-full min-h-11"
       >
         {isLoading ? '生成中...' : '文章を生成'}

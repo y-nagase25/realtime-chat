@@ -18,8 +18,9 @@ export function SessionStats() {
   }
 
   return (
-    <div
+    <section
       data-testid="session-stats"
+      aria-label="読書セッション統計"
       className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border bg-muted/50 px-4 py-2 text-sm"
     >
       <div className="flex items-center gap-1.5">
@@ -42,6 +43,6 @@ export function SessionStats() {
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 }

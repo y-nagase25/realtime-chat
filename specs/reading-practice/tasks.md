@@ -214,10 +214,10 @@ This document outlines the implementation tasks for the Reading Practice feature
 
 ### Task 6.4: Accessibility
 
-- [ ] Add proper ARIA labels
-- [ ] Ensure keyboard navigation works
-- [ ] Test color contrast ratios
-- [ ] Add focus indicators
+- [x] Add proper ARIA labels
+- [x] Ensure keyboard navigation works
+- [x] Test color contrast ratios
+- [x] Add focus indicators
 
 ### Task 6.5: Final UI Polish
 

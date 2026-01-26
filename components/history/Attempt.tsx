@@ -3,11 +3,17 @@
 import type { SpeakingAttempt } from '@/lib/types/speaking';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from 'lucide-react';
 import { getScoreBadgeClass } from '@/lib/utils/scoring';
 import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 
-export function Attempt({ attempt }: { attempt: SpeakingAttempt }) {
+export function Attempt({
+  attempt,
+  removeAttempt,
+}: {
+  attempt: SpeakingAttempt;
+  removeAttempt?: (id: string) => void;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -82,6 +88,12 @@ export function Attempt({ attempt }: { attempt: SpeakingAttempt }) {
               </ul>
             </div>
           )}
+          <TrashIcon
+            size={20}
+            onClick={() => removeAttempt?.(attempt.id)}
+            className="cursor-pointer"
+            color="var(--destructive)"
+          />
         </div>
       )}
     </div>

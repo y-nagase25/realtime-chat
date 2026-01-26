@@ -9,34 +9,42 @@ import { ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Page() {
+  const items = [
+    {
+      title: 'Reading',
+      description: 'リーディング問題の自動生成と解説',
+      href: '/reading',
+    },
+    {
+      title: 'Speaking',
+      description: 'AIを活用したスピーキング練習',
+      href: '/speaking',
+    },
+    {
+      title: 'History',
+      description: '学習履歴',
+      href: '/history',
+    },
+  ];
   return (
     <>
       <h1 className="text-3xl font-bold">AI-GO</h1>
       <p className="text-muted-foreground text-xl">AI-powerd Language Learning</p>
       <div className="max-w-2xl">
         <div className="space-y-4">
-          <Item variant="outline" asChild>
-            <Link href="/reading">
-              <ItemContent>
-                <ItemTitle>Reading</ItemTitle>
-                <ItemDescription>***</ItemDescription>
-              </ItemContent>
-              <ItemActions>
-                <ExternalLinkIcon className="size-4" />
-              </ItemActions>
-            </Link>
-          </Item>
-          <Item variant="outline" asChild>
-            <Link href="/speaking">
-              <ItemContent>
-                <ItemTitle>Speaking</ItemTitle>
-                <ItemDescription>AIを活用したスピーキング練習</ItemDescription>
-              </ItemContent>
-              <ItemActions>
-                <ExternalLinkIcon className="size-4" />
-              </ItemActions>
-            </Link>
-          </Item>
+          {items.map((item) => (
+            <Item variant="outline" asChild key={item.href}>
+              <Link href={item.href}>
+                <ItemContent>
+                  <ItemTitle>{item.title}</ItemTitle>
+                  <ItemDescription>{item.description}</ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                  <ExternalLinkIcon className="size-4" />
+                </ItemActions>
+              </Link>
+            </Item>
+          ))}
         </div>
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">

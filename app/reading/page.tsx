@@ -16,7 +16,6 @@ import {
 import { QuestionResults, type QuestionResult } from '@/components/reading/QuestionResults';
 import { ReadingTimer } from '@/components/reading/ReadingTimer';
 import { SummaryWriting } from '@/components/reading/SummaryWriting';
-import { SessionStats } from '@/components/reading/SessionStats';
 import { PassageSkeleton } from '@/components/reading/PassageSkeleton';
 import { ErrorMessage } from '@/components/reading/ErrorMessage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -224,7 +223,6 @@ export default function ReadingPage() {
 
       {phase === 'settings' && (
         <>
-          <SessionStats />
           <Card className="mt-4">
             <CardHeader>
               <CardTitle>設定</CardTitle>

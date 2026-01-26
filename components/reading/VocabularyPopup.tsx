@@ -54,6 +54,7 @@ export function VocabularyPopup({
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log('click outside');
     const handleClickOutside = (event: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
         onClose();
@@ -67,6 +68,7 @@ export function VocabularyPopup({
   }, [onClose]);
 
   useEffect(() => {
+    console.log('key down escape');
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();

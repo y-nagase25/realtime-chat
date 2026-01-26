@@ -8,7 +8,6 @@
 import { useCallback } from 'react';
 import type { Question } from '@/lib/types/db';
 import { useSpeakingScoring } from '@/lib/hooks/use-speaking-scoring';
-import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { AudioRecorder } from './AudioRecorder';
 import { TranscriptDisplay } from './TranscriptDisplay';
 import { ScoringResults } from './ScoringResults';
@@ -17,13 +16,15 @@ import { Spinner } from '@/components/ui/spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
+import { SPEAKING_ATTEMPTS_STORAGE_KEY, useLocalStorage } from '@/lib/hooks/use-local-storage';
+import type { SpeakingAttempt } from '@/lib/types/speaking';
 
 interface SpeakingPracticeProps {
   question: Question;
 }
 
 export function SpeakingPractice({ question }: SpeakingPracticeProps) {
-  const { addAttempt } = useAttemptHistory();
+  const { add: addAttempt } = useLocalStorage<SpeakingAttempt>(SPEAKING_ATTEMPTS_STORAGE_KEY);
 
   const { state, transcript, scoringResult, error, transcribeAudio, requestScoring, reset } =
     useSpeakingScoring({
@@ -59,6 +60,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
         areas_for_improvement: scoringResult.areasForImprovement,
         good_points: scoringResult.goodPoints,
         processing_time_ms: scoringResult.processingTime,
+        created_at: new Date().toISOString(),
       });
     }
   }, [scoringResult, transcript, question.id, question.question, question.answer, addAttempt]);

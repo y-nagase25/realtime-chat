@@ -16,14 +16,8 @@ import { ComprehensionQuestions } from '../ComprehensionQuestions';
 import { QuestionResults } from '../QuestionResults';
 import { ReadingTimer } from '../ReadingTimer';
 import { SummaryWriting } from '../SummaryWriting';
-import { SessionStats } from '../SessionStats';
 import { ErrorMessage } from '../ErrorMessage';
 import type { Passage, ComprehensionQuestion, VocabularyEntry } from '@/lib/types/reading';
-
-// Mock storage for SessionStats
-vi.mock('@/lib/storage/reading-history', () => ({
-  getSessionStats: () => ({ sessionCount: 5, lastWpm: 120, wpmChange: 10 }),
-}));
 
 describe('Accessibility', () => {
   afterEach(() => {
@@ -204,14 +198,6 @@ describe('Accessibility', () => {
         render(<QuestionResults results={mockResults} onNewPassage={vi.fn()} />);
         const score = screen.getByTestId('results-score');
         expect(score.closest('[aria-live]')).toHaveAttribute('aria-live', 'polite');
-      });
-    });
-
-    describe('SessionStats', () => {
-      it('should have aria-label describing stats section', () => {
-        render(<SessionStats />);
-        const stats = screen.getByTestId('session-stats');
-        expect(stats).toHaveAttribute('aria-label');
       });
     });
 

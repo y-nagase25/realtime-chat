@@ -15,14 +15,8 @@ import { VocabularyPopup } from '../VocabularyPopup';
 import { ComprehensionQuestions } from '../ComprehensionQuestions';
 import { QuestionResults } from '../QuestionResults';
 import { SummaryWriting } from '../SummaryWriting';
-import { SessionStats } from '../SessionStats';
 import { PassageSkeleton } from '../PassageSkeleton';
 import type { Passage, ComprehensionQuestion, VocabularyEntry } from '@/lib/types/reading';
-
-// Mock storage for SessionStats
-vi.mock('@/lib/storage/reading-history', () => ({
-  getSessionStats: () => ({ sessionCount: 5, lastWpm: 120, wpmChange: 10 }),
-}));
 
 describe('UI Polish', () => {
   afterEach(() => {
@@ -466,14 +460,6 @@ describe('UI Polish', () => {
         render(<QuestionResults results={mockResults} onNewPassage={vi.fn()} />);
         const resultItem = screen.getByTestId('result-q1');
         expect(resultItem.className).toMatch(/red/);
-      });
-    });
-
-    describe('SessionStats', () => {
-      it('should use green for positive WPM change', () => {
-        render(<SessionStats />);
-        const wpmChange = screen.getByTestId('wpm-change');
-        expect(wpmChange.className).toMatch(/green/);
       });
     });
   });

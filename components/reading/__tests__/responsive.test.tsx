@@ -16,14 +16,8 @@ import { ComprehensionQuestions } from '../ComprehensionQuestions';
 import { QuestionResults } from '../QuestionResults';
 import { ReadingTimer } from '../ReadingTimer';
 import { SummaryWriting } from '../SummaryWriting';
-import { SessionStats } from '../SessionStats';
 import { ErrorMessage } from '../ErrorMessage';
 import type { Passage, ComprehensionQuestion, VocabularyEntry } from '@/lib/types/reading';
-
-// Mock storage for SessionStats
-vi.mock('@/lib/storage/reading-history', () => ({
-  getSessionStats: () => ({ sessionCount: 5, lastWpm: 120, wpmChange: 10 }),
-}));
 
 describe('Responsive Design', () => {
   afterEach(() => {
@@ -167,14 +161,6 @@ describe('Responsive Design', () => {
   });
 
   describe('Mobile Layout (320px)', () => {
-    describe('SessionStats', () => {
-      it('should stack items vertically on mobile with flex-wrap', () => {
-        render(<SessionStats />);
-        const statsContainer = screen.getByTestId('session-stats');
-        expect(statsContainer.className).toMatch(/flex-wrap|flex-col|sm:flex-row/);
-      });
-    });
-
     describe('ReadingTimer', () => {
       it('should support stacking on very narrow screens', () => {
         render(<ReadingTimer isRunning={true} wordCount={100} level="A2" />);

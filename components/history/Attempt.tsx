@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from 'lucide-react';
 import { getScoreBadgeClass } from '@/lib/utils/scoring';
 import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
+import { isoToDatetime } from '@/lib/utils/date-jst';
 
 export function Attempt({
   attempt,
@@ -28,10 +29,7 @@ export function Attempt({
           </div>
           <div className="text-left">
             <div className="text-sm font-medium">Q.{attempt.questionText}</div>
-            <div className="text-xs text-muted-foreground">
-              {new Date(attempt.created_at).toLocaleDateString()}{' '}
-              {new Date(attempt.created_at).toLocaleTimeString()}
-            </div>
+            <div className="text-xs text-muted-foreground">{isoToDatetime(attempt.created_at)}</div>
           </div>
         </div>
         {isExpanded ? (

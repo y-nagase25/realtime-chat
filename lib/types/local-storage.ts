@@ -5,7 +5,6 @@ import type { ReadingLevel, ReadingTopicId } from '@/lib/types/reading';
  */
 export interface ReadingSession {
   id: string;
-  timestamp: number;
   level: ReadingLevel;
   topic: ReadingTopicId;
   passageTitle: string;
@@ -16,13 +15,14 @@ export interface ReadingSession {
   questionsCorrect: number;
   scorePercentage: number;
   savedWords: string[];
+  created_at: string; // ISO timestamp
 }
 
 /**
  * Speaking attempt stored in local storage
  */
 export interface SpeakingAttempt {
-  id: string; // UUID generated client-side
+  id: string;
   question_id: number;
   questionText: string;
   modelAnswer: string;

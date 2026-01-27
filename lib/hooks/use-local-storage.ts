@@ -32,11 +32,11 @@ export function useLocalStorage<T>(key: string) {
   }, [key]);
 
   const add = useCallback(
-    (value: Omit<T, 'id' | 'timestamp'>) => {
+    (value: Omit<T, 'id' | 'created_at'>) => {
       const newValue = {
         ...value,
         id: generateId(),
-        timestamp: Date.now(),
+        created_at: new Date().toISOString(),
       } as T;
 
       // Use functional update to ensure we have the latest state

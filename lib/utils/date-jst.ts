@@ -64,3 +64,7 @@ export function getJSTDayRange(): JSTDateRange {
 export function formatNumber(value: number): string {
   return value.toLocaleString('en-US');
 }
+
+export function isoToDatetime(isoTimestamp: string): string {
+  return `${new Date(isoTimestamp).toLocaleDateString()} ${new Date(isoTimestamp).toLocaleTimeString()}`;
+}

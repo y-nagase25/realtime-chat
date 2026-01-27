@@ -12,6 +12,7 @@ import type { ReadingSession } from '@/lib/types/local-storage';
 import type { SpeakingAttempt } from '@/lib/types/local-storage';
 import { TrashIcon } from 'lucide-react';
 import { AttemptHistory } from './AtemptHistory';
+import { isoToDatetime } from '@/lib/utils/date-jst';
 
 export function Histories() {
   const {
@@ -24,7 +25,7 @@ export function Histories() {
     useLocalStorage<SpeakingAttempt>(SPEAKING_ATTEMPTS_STORAGE_KEY);
 
   const handleAddReadingHistory = () => {
-    const data: Omit<ReadingSession, 'id' | 'timestamp'> = {
+    const data: Omit<ReadingSession, 'id' | 'created_at'> = {
       level: 'A1',
       topic: 'daily-life',
       passageTitle: 'Passage Title',
@@ -52,7 +53,8 @@ export function Histories() {
             <Item key={hist.id} variant="outline">
               <ItemContent>
                 <ItemTitle>{hist.id}</ItemTitle>
-                <ItemDescription>time: {hist.timestamp}</ItemDescription>
+                <ItemDescription>{hist.passageTitle}</ItemDescription>
+                <ItemDescription>{isoToDatetime(hist.created_at)}</ItemDescription>
               </ItemContent>
               <ItemActions>
                 <Button

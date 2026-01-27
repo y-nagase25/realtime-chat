@@ -60,7 +60,6 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
         areas_for_improvement: scoringResult.areasForImprovement,
         good_points: scoringResult.goodPoints,
         processing_time_ms: scoringResult.processingTime,
-        created_at: new Date().toISOString(),
       });
     }
   }, [scoringResult, transcript, question.id, question.question, question.answer, addAttempt]);

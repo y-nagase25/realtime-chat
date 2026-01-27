@@ -4,10 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js application that implements real-time voice chat using OpenAI's Realtime API with WebRTC, as well as audio transcription using OpenAI's Whisper API. The application enables:
-- Bidirectional voice communication between users and OpenAI's GPT models via WebRTC
-- Audio transcription using the Whisper speech-to-text API for speaking practice features
-- Text generation using OpenAI's GPT-5 models with cost calculation
+This is a Next.js application for English language learning that provides:
+- **Reading Practice**: AI-generated passages with comprehension questions and vocabulary lookup
+- **Speaking Practice**: Audio recording, transcription, and AI-powered scoring
+- **Learning History**: Progress tracking dashboard for reading and speaking activities
+- **Realtime Voice Chat**: WebRTC-based bidirectional voice communication with OpenAI (development only)
 
 ## Development Commands
 
@@ -21,11 +22,19 @@ npm run build
 # Start production server
 npm start
 
-# Lint code with Biome
+# Linting and formatting (Biome)
 npm run lint
-
-# Format code with Biome
 npm run format
+
+# Unit tests (Vitest)
+npm run test:unit
+npm run test:unit:watch
+npm run test:unit:coverage
+
+# E2E tests (Playwright)
+npm run test:e2e
+npm run test:e2e:ui
+npm run test:e2e:debug
 ```
 
 ## Technology Stack
@@ -35,140 +44,187 @@ npm run format
 - **Styling**: Tailwind CSS 4
 - **Linting/Formatting**: Biome 2.2.0
 - **UI Components**: Radix UI primitives with custom components
+- **Database**: Supabase (usage tracking)
+- **Testing**: Vitest (unit), Playwright (E2E)
 - **Real-time Communication**: WebRTC + OpenAI Realtime API
 
 ## Architecture Overview
 
-### WebRTC Session Flow
+### Directory Structure
 
-The application establishes WebRTC connections to OpenAI's Realtime API following this sequence:
+```
+/app                          - Next.js app directory (routes and pages)
+  /api/                       - API route handlers
+    /csrf/                    - CSRF token generation
+    /reading/                 - Reading practice APIs
+    /speaking/                - Speaking practice APIs
+    /usage/                   - Usage limit checking
+    /realtime/                - WebRTC session tokens
+    /text/                    - Text generation
+    /transcribe/              - Audio transcription
 
-1. **Token Acquisition**: Backend route `/api/realtime/session` fetches ephemeral tokens from OpenAI
-2. **Peer Connection Setup**: Client creates `RTCPeerConnection` and adds local audio track from microphone
-3. **Data Channel**: Creates `oai-events` data channel for bidirectional event messaging
-4. **SDP Negotiation**: Client generates SDP offer, sends to OpenAI, receives answer
-5. **Audio Streaming**: Bidirectional audio streams via WebRTC tracks
+/components                   - React components
+  /reading/                   - Reading feature components
+  /speaking/                  - Speaking feature components
+  /history/                   - History feature components
+  /ui/                        - Generic UI components (Radix-based)
+  /providers/                 - Context providers (CSRF)
 
-### Key Components
+/lib                          - Utilities and types
+  /types/                     - TypeScript definitions
+  /hooks/                     - Custom React hooks
+  /utils/                     - Utility functions
+  /constants/                 - Constants and config
+  /rate-limit/                - Rate limiting middleware
+  /csrf/                      - CSRF protection
 
-**SessionControl** (`components/SessionControl.tsx`)
-- Main orchestrator for WebRTC session lifecycle
-- Uses `useRealtimeSession` hook for WebRTC logic
-- Handles session start/stop operations
+/specs                        - Specification documents
+/e2e                          - Playwright E2E tests
+/__tests__                    - Unit tests
+```
 
-**RealtimeApiPage** (`app/realtime-api/ga/page.tsx`)
-- Production-ready implementation using SessionControl component
-- Connection state machine with states: idle → fetching-token → creating-peer → requesting-mic → creating-offer → connecting → connected
-- Audio playback handling with browser autoplay policy detection
+### Pages and Routes
+
+| Route | Description |
+|-------|-------------|
+| `/` | Home page with navigation to Reading, Speaking, and History |
+| `/reading` | Reading practice with AI-generated passages and questions |
+| `/speaking` | Speaking practice with audio recording and AI scoring |
+| `/history` | Learning history dashboard (reading and speaking tabs) |
+| `/realtime-chat` | WebRTC voice chat (development only) |
 
 ### API Routes
 
-**`/api/realtime/session`** (`app/api/realtime/session/route.ts`)
-- POST endpoint to obtain ephemeral tokens from OpenAI Realtime API
-- Requires `OPENAI_API_KEY` environment variable
-- Returns `clientSecret` and `expiresAt` for client WebRTC authentication
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/csrf` | GET | Generate CSRF token |
+| `/api/reading/generate` | POST | Generate reading passages with questions |
+| `/api/reading/vocabulary` | POST | Lookup word definitions |
+| `/api/reading/evaluate-summary` | POST | Evaluate user-written summaries |
+| `/api/speaking/score` | POST | Score speaking responses |
+| `/api/transcribe` | POST | Transcribe audio using Whisper |
+| `/api/text` | POST | Text generation using GPT models |
+| `/api/usage/limit` | GET | Check daily usage limits |
+| `/api/realtime/session` | POST | Get ephemeral WebRTC tokens |
 
-**`/api/transcribe`** (`app/api/transcribe/route.ts`)
-- POST endpoint for audio file transcription using Whisper API
-- Used by speaking practice feature for audio transcription
-- Accepts multipart/form-data with audio file
-- Returns transcription result with JSON format
-- Uses `whisper-1` model with temperature 0.1
+### Key Components
 
-**`/api/text`** (`app/api/text/route.ts`)
-- POST endpoint for text generation using GPT-5 models
-- Demonstrates cost calculation for input/output tokens
-- Supports GPT-5, GPT-5-mini, and GPT-5-nano models
-- Includes pricing information and usage tracking
+**Reading Feature** (`components/reading/`)
+- `PassageDisplay.tsx` - Renders passage with clickable words for vocabulary
+- `ComprehensionQuestions.tsx` - Multiple-choice, true/false, fill-in-blank questions
+- `VocabularyPopup.tsx` - Word definitions popup (English/Japanese)
+- `ReadingSettings.tsx` - Level, topic, grammar selection form
+- `ReadingTimer.tsx` - Reading time and WPM calculation
+- `SummaryWriting.tsx` - Summary writing with AI evaluation
+- `QuestionResults.tsx` - Comprehension score display
 
-### Type System
+**Speaking Feature** (`components/speaking/`)
+- `SpeakingPracticeContainer.tsx` - Main container with state management
+- `AudioRecorder.tsx` - MediaRecorder-based audio capture
+- `TranscriptDisplay.tsx` - Transcription display
+- `ScoringResults.tsx` - Score display with feedback
 
-**`lib/types/voice-chat.ts`**
-- Comprehensive TypeScript definitions for WebRTC messages
-- OpenAI Realtime API message types (audio, transcription, session updates)
-- Connection state and status types
+**History Feature** (`components/history/`)
+- `Histories.tsx` - Tabbed interface for reading/speaking history
+- `AtemptHistory.tsx` - List view with expandable details
+- `Attempt.tsx` - Individual attempt card
 
-### Utility Modules
+### Custom Hooks
 
-**`lib/openai.ts`**
-- OpenAI client initialization and configuration
-- Whisper API model configuration (`whisper-1`)
-- Cost calculation utilities for Whisper transcription ($0.006 per minute)
-- Mock audio file helpers for testing
+| Hook | Purpose |
+|------|---------|
+| `useLocalStorage` | Generic localStorage persistence with TypeScript support |
+| `useRecording` | Audio recording with noise suppression, echo cancellation |
+| `useSpeakingScoring` | State machine for speaking practice flow |
+| `useRealtimeSession` | WebRTC connection management |
+| `useQuestionNavigation` | Question navigation (prev/next) |
+| `useQuestionSelection` | Question selection state |
+
+### Type Definitions
+
+**Reading Types** (`lib/types/reading.ts`)
+- `ReadingLevel` - CEFR levels (A1-C1)
+- `ReadingTopic` - Topics (daily-life, business, travel, news, science, culture)
+- `Passage` - Generated passage with questions and metadata
+- `ComprehensionQuestion` - Union type for all question types
+- `VocabularyEntry` - Word definition structure
+
+**Speaking Types** (`lib/types/speaking.ts`)
+- `ScoringResult` - Score (0-10), improvement areas, good points
+- `SpeakingState` - State machine states
+- `SpeakingEvent` - State transition events
+
+**Local Storage Types** (`lib/types/local-storage.ts`)
+- `ReadingSession` - Stored reading practice data
+- `SpeakingAttempt` - Stored speaking attempt data
+
+## Security Features
+
+### CSRF Protection
+- Token generation via `/api/csrf` endpoint
+- Cookie-based token storage
+- `CsrfProvider` context for client-side access
+
+### Rate Limiting
+- Configurable per-endpoint limits (`lib/rate-limit/config.ts`)
+- In-memory store with sliding window
+- 60 requests/minute default for speaking score API
+
+### Usage Limits
+- Daily Whisper API limit: 60 seconds
+- JST timezone-based daily reset
+- Supabase-backed usage tracking
+
+## OpenAI API Integration
+
+### Whisper API (Transcription)
+- Model: `whisper-1`
+- Pricing: $0.006 per minute
+- Daily limit: 60 seconds
+
+### Text Generation
+- Models: GPT-5, GPT-5-mini, GPT-5-nano
+- Used for: passage generation, scoring, vocabulary lookup, summary evaluation
+
+### Realtime API (Voice Chat)
+- Model: `gpt-4o-realtime-preview`
+- Connection: WebRTC with ephemeral tokens
+- Events via `oai-events` data channel
 
 ## Code Style and Conventions
 
-The project uses Biome for linting and formatting with these key rules:
-
+Biome configuration:
 - **Indentation**: 2 spaces
 - **Line width**: 100 characters
 - **Quotes**: Single quotes for JS/TS, double quotes for JSX
 - **Semicolons**: Always required
 - **Trailing commas**: ES5 style
-- **Unused variables**: Warning level
-- **No explicit any**: Warning level
 
 ## Environment Variables
 
-Required environment variables (add to `.env` file):
-
 ```
 OPENAI_API_KEY=sk-...
+SUPABASE_URL=https://...
+SUPABASE_ANON_KEY=...
 ```
 
 ## Path Aliases
 
-The project uses `@/*` path alias mapping to the root directory:
-
 ```typescript
-import { SessionControl } from '@/components/SessionControl';
+import { Component } from '@/components/Component';
+import { useHook } from '@/lib/hooks/useHook';
 ```
-
-## Browser Considerations
-
-- WebRTC and MediaDevices API support required
-- Microphone permissions must be granted
-- Audio autoplay policies may block playback - implementation includes retry mechanisms
-- HTTPS required for production (microphone access restriction)
-
-## OpenAI API Integration
-
-### Realtime API (WebRTC Voice Chat)
-- Model: `gpt-4o-realtime-preview`
-- Voice options: alloy, echo, shimmer, etc.
-- Audio format: PCM16 (typically)
-- Connection: WebRTC with ephemeral token authentication
-- Events transmitted via `oai-events` data channel
-
-### Whisper API (Audio Transcription)
-- Model: `whisper-1`
-- Pricing: $0.006 per minute
-- Response format: JSON
-- Temperature: 0.1 for more deterministic results
-- Supports various audio formats (MP3, WAV, etc.)
-
-### Text Generation API
-- Models: GPT-5, GPT-5-mini, GPT-5-nano
-- Pricing: Variable based on model and token usage
-- Input/output token tracking and cost calculation
-- Cached token support with 90% discount
-
-## Pages and Routes
-- `/` - Home page
-- `/realtime-api/ga` - Production-ready Realtime API implementation
-- `/speaking-practice` - Speaking practice interface with audio transcription
 
 ## Requirements-Driven Development
 
-When a `requirements.md` file exists in the `specs/[feature_name]/`:
+When a `requirements.md` file exists in `specs/[feature_name]/`:
 
-1. **Read requirements first** before any implementation
+1. **Read requirements first** before implementation
 2. **Follow the specification strictly**
 3. **Implement only what is in scope**
-4. **Do not add features marked as "Out of Scope"**
-5. **Verify against acceptance criteria**
-6. **Create design & task document** before implementation
-7. **Check off completed tasks** in `tasks.md` as you complete them using `[x]` syntax
+4. **Create design & task document** before implementation
+5. **Check off completed tasks** in `tasks.md` using `[x]` syntax
+6. **Verify against acceptance criteria**
 
 ### Workflow
 ```
@@ -180,22 +236,28 @@ Create design & task specs
   ↓
 Implement according to spec
   ↓
-Check off tasks as completed in tasks.md
+Check off tasks as completed
   ↓
 Verify against acceptance criteria
   ↓
 Run tests and checks
 ```
 
-### Task Tracking
+## Testing
 
-When working with `tasks.md` files in spec directories:
-- **Mark tasks as completed** using `[x]` syntax as soon as each task is done
-- Update all sub-tasks within a task group when completing work
-- This provides clear progress tracking and documentation of completed work
-- Example:
-  ```markdown
-  - [x] Create component file
-  - [x] Add imports
-  - [x] Implement logic
-  ```
+### Unit Tests (Vitest)
+- Location: `__tests__/` and co-located `*.test.tsx` files
+- Coverage target: 80%+
+- Run: `npm run test:unit`
+
+### E2E Tests (Playwright)
+- Location: `/e2e/`
+- Run: `npm run test:e2e`
+- Debug: `npm run test:e2e:ui`
+
+## Browser Considerations
+
+- WebRTC and MediaDevices API support required
+- Microphone permissions must be granted
+- Audio autoplay policies may block playback
+- HTTPS required for production (microphone access)

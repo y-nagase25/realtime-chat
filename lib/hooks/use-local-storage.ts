@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { LocalStorageType } from '../types/local-storage';
 
 export const SPEAKING_ATTEMPTS_STORAGE_KEY = 'speaking-attempts';
 export const READING_HISTORY_STORAGE_KEY = 'reading-practice-history';
@@ -17,7 +18,7 @@ function generateId(): string {
  * @example
  * const { history, add, remove } = useLocalStorage<SpeakingAttempt>(SPEAKING_ATTEMPTS_STORAGE_KEY);
  */
-export function useLocalStorage<T>(key: string) {
+export function useLocalStorage<T extends LocalStorageType>(key: string) {
   const [history, setHistory] = useState<T[]>([]);
 
   useEffect(() => {

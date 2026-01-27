@@ -2,8 +2,9 @@
  * Validation utility functions
  */
 
-import type { ScoringRequest, SpeakingAttempt } from '@/lib/types/speaking';
+import type { ScoringRequest } from '@/lib/types/speaking';
 import type { ValidationResult } from '@/lib/types/validation';
+import type { SpeakingAttempt } from '@/lib/types/local-storage';
 
 const MAX_AUDIO_SIZE = 25 * 1024 * 1024; // 25MB (Whisper limit)
 const ALLOWED_MIME_TYPES = ['audio/webm', 'audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/ogg'];

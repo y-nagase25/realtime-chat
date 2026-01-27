@@ -1,6 +1,6 @@
 'use client';
 
-import type { SpeakingAttempt } from '@/lib/types/speaking';
+import type { SpeakingAttempt } from '@/lib/types/local-storage';
 import { Button } from '@/components/ui/button';
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from 'lucide-react';
 import { getScoreBadgeClass } from '@/lib/utils/scoring';

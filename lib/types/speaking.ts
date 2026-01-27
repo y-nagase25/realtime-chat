@@ -3,22 +3,6 @@
  */
 
 /**
- * Speaking attempt stored in local storage
- */
-export interface SpeakingAttempt {
-  id: string; // UUID generated client-side
-  question_id: number;
-  questionText: string;
-  modelAnswer: string;
-  transcript: string;
-  score: number; // 0-10
-  areas_for_improvement: string[];
-  good_points: string[];
-  created_at: string; // ISO timestamp
-  processing_time_ms: number;
-}
-
-/**
  * Scoring result from API
  */
 export interface ScoringResult {

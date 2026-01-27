@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 import { SPEAKING_ATTEMPTS_STORAGE_KEY, useLocalStorage } from '@/lib/hooks/use-local-storage';
-import type { SpeakingAttempt } from '@/lib/types/speaking';
+import type { SpeakingAttempt } from '@/lib/types/local-storage';
 
 interface SpeakingPracticeProps {
   question: Question;

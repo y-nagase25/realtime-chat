@@ -4,7 +4,7 @@ import { Attempt } from '@/components/history/Attempt';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect, useState } from 'react';
-import type { SpeakingAttempt } from '@/lib/types/speaking';
+import type { SpeakingAttempt } from '@/lib/types/local-storage';
 
 export function AttemptHistory({
   history,

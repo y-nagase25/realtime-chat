@@ -131,24 +131,6 @@ export type StoredVocabularyEntry = VocabularyEntry & {
 };
 
 /**
- * Reading session record for progress tracking
- */
-export type ReadingSession = {
-  id: string;
-  timestamp: number;
-  level: ReadingLevel;
-  topic: ReadingTopicId;
-  passageTitle: string;
-  wordCount: number;
-  readingTimeSeconds: number;
-  wordsPerMinute: number;
-  questionsTotal: number;
-  questionsCorrect: number;
-  scorePercentage: number;
-  savedWords: string[];
-};
-
-/**
  * API Request/Response types
  */
 

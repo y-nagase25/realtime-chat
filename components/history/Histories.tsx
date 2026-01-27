@@ -8,8 +8,8 @@ import {
   SPEAKING_ATTEMPTS_STORAGE_KEY,
   useLocalStorage,
 } from '@/lib/hooks/use-local-storage';
-import type { ReadingSession } from '@/lib/types/reading';
-import type { SpeakingAttempt } from '@/lib/types/speaking';
+import type { ReadingSession } from '@/lib/types/local-storage';
+import type { SpeakingAttempt } from '@/lib/types/local-storage';
 import { TrashIcon } from 'lucide-react';
 import { AttemptHistory } from './AtemptHistory';
 

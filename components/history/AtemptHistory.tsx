@@ -1,16 +1,18 @@
 'use client';
 
-import type { SpeakingAttempt } from '@/lib/types/speaking';
 import { Attempt } from '@/components/history/Attempt';
-import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect, useState } from 'react';
-import { SPEAKING_ATTEMPTS_STORAGE_KEY, useLocalStorage } from '@/lib/hooks/use-local-storage';
+import type { SpeakingAttempt } from '@/lib/types/speaking';
 
-export function AttemptHistory() {
-  const { history: speakingAttempts, remove: removeSpeakingAttempt } =
-    useLocalStorage<SpeakingAttempt>(SPEAKING_ATTEMPTS_STORAGE_KEY);
+export function AttemptHistory({
+  history,
+  remove,
+}: {
+  history: SpeakingAttempt[];
+  remove: (id: string) => void;
+}) {
   const [didMount, setDidMount] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number>(0);
 
@@ -21,22 +23,17 @@ export function AttemptHistory() {
   // Render skeleton during SSR to match initial client render
   if (didMount) {
     return (
-      <>
-        <h2>
-          {SPEAKING_LABELS.history} ({speakingAttempts.length})
-        </h2>
-        <div className="mt-4 space-y-4">
-          {speakingAttempts.map((attempt, idx) => (
-            <Attempt
-              key={attempt.id}
-              attempt={attempt}
-              removeAttempt={(id) => removeSpeakingAttempt(id)}
-              isExpanded={expandedIndex === idx}
-              onShow={() => setExpandedIndex(idx)}
-            />
-          ))}
-        </div>
-      </>
+      <div className="mt-4 space-y-4">
+        {history.map((attempt, idx) => (
+          <Attempt
+            key={attempt.id}
+            attempt={attempt}
+            removeAttempt={(id) => remove(id)}
+            isExpanded={expandedIndex === idx}
+            onShow={() => setExpandedIndex(idx)}
+          />
+        ))}
+      </div>
     );
   } else {
     return <LoadingSkeleton />;

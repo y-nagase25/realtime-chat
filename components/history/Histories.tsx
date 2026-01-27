@@ -2,8 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
-import { READING_HISTORY_STORAGE_KEY, useLocalStorage } from '@/lib/hooks/use-local-storage';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  READING_HISTORY_STORAGE_KEY,
+  SPEAKING_ATTEMPTS_STORAGE_KEY,
+  useLocalStorage,
+} from '@/lib/hooks/use-local-storage';
 import type { ReadingSession } from '@/lib/types/reading';
+import type { SpeakingAttempt } from '@/lib/types/speaking';
 import { TrashIcon } from 'lucide-react';
 import { AttemptHistory } from './AtemptHistory';
 
@@ -13,6 +19,9 @@ export function Histories() {
     add: addReadingHistory,
     remove: removeReadingHistory,
   } = useLocalStorage<ReadingSession>(READING_HISTORY_STORAGE_KEY);
+
+  const { history: speakingAttempts, remove: removeSpeakingAttempt } =
+    useLocalStorage<SpeakingAttempt>(SPEAKING_ATTEMPTS_STORAGE_KEY);
 
   const handleAddReadingHistory = () => {
     const data: Omit<ReadingSession, 'id' | 'timestamp'> = {
@@ -31,11 +40,13 @@ export function Histories() {
   };
 
   return (
-    <div className="flex gap-4">
-      <div className="w-1/2 p-4">
-        <h2>
-          {'Reading Practice'} ({readingHistory.length})
-        </h2>
+    <Tabs defaultValue="reading">
+      <TabsList variant="line">
+        <TabsTrigger value="reading">Reading({readingHistory.length})</TabsTrigger>
+        <TabsTrigger value="speaking">Speaking({speakingAttempts.length})</TabsTrigger>
+      </TabsList>
+      <TabsContent value="reading">
+        <Button onClick={handleAddReadingHistory}>Add</Button>
         <div className="mt-4 space-y-4">
           {readingHistory.map((hist) => (
             <Item key={hist.id} variant="outline">
@@ -55,11 +66,10 @@ export function Histories() {
             </Item>
           ))}
         </div>
-        <Button onClick={handleAddReadingHistory}>Add</Button>
-      </div>
-      <div className="w-1/2 p-4">
-        <AttemptHistory />
-      </div>
-    </div>
+      </TabsContent>
+      <TabsContent value="speaking">
+        <AttemptHistory history={speakingAttempts} remove={removeSpeakingAttempt} />
+      </TabsContent>
+    </Tabs>
   );
 }

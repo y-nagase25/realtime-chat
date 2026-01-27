@@ -6,7 +6,7 @@
 
 'use client';
 
-import type { ComprehensionQuestion } from '@/lib/types/reading';
+import type { ComprehensionQuestion, Passage } from '@/lib/types/reading';
 import type { UserAnswer } from '@/components/reading/ComprehensionQuestions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -22,21 +22,46 @@ export type QuestionResult = {
 
 /**
  * Props for the QuestionResults component
+ *
+ * Note: The new props (passage, readingTimeSeconds, savedWords, onSaveHistory)
+ * are optional for backward compatibility during migration.
+ * When onSaveHistory is provided, it will be used instead of onNewPassage.
  */
 export type QuestionResultsProps = {
   /** Array of question results */
   results: QuestionResult[];
-  /** Callback when user wants to generate a new passage */
-  onNewPassage: () => void;
+  /** The passage that was read (required for history saving) */
+  passage?: Passage;
+  /** Time spent reading in seconds (required for history saving) */
+  readingTimeSeconds?: number;
+  /** Words saved during the session (required for history saving) */
+  savedWords?: string[];
+  /** Callback when user wants to save history and complete (new API) */
+  onSaveHistory?: () => void;
+  /**
+   * @deprecated Use onSaveHistory instead. This prop will be removed in future versions.
+   * Callback when user wants to generate a new passage (legacy API)
+   */
+  onNewPassage?: () => void;
 };
 
 /**
  * QuestionResults - Displays score and explanations for answered questions
  */
-export function QuestionResults({ results, onNewPassage }: QuestionResultsProps) {
+export function QuestionResults({
+  results,
+  passage: _passage,
+  readingTimeSeconds: _readingTimeSeconds,
+  savedWords: _savedWords,
+  onSaveHistory,
+  onNewPassage,
+}: QuestionResultsProps) {
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+
+  // Use onSaveHistory if provided, otherwise fall back to onNewPassage for backward compatibility
+  const handleComplete = onSaveHistory ?? onNewPassage;
 
   return (
     <Card data-testid="question-results">
@@ -60,7 +85,7 @@ export function QuestionResults({ results, onNewPassage }: QuestionResultsProps)
         <div className="flex gap-3 pt-4">
           <Button
             data-testid="new-passage-button"
-            onClick={onNewPassage}
+            onClick={handleComplete}
             className="flex-1 min-h-11"
           >
             完了

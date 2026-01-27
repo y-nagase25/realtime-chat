@@ -20,6 +20,8 @@ export type ReadingTimerProps = {
   wordCount: number;
   /** Reading level for target WPM display */
   level: ReadingLevel;
+  /** Optional callback invoked each second with the current elapsed time */
+  onTimeUpdate?: (seconds: number) => void;
 };
 
 /**
@@ -34,14 +36,23 @@ function formatTime(totalSeconds: number): string {
 /**
  * ReadingTimer - Displays reading time and WPM metrics
  */
-export function ReadingTimer({ isRunning, wordCount: _wordCount, level }: ReadingTimerProps) {
+export function ReadingTimer({
+  isRunning,
+  wordCount: _wordCount,
+  level,
+  onTimeUpdate,
+}: ReadingTimerProps) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (isRunning) {
       intervalRef.current = setInterval(() => {
-        setElapsedSeconds((prev) => prev + 1);
+        setElapsedSeconds((prev) => {
+          const newSeconds = prev + 1;
+          onTimeUpdate?.(newSeconds);
+          return newSeconds;
+        });
       }, 1000);
     }
 
@@ -51,7 +62,7 @@ export function ReadingTimer({ isRunning, wordCount: _wordCount, level }: Readin
         intervalRef.current = null;
       }
     };
-  }, [isRunning]);
+  }, [isRunning, onTimeUpdate]);
 
   const targetWpm = getTargetWpmRange(level);
 

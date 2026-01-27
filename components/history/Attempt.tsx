@@ -1,7 +1,6 @@
 'use client';
 
 import type { SpeakingAttempt } from '@/lib/types/speaking';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from 'lucide-react';
 import { getScoreBadgeClass } from '@/lib/utils/scoring';
@@ -10,19 +9,17 @@ import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
 export function Attempt({
   attempt,
   removeAttempt,
+  isExpanded,
+  onShow,
 }: {
   attempt: SpeakingAttempt;
-  removeAttempt?: (id: string) => void;
+  removeAttempt: (id: string) => void;
+  isExpanded: boolean;
+  onShow: () => void;
 }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   return (
     <div key={attempt.id} className="rounded-lg border">
-      <Button
-        variant="ghost"
-        className="w-full justify-between p-4 h-auto"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
+      <Button variant="ghost" className="w-full justify-between p-4 h-auto" onClick={onShow}>
         <div className="flex items-center gap-3">
           <div
             className={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-bold ${getScoreBadgeClass(attempt.score)}`}
@@ -32,7 +29,7 @@ export function Attempt({
           <div className="text-left">
             <div className="text-sm font-medium">Q.{attempt.questionText}</div>
             <div className="text-xs text-muted-foreground">
-              {new Date(attempt.created_at).toLocaleDateString()} at{' '}
+              {new Date(attempt.created_at).toLocaleDateString()}{' '}
               {new Date(attempt.created_at).toLocaleTimeString()}
             </div>
           </div>
@@ -90,7 +87,7 @@ export function Attempt({
           )}
           <TrashIcon
             size={20}
-            onClick={() => removeAttempt?.(attempt.id)}
+            onClick={() => removeAttempt(attempt.id)}
             className="cursor-pointer"
             color="var(--destructive)"
           />

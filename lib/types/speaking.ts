@@ -29,16 +29,6 @@ export interface ScoringResult {
 }
 
 /**
- * Session statistics across all attempts
- */
-export interface SessionStats {
-  totalAttempts: number;
-  averageScore: number;
-  bestScore: number;
-  latestScore: number | null;
-}
-
-/**
  * State machine states for speaking practice flow
  */
 export type SpeakingState =

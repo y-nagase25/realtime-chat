@@ -2,7 +2,7 @@
  * Scoring utility functions
  */
 
-import type { SessionStats, SpeakingAttempt, ScoringRequest } from '@/lib/types/speaking';
+import type { ScoringRequest } from '@/lib/types/speaking';
 
 /**
  * Build scoring prompt for GPT-4o
@@ -48,28 +48,4 @@ export function getScoreBadgeClass(score: number): string {
     return 'bg-yellow-100 text-yellow-800 border-yellow-500 dark:bg-yellow-900 dark:text-yellow-200';
   }
   return 'bg-red-100 text-red-800 border-red-500 dark:bg-red-900 dark:text-red-200';
-}
-
-/**
- * Calculate session statistics from all attempts
- */
-export function calculateSessionStats(attempts: SpeakingAttempt[]): SessionStats {
-  if (attempts.length === 0) {
-    return {
-      totalAttempts: 0,
-      averageScore: 0,
-      bestScore: 0,
-      latestScore: null,
-    };
-  }
-
-  const scores = attempts.map((a) => a.score);
-  const totalScore = scores.reduce((sum, score) => sum + score, 0);
-
-  return {
-    totalAttempts: attempts.length,
-    averageScore: totalScore / attempts.length,
-    bestScore: Math.max(...scores),
-    latestScore: attempts[attempts.length - 1]?.score ?? null,
-  };
 }

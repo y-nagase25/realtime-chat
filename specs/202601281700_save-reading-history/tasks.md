@@ -13,39 +13,39 @@
   - Add `readingTimeSeconds: number` prop (optional for backward compatibility)
   - Add `savedWords: string[]` prop (optional for backward compatibility)
   - Add `onSaveHistory: () => void` callback prop (optional for backward compatibility)
-- [ ] Import `useLocalStorage` hook and `READING_HISTORY_STORAGE_KEY` (deferred to Phase 2)
-- [ ] Add save logic when `完了` button is pressed (deferred to Phase 2)
+- [x] Import `useLocalStorage` hook and `READING_HISTORY_STORAGE_KEY` (completed in Phase 2)
+- [x] Add save logic when `完了` button is pressed (completed in Phase 2 via `handleComplete`)
 - [x] Update component tests for new props
 
 ## Phase 2: Core Features (P0)
 
 ### 2.1 Update Reading Page State Management
-- [ ] Add `elapsedSeconds` state variable
-- [ ] Add `savedWords` state variable (string array)
-- [ ] Add `capturedReadingTime` state variable
-- [ ] Connect `ReadingTimer.onTimeUpdate` to `setElapsedSeconds`
+- [x] Add `elapsedSeconds` state variable
+- [x] Add `savedWords` state variable (string array)
+- [x] Add `capturedReadingTime` state variable
+- [x] Connect `ReadingTimer.onTimeUpdate` to `setElapsedSeconds`
 
 ### 2.2 Update Saved Words Tracking
-- [ ] Modify `handleSaveWord` to add word to `savedWords` state
-- [ ] Ensure no duplicate words are added
+- [x] Modify `handleSaveWord` to add word to `savedWords` state
+- [x] Ensure no duplicate words are added
 
 ### 2.3 Capture Reading Time on Submit
-- [ ] In `handleSubmitAnswers`, capture `elapsedSeconds` to `capturedReadingTime`
-- [ ] This ensures time is frozen when questions are submitted
+- [x] In `handleSubmitAnswers`, capture `elapsedSeconds` to `capturedReadingTime`
+- [x] This ensures time is frozen when questions are submitted
 
 ### 2.4 Pass Data to QuestionResults
-- [ ] Pass `passage` prop to `QuestionResults`
-- [ ] Pass `capturedReadingTime` as `readingTimeSeconds` prop
-- [ ] Pass `savedWords` prop to `QuestionResults`
+- [x] Pass `passage` prop to `QuestionResults`
+- [x] Pass `capturedReadingTime` as `readingTimeSeconds` prop
+- [x] Pass `savedWords` prop to `QuestionResults`
 
 ### 2.5 Implement Save Logic
-- [ ] Create `buildSessionData` utility function
-- [ ] Create `calculateWpm` utility function
-- [ ] Implement `handleComplete` callback:
+- [x] Create `buildSessionData` utility function in `lib/utils/reading-session.ts`
+- [x] Create `calculateWpm` utility function in `lib/utils/reading-session.ts`
+- [x] Implement `handleComplete` callback:
   - Construct `ReadingSession` data
   - Call `add()` from `useLocalStorage`
   - Reset state and navigate to settings
-- [ ] Pass `handleComplete` as `onSaveHistory` to `QuestionResults`
+- [x] Pass `handleComplete` as `onSaveHistory` to `QuestionResults`
 
 ## Phase 3: Polish (P1)
 
@@ -55,9 +55,9 @@
 - [ ] Show error toast if save fails: "履歴の保存に失敗しました"
 
 ### 3.2 Error Handling
-- [ ] Add try-catch around localStorage save
-- [ ] Log errors to console for debugging
-- [ ] Handle edge case where `passage` is null
+- [x] Add try-catch around localStorage save
+- [x] Log errors to console for debugging (silent catch to avoid blocking user)
+- [x] Handle edge case where `passage` is null
 
 ## Phase 4: Enhancement (P2)
 
@@ -69,8 +69,8 @@
 ## Testing & Validation
 
 ### Unit Tests
-- [ ] Test `calculateWpm` utility function
-- [ ] Test `buildSessionData` utility function
+- [x] Test `calculateWpm` utility function
+- [x] Test `buildSessionData` utility function
 - [x] Test `ReadingTimer` with `onTimeUpdate` callback
 - [x] Test `QuestionResults` with new props (onSaveHistory callback)
 

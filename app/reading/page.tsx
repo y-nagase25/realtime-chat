@@ -26,6 +26,9 @@ import type {
   SummaryFeedback,
 } from '@/lib/types/reading';
 import { apiPost } from '@/lib/api-client';
+import { useLocalStorage, READING_HISTORY_STORAGE_KEY } from '@/lib/hooks/use-local-storage';
+import type { ReadingSession } from '@/lib/types/local-storage';
+import { buildSessionData } from '@/lib/utils/reading-session';
 
 type ReadingPhase = 'settings' | 'reading' | 'results' | 'summary';
 
@@ -79,6 +82,14 @@ export default function ReadingPage() {
   const [isEvaluatingSummary, setIsEvaluatingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const [lastSummary, setLastSummary] = useState<string | null>(null);
+
+  // State for reading history tracking
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [savedWords, setSavedWords] = useState<string[]>([]);
+  const [capturedReadingTime, setCapturedReadingTime] = useState(0);
+
+  // Hook for saving reading history
+  const { add: addReadingHistory } = useLocalStorage<ReadingSession>(READING_HISTORY_STORAGE_KEY);
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
     setIsLoading(true);
@@ -151,11 +162,25 @@ export default function ReadingPage() {
   }, []);
 
   const handleSaveWord = useCallback(() => {
-    setVocabPopup((prev) => (prev ? { ...prev, isSaved: true } : null));
+    setVocabPopup((prev) => {
+      if (prev?.word) {
+        // Add word to savedWords, avoiding duplicates
+        setSavedWords((words) => {
+          if (words.includes(prev.word)) {
+            return words;
+          }
+          return [...words, prev.word];
+        });
+      }
+      return prev ? { ...prev, isSaved: true } : null;
+    });
   }, []);
 
   const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
     setIsSubmittingAnswers(true);
+
+    // Capture reading time at the moment of submission
+    setCapturedReadingTime(elapsedSeconds);
 
     const regularQuestions = questions.filter((q) => q.type !== 'summary');
     const results = regularQuestions.map((question) => {
@@ -175,13 +200,47 @@ export default function ReadingPage() {
     }
   };
 
-  const handleNewPassage = () => {
+  /**
+   * Reset all state to return to settings phase
+   */
+  const resetState = useCallback(() => {
     setPassage(null);
     setQuestions([]);
     setQuestionResults([]);
     setSummaryFeedback(null);
+    setElapsedSeconds(0);
+    setSavedWords([]);
+    setCapturedReadingTime(0);
     setPhase('settings');
-  };
+  }, []);
+
+  /**
+   * Handle completion of reading session - saves history and resets state
+   */
+  const handleComplete = useCallback(() => {
+    if (!passage) {
+      // If passage is null for some reason, just reset state
+      resetState();
+      return;
+    }
+
+    try {
+      // Build session data and save to localStorage
+      const sessionData = buildSessionData(
+        passage,
+        capturedReadingTime,
+        questionResults,
+        savedWords
+      );
+      addReadingHistory(sessionData);
+    } catch {
+      // Log error but continue with navigation
+      // We don't want to block the user from proceeding
+    }
+
+    // Reset state and navigate to settings
+    resetState();
+  }, [passage, capturedReadingTime, questionResults, savedWords, addReadingHistory, resetState]);
 
   const handleSubmitSummary = async (summary: string) => {
     if (!passage) return;
@@ -253,7 +312,12 @@ export default function ReadingPage() {
             highlightGrammar={!!passage.grammarFocus}
           />
           <div className="mt-4">
-            <ReadingTimer isRunning={true} wordCount={passage.wordCount} level={passage.level} />
+            <ReadingTimer
+              isRunning={true}
+              wordCount={passage.wordCount}
+              level={passage.level}
+              onTimeUpdate={setElapsedSeconds}
+            />
           </div>
           {questions.length > 0 && (
             <div className="mt-6">
@@ -281,8 +345,14 @@ export default function ReadingPage() {
         </>
       )}
 
-      {phase === 'results' && questionResults.length > 0 && (
-        <QuestionResults results={questionResults} onNewPassage={handleNewPassage} />
+      {phase === 'results' && questionResults.length > 0 && passage && (
+        <QuestionResults
+          results={questionResults}
+          passage={passage}
+          readingTimeSeconds={capturedReadingTime}
+          savedWords={savedWords}
+          onSaveHistory={handleComplete}
+        />
       )}
 
       {phase === 'summary' && (

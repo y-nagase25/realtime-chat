@@ -1,16 +1,16 @@
-import type { ReadingLevel, ReadingTopicId } from '@/lib/types/reading';
+import type { ReadingLevel, ReadingTopicId, VocabularyEntry } from '@/lib/types/reading';
 
-export type LocalStorageType = ReadingSession | SpeakingAttempt;
+export type LocalStorageType = ReadingSession | SpeakingAttempt | SavedVocabulary;
 
-export interface LocalStorageBase {
+export type LocalStorageBase = {
   id: string;
   created_at: string; // ISO timestamp
-}
+};
 
 /**
  * Reading session record for progress tracking
  */
-export interface ReadingSession extends LocalStorageBase {
+export type ReadingSession = LocalStorageBase & {
   level: ReadingLevel;
   topic: ReadingTopicId;
   passageTitle: string;
@@ -18,12 +18,12 @@ export interface ReadingSession extends LocalStorageBase {
   questionsTotal: number;
   questionsCorrect: number;
   scorePercentage: number;
-}
+};
 
 /**
  * Speaking attempt stored in local storage
  */
-export interface SpeakingAttempt extends LocalStorageBase {
+export type SpeakingAttempt = LocalStorageBase & {
   question_id: number;
   questionText: string;
   modelAnswer: string;
@@ -32,4 +32,9 @@ export interface SpeakingAttempt extends LocalStorageBase {
   areas_for_improvement: string[];
   good_points: string[];
   processing_time_ms: number;
-}
+};
+
+/**
+ * Saved vocabulary record for progress tracking
+ */
+export type SavedVocabulary = LocalStorageBase & VocabularyEntry;

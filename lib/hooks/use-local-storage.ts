@@ -5,6 +5,7 @@ import type { LocalStorageType } from '../types/local-storage';
 
 export const SPEAKING_ATTEMPTS_STORAGE_KEY = 'speaking-attempts';
 export const READING_HISTORY_STORAGE_KEY = 'reading-practice-history';
+export const SAVED_VOCABULARY_STORAGE_KEY = 'saved-vocabulary';
 export const MAX_HISTORY_SIZE = 50;
 
 function generateId(): string {

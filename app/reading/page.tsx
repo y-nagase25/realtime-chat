@@ -26,8 +26,12 @@ import type {
   SummaryFeedback,
 } from '@/lib/types/reading';
 import { apiPost } from '@/lib/api-client';
-import { useLocalStorage, READING_HISTORY_STORAGE_KEY } from '@/lib/hooks/use-local-storage';
-import type { ReadingSession } from '@/lib/types/local-storage';
+import {
+  useLocalStorage,
+  READING_HISTORY_STORAGE_KEY,
+  SAVED_VOCABULARY_STORAGE_KEY,
+} from '@/lib/hooks/use-local-storage';
+import type { ReadingSession, SavedVocabulary } from '@/lib/types/local-storage';
 import { buildSessionData } from '@/lib/utils/reading-session';
 
 type ReadingPhase = 'settings' | 'reading' | 'results' | 'summary';
@@ -74,6 +78,7 @@ export default function ReadingPage() {
   const [error, setError] = useState<string | null>(null);
   const [lastSettings, setLastSettings] = useState<ReadingSettingsValue | null>(null);
   const [vocabPopup, setVocabPopup] = useState<VocabPopupState | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
   const [questions, setQuestions] = useState<ComprehensionQuestion[]>([]);
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
@@ -82,8 +87,11 @@ export default function ReadingPage() {
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const [lastSummary, setLastSummary] = useState<string | null>(null);
 
-  // Hook for saving reading history
+  // Hook for saving history data
   const { add: addReadingHistory } = useLocalStorage<ReadingSession>(READING_HISTORY_STORAGE_KEY);
+  const { add: addVocabularyHistory } = useLocalStorage<SavedVocabulary>(
+    SAVED_VOCABULARY_STORAGE_KEY
+  );
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
     setIsLoading(true);
@@ -108,6 +116,7 @@ export default function ReadingPage() {
   };
 
   const handleWordClick = async (word: string, context: string) => {
+    setIsSaved(false);
     const wordElement = document.querySelector(`[data-testid="word-${word.toLowerCase()}"]`);
     const rect = wordElement?.getBoundingClientRect();
     const position = rect ? { x: rect.left, y: rect.bottom } : { x: 100, y: 100 };
@@ -149,6 +158,13 @@ export default function ReadingPage() {
       handleWordClick(vocabPopup.word, vocabPopup.context);
     }
   }, [vocabPopup]);
+
+  const handleSaveVocabulary = useCallback(() => {
+    if (vocabPopup?.entry) {
+      addVocabularyHistory(vocabPopup.entry);
+      setIsSaved(true);
+    }
+  }, [vocabPopup, addVocabularyHistory]);
 
   const handleClosePopup = useCallback(() => {
     setVocabPopup(null);
@@ -300,6 +316,8 @@ export default function ReadingPage() {
               onClose={handleClosePopup}
               error={vocabPopup.error ?? undefined}
               onRetry={handleRetryVocabulary}
+              onSave={handleSaveVocabulary}
+              isSaved={isSaved}
             />
           )}
         </>

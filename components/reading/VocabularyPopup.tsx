@@ -28,9 +28,9 @@ export type VocabularyPopupProps = {
   /** Callback when the popup is closed */
   onClose: () => void;
   /** Callback when the user saves the word */
-  onSave?: () => void;
+  onSave: () => void;
   /** Whether the word has been saved */
-  isSaved?: boolean;
+  isSaved: boolean;
   /** Error message to display */
   error?: string;
   /** Callback when user clicks retry after an error */
@@ -54,7 +54,6 @@ export function VocabularyPopup({
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log('click outside');
     const handleClickOutside = (event: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
         onClose();
@@ -68,7 +67,6 @@ export function VocabularyPopup({
   }, [onClose]);
 
   useEffect(() => {
-    console.log('key down escape');
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
@@ -158,21 +156,17 @@ export function VocabularyPopup({
                 <p className="italic">&ldquo;{entry.exampleSentence}&rdquo;</p>
               </div>
 
-              {onSave && (
-                <>
-                  <Separator />
+              <Separator />
 
-                  <Button
-                    data-testid="vocab-save-button"
-                    onClick={onSave}
-                    disabled={isSaved}
-                    variant={isSaved ? 'secondary' : 'default'}
-                    className="w-full min-h-11"
-                  >
-                    {isSaved ? '保存済み' : '単語を保存'}
-                  </Button>
-                </>
-              )}
+              <Button
+                data-testid="vocab-save-button"
+                onClick={onSave}
+                disabled={isSaved}
+                variant={isSaved ? 'secondary' : 'default'}
+                className="w-full min-h-11"
+              >
+                {isSaved ? '保存済み' : '単語を保存'}
+              </Button>
             </div>
           )}
         </CardContent>

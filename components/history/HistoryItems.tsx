@@ -1,20 +1,24 @@
 'use client';
 
-import { Attempt } from '@/components/history/Attempt';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect, useState } from 'react';
-import type { SpeakingAttempt } from '@/lib/types/local-storage';
+import type { LocalStorageType, ReadingSession, SpeakingAttempt } from '@/lib/types/local-storage';
+import { ReadingSessionHistory } from './ReadingSessionHistory';
+import { SpeakingAttemptHistory } from './SpeakingAttemptHistory';
 
-export function AttemptHistory({
+interface HistoryItemsProps<T extends LocalStorageType> {
+  history: T[];
+  remove: (id: string) => void;
+  variant: 'reading' | 'speaking';
+}
+
+export function HistoryItems<T extends LocalStorageType>({
   history,
   remove,
-}: {
-  history: SpeakingAttempt[];
-  remove: (id: string) => void;
-}) {
+  variant,
+}: HistoryItemsProps<T>) {
   const [didMount, setDidMount] = useState(false);
-  const [expandedIndex, setExpandedIndex] = useState<number>(0);
 
   useEffect(() => {
     setDidMount(true);
@@ -23,17 +27,14 @@ export function AttemptHistory({
   // Render skeleton during SSR to match initial client render
   if (didMount) {
     return (
-      <div className="mt-4 space-y-4">
-        {history.map((attempt, idx) => (
-          <Attempt
-            key={attempt.id}
-            attempt={attempt}
-            removeAttempt={(id) => remove(id)}
-            isExpanded={expandedIndex === idx}
-            onShow={() => setExpandedIndex(idx)}
-          />
-        ))}
-      </div>
+      <>
+        {variant === 'reading' && (
+          <ReadingSessionHistory readingSession={history as ReadingSession[]} remove={remove} />
+        )}
+        {variant === 'speaking' && (
+          <SpeakingAttemptHistory speakingAttempts={history as SpeakingAttempt[]} remove={remove} />
+        )}
+      </>
     );
   } else {
     return <LoadingSkeleton />;

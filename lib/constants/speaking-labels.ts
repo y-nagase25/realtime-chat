@@ -3,7 +3,7 @@
  */
 export const SPEAKING_LABELS = {
   // ScoringResults
-  result: '結果',
+  result: 'あなたの回答',
   answer: '模範解答',
   goodPoints: '良かった点',
   areasForImprovement: '改善点',

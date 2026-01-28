@@ -3,14 +3,20 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect, useState } from 'react';
-import type { LocalStorageType, ReadingSession, SpeakingAttempt } from '@/lib/types/local-storage';
+import type {
+  LocalStorageType,
+  ReadingSession,
+  SavedVocabulary,
+  SpeakingAttempt,
+} from '@/lib/types/local-storage';
 import { ReadingSessionHistory } from './ReadingSessionHistory';
 import { SpeakingAttemptHistory } from './SpeakingAttemptHistory';
+import { VocabularyHistory } from './VocabularyHistory';
 
 interface HistoryItemsProps<T extends LocalStorageType> {
   history: T[];
   remove: (id: string) => void;
-  variant: 'reading' | 'speaking';
+  variant: 'reading' | 'speaking' | 'vocabulary';
 }
 
 export function HistoryItems<T extends LocalStorageType>({
@@ -33,6 +39,9 @@ export function HistoryItems<T extends LocalStorageType>({
         )}
         {variant === 'speaking' && (
           <SpeakingAttemptHistory speakingAttempts={history as SpeakingAttempt[]} remove={remove} />
+        )}
+        {variant === 'vocabulary' && (
+          <VocabularyHistory vocabularyHistory={history as SavedVocabulary[]} remove={remove} />
         )}
       </>
     );

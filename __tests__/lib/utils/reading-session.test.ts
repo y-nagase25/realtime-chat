@@ -4,43 +4,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { calculateWpm, buildSessionData } from '@/lib/utils/reading-session';
+import { buildSessionData } from '@/lib/utils/reading-session';
 import type { Passage, MultipleChoiceQuestion, TrueFalseQuestion } from '@/lib/types/reading';
 import type { QuestionResult } from '@/components/reading/QuestionResults';
-
-describe('calculateWpm', () => {
-  it('calculates WPM correctly for typical reading speed', () => {
-    // 300 words in 120 seconds = 150 WPM
-    expect(calculateWpm(300, 120)).toBe(150);
-  });
-
-  it('returns 0 when readingTimeSeconds is 0', () => {
-    expect(calculateWpm(300, 0)).toBe(0);
-  });
-
-  it('returns 0 when readingTimeSeconds is negative', () => {
-    expect(calculateWpm(300, -10)).toBe(0);
-  });
-
-  it('rounds WPM to the nearest integer', () => {
-    // 200 words in 90 seconds = 133.33... WPM, should round to 133
-    expect(calculateWpm(200, 90)).toBe(133);
-  });
-
-  it('handles very fast reading (high WPM)', () => {
-    // 500 words in 60 seconds = 500 WPM
-    expect(calculateWpm(500, 60)).toBe(500);
-  });
-
-  it('handles very slow reading (low WPM)', () => {
-    // 50 words in 300 seconds = 10 WPM
-    expect(calculateWpm(50, 300)).toBe(10);
-  });
-
-  it('returns 0 when wordCount is 0', () => {
-    expect(calculateWpm(0, 120)).toBe(0);
-  });
-});
 
 describe('buildSessionData', () => {
   const mockPassage: Passage = {
@@ -78,19 +44,16 @@ describe('buildSessionData', () => {
       { question: mockTrueFalseQuestion, userAnswer: true, isCorrect: true },
     ];
 
-    const sessionData = buildSessionData(mockPassage, 120, results, ['vocabulary', 'words']);
+    const sessionData = buildSessionData(mockPassage, results);
 
     expect(sessionData).toEqual({
       level: 'B1',
       topic: 'daily-life',
       passageTitle: 'Test Passage Title',
       wordCount: 250,
-      readingTimeSeconds: 120,
-      wordsPerMinute: 125, // 250 words / 2 minutes
       questionsTotal: 2,
       questionsCorrect: 2,
       scorePercentage: 100,
-      savedWords: ['vocabulary', 'words'],
     });
   });
 
@@ -100,7 +63,7 @@ describe('buildSessionData', () => {
       { question: mockTrueFalseQuestion, userAnswer: false, isCorrect: false },
     ];
 
-    const sessionData = buildSessionData(mockPassage, 180, results, []);
+    const sessionData = buildSessionData(mockPassage, results);
 
     expect(sessionData.questionsTotal).toBe(2);
     expect(sessionData.questionsCorrect).toBe(1);
@@ -113,52 +76,18 @@ describe('buildSessionData', () => {
       { question: mockTrueFalseQuestion, userAnswer: false, isCorrect: false },
     ];
 
-    const sessionData = buildSessionData(mockPassage, 120, results, []);
+    const sessionData = buildSessionData(mockPassage, results);
 
     expect(sessionData.questionsCorrect).toBe(0);
     expect(sessionData.scorePercentage).toBe(0);
   });
 
   it('handles empty results array', () => {
-    const sessionData = buildSessionData(mockPassage, 120, [], []);
+    const sessionData = buildSessionData(mockPassage, []);
 
     expect(sessionData.questionsTotal).toBe(0);
     expect(sessionData.questionsCorrect).toBe(0);
     expect(sessionData.scorePercentage).toBe(0);
-  });
-
-  it('removes duplicate saved words', () => {
-    const results: QuestionResult[] = [
-      { question: mockMultipleChoiceQuestion, userAnswer: 0, isCorrect: true },
-    ];
-
-    const sessionData = buildSessionData(mockPassage, 120, results, [
-      'apple',
-      'banana',
-      'apple', // duplicate
-      'cherry',
-      'banana', // duplicate
-    ]);
-
-    expect(sessionData.savedWords).toEqual(['apple', 'banana', 'cherry']);
-  });
-
-  it('calculates WPM correctly based on passage word count and reading time', () => {
-    const results: QuestionResult[] = [];
-
-    // 250 words in 150 seconds = 100 WPM
-    const sessionData = buildSessionData(mockPassage, 150, results, []);
-
-    expect(sessionData.wordsPerMinute).toBe(100);
-  });
-
-  it('handles zero reading time gracefully', () => {
-    const results: QuestionResult[] = [];
-
-    const sessionData = buildSessionData(mockPassage, 0, results, []);
-
-    expect(sessionData.wordsPerMinute).toBe(0);
-    expect(sessionData.readingTimeSeconds).toBe(0);
   });
 
   it('rounds score percentage to integer', () => {
@@ -173,7 +102,7 @@ describe('buildSessionData', () => {
     ];
 
     // 2 out of 3 = 66.67% -> should round to 67%
-    const sessionData = buildSessionData(mockPassage, 120, results, []);
+    const sessionData = buildSessionData(mockPassage, results);
 
     expect(sessionData.scorePercentage).toBe(67);
   });
@@ -188,7 +117,7 @@ describe('buildSessionData', () => {
       grammarFocus: 'passive-voice',
     };
 
-    const sessionData = buildSessionData(passageWithGrammar, 300, [], []);
+    const sessionData = buildSessionData(passageWithGrammar, []);
 
     expect(sessionData.level).toBe('C1');
     expect(sessionData.topic).toBe('science');

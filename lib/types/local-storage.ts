@@ -15,12 +15,9 @@ export interface ReadingSession extends LocalStorageBase {
   topic: ReadingTopicId;
   passageTitle: string;
   wordCount: number;
-  readingTimeSeconds: number;
-  wordsPerMinute: number;
   questionsTotal: number;
   questionsCorrect: number;
   scorePercentage: number;
-  savedWords: string[];
 }
 
 /**

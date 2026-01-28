@@ -30,12 +30,9 @@ export function Histories() {
       topic: 'daily-life',
       passageTitle: 'Passage Title',
       wordCount: 100,
-      readingTimeSeconds: 100,
-      wordsPerMinute: 100,
       questionsTotal: 100,
       questionsCorrect: 100,
       scorePercentage: 100,
-      savedWords: ['word1', 'word2', 'word3'],
     };
     addReadingHistory(data);
   };

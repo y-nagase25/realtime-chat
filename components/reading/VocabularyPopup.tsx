@@ -28,7 +28,7 @@ export type VocabularyPopupProps = {
   /** Callback when the popup is closed */
   onClose: () => void;
   /** Callback when the user saves the word */
-  onSave: () => void;
+  onSave?: () => void;
   /** Whether the word has been saved */
   isSaved?: boolean;
   /** Error message to display */
@@ -158,17 +158,21 @@ export function VocabularyPopup({
                 <p className="italic">&ldquo;{entry.exampleSentence}&rdquo;</p>
               </div>
 
-              <Separator />
+              {onSave && (
+                <>
+                  <Separator />
 
-              <Button
-                data-testid="vocab-save-button"
-                onClick={onSave}
-                disabled={isSaved}
-                variant={isSaved ? 'secondary' : 'default'}
-                className="w-full min-h-11"
-              >
-                {isSaved ? '保存済み' : '単語を保存'}
-              </Button>
+                  <Button
+                    data-testid="vocab-save-button"
+                    onClick={onSave}
+                    disabled={isSaved}
+                    variant={isSaved ? 'secondary' : 'default'}
+                    className="w-full min-h-11"
+                  >
+                    {isSaved ? '保存済み' : '単語を保存'}
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </CardContent>

@@ -22,20 +22,12 @@ export type QuestionResult = {
 
 /**
  * Props for the QuestionResults component
- *
- * Note: The new props (passage, readingTimeSeconds, savedWords, onSaveHistory)
- * are optional for backward compatibility during migration.
- * When onSaveHistory is provided, it will be used instead of onNewPassage.
  */
 export type QuestionResultsProps = {
   /** Array of question results */
   results: QuestionResult[];
-  /** The passage that was read (required for history saving) */
+  /** The passage that was read */
   passage?: Passage;
-  /** Time spent reading in seconds (required for history saving) */
-  readingTimeSeconds?: number;
-  /** Words saved during the session (required for history saving) */
-  savedWords?: string[];
   /** Callback when user wants to save history and complete (new API) */
   onSaveHistory?: () => void;
   /**
@@ -51,8 +43,6 @@ export type QuestionResultsProps = {
 export function QuestionResults({
   results,
   passage: _passage,
-  readingTimeSeconds: _readingTimeSeconds,
-  savedWords: _savedWords,
   onSaveHistory,
   onNewPassage,
 }: QuestionResultsProps) {

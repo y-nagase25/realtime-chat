@@ -37,7 +37,6 @@ type VocabPopupState = {
   entry: VocabularyEntry | null;
   isLoading: boolean;
   position: { x: number; y: number };
-  isSaved: boolean;
   error: string | null;
   context: string;
 };
@@ -83,11 +82,6 @@ export default function ReadingPage() {
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const [lastSummary, setLastSummary] = useState<string | null>(null);
 
-  // State for reading history tracking
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [savedWords, setSavedWords] = useState<string[]>([]);
-  const [capturedReadingTime, setCapturedReadingTime] = useState(0);
-
   // Hook for saving reading history
   const { add: addReadingHistory } = useLocalStorage<ReadingSession>(READING_HISTORY_STORAGE_KEY);
 
@@ -123,7 +117,6 @@ export default function ReadingPage() {
       entry: null,
       isLoading: true,
       position,
-      isSaved: false,
       error: null,
       context,
     });
@@ -161,26 +154,8 @@ export default function ReadingPage() {
     setVocabPopup(null);
   }, []);
 
-  const handleSaveWord = useCallback(() => {
-    setVocabPopup((prev) => {
-      if (prev?.word) {
-        // Add word to savedWords, avoiding duplicates
-        setSavedWords((words) => {
-          if (words.includes(prev.word)) {
-            return words;
-          }
-          return [...words, prev.word];
-        });
-      }
-      return prev ? { ...prev, isSaved: true } : null;
-    });
-  }, []);
-
   const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
     setIsSubmittingAnswers(true);
-
-    // Capture reading time at the moment of submission
-    setCapturedReadingTime(elapsedSeconds);
 
     const regularQuestions = questions.filter((q) => q.type !== 'summary');
     const results = regularQuestions.map((question) => {
@@ -208,9 +183,6 @@ export default function ReadingPage() {
     setQuestions([]);
     setQuestionResults([]);
     setSummaryFeedback(null);
-    setElapsedSeconds(0);
-    setSavedWords([]);
-    setCapturedReadingTime(0);
     setPhase('settings');
   }, []);
 
@@ -226,12 +198,7 @@ export default function ReadingPage() {
 
     try {
       // Build session data and save to localStorage
-      const sessionData = buildSessionData(
-        passage,
-        capturedReadingTime,
-        questionResults,
-        savedWords
-      );
+      const sessionData = buildSessionData(passage, questionResults);
       addReadingHistory(sessionData);
     } catch {
       // Log error but continue with navigation
@@ -240,7 +207,7 @@ export default function ReadingPage() {
 
     // Reset state and navigate to settings
     resetState();
-  }, [passage, capturedReadingTime, questionResults, savedWords, addReadingHistory, resetState]);
+  }, [passage, questionResults, addReadingHistory, resetState]);
 
   const handleSubmitSummary = async (summary: string) => {
     if (!passage) return;
@@ -312,12 +279,7 @@ export default function ReadingPage() {
             highlightGrammar={!!passage.grammarFocus}
           />
           <div className="mt-4">
-            <ReadingTimer
-              isRunning={true}
-              wordCount={passage.wordCount}
-              level={passage.level}
-              onTimeUpdate={setElapsedSeconds}
-            />
+            <ReadingTimer isRunning={true} wordCount={passage.wordCount} level={passage.level} />
           </div>
           {questions.length > 0 && (
             <div className="mt-6">
@@ -336,8 +298,6 @@ export default function ReadingPage() {
               isLoading={vocabPopup.isLoading}
               position={vocabPopup.position}
               onClose={handleClosePopup}
-              onSave={handleSaveWord}
-              isSaved={vocabPopup.isSaved}
               error={vocabPopup.error ?? undefined}
               onRetry={handleRetryVocabulary}
             />
@@ -349,8 +309,6 @@ export default function ReadingPage() {
         <QuestionResults
           results={questionResults}
           passage={passage}
-          readingTimeSeconds={capturedReadingTime}
-          savedWords={savedWords}
           onSaveHistory={handleComplete}
         />
       )}

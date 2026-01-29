@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { validateCsrfToken, CSRF_COOKIE_NAME, CSRF_HEADER_NAME } from '@/lib/csrf';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { checkOpenAIUsage } from '@/lib/rate-limit/api';
 
 /**
  * Protected API endpoints that require CSRF validation
@@ -70,6 +71,11 @@ export async function proxy(request: NextRequest) {
   // Only process protected endpoints with POST method
   if (!isProtectedEndpoint(pathname) || request.method !== 'POST') {
     return NextResponse.next();
+  }
+
+  const result = await checkOpenAIUsage();
+  if (!result.allowed) {
+    return createErrorResponse(429, 'Usage Limit Exceeded', 'Retry after next 24 hours');
   }
 
   const clientIp = getClientIp(request);

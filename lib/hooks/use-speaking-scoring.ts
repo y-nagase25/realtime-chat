@@ -15,7 +15,7 @@ import type {
 import { apiPost, apiPostFormData } from '@/lib/api-client';
 import { RateLimitError } from '@/lib/errors';
 import { toast } from 'sonner';
-import { EXCEEDED_USAGE_LIMIT_MSG } from '../costants';
+import { EXCEEDED_USAGE_LIMIT_MSG } from '../constants';
 
 export interface UseSpeakingScoringOptions {
   questionId: number;

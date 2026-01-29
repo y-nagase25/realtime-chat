@@ -5,25 +5,24 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-const ROUTES = {
-  HOME: '/',
-  SPEAKING: '/speaking',
-} as const;
+const ROUTES = [
+  { label: 'Reading', href: '/reading' },
+  { label: 'Speaking', href: '/speaking' },
+  { label: 'History', href: '/history' },
+];
 
 export function Header() {
-  const isDev = process.env.NODE_ENV === 'development';
   const pathname = usePathname();
 
   const isActiveLink = (href: string): boolean => {
-    if (href === ROUTES.HOME) return pathname === ROUTES.HOME;
     return pathname.startsWith(href);
   };
 
   return (
-    <header className={cn('mx-auto rounded-md border px-4', isDev && 'bg-muted-foreground')}>
+    <header className="mx-auto rounded-md border px-4">
       <nav className="flex items-center justify-between py-4">
         <div className="flex items-center space-x-8">
-          <Link href={ROUTES.HOME}>
+          <Link href="/">
             <Image
               src="/aigo-header.png"
               alt="AI-GO Logo"
@@ -39,15 +38,18 @@ export function Header() {
             />
           </Link>
           <div className="flex items-center space-x-8">
-            <Link
-              href={ROUTES.SPEAKING}
-              className={cn(
-                'transition-colors',
-                isActiveLink(ROUTES.SPEAKING) && 'border-b border-primary'
-              )}
-            >
-              Speaking
-            </Link>
+            {ROUTES.map((route) => (
+              <Link
+                key={route.href}
+                href={route.href}
+                className={cn(
+                  'transition-colors',
+                  isActiveLink(route.href) && 'border-b border-primary'
+                )}
+              >
+                {route.label}
+              </Link>
+            ))}
           </div>
         </div>
       </nav>

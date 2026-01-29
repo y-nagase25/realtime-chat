@@ -2,21 +2,17 @@
  * Scoring utility functions
  */
 
-import type { SessionStats, SpeakingAttempt } from '@/lib/types/speaking';
+import type { ScoringRequest } from '@/lib/types/speaking';
 
 /**
  * Build scoring prompt for GPT-4o
  */
-export function buildScoringPrompt(
-  questionText: string,
-  modelAnswer: string,
-  userTranscript: string
-): string {
+export function buildScoringPrompt(scoringRequest: ScoringRequest): string {
   return `あなたは英語スピーキング指導者として、ユーザーの音声回答を書き起こしたテキストを評価します。
 
-質問: ${questionText}
-模範解答: ${modelAnswer}
-ユーザーの書き起こし回答: ${userTranscript}
+質問: ${scoringRequest.questionText}
+模範解答: ${scoringRequest.modelAnswer}
+ユーザーの書き起こし回答: ${scoringRequest.userTranscript}
 
 ユーザーの回答テキストと模範解答テキストを比較し、以下の観点で評価してください:
 1. 文法の正確性 - ユーザーの回答に文法的な誤りはないか?
@@ -52,28 +48,4 @@ export function getScoreBadgeClass(score: number): string {
     return 'bg-yellow-100 text-yellow-800 border-yellow-500 dark:bg-yellow-900 dark:text-yellow-200';
   }
   return 'bg-red-100 text-red-800 border-red-500 dark:bg-red-900 dark:text-red-200';
-}
-
-/**
- * Calculate session statistics from all attempts
- */
-export function calculateSessionStats(attempts: SpeakingAttempt[]): SessionStats {
-  if (attempts.length === 0) {
-    return {
-      totalAttempts: 0,
-      averageScore: 0,
-      bestScore: 0,
-      latestScore: null,
-    };
-  }
-
-  const scores = attempts.map((a) => a.score);
-  const totalScore = scores.reduce((sum, score) => sum + score, 0);
-
-  return {
-    totalAttempts: attempts.length,
-    averageScore: totalScore / attempts.length,
-    bestScore: Math.max(...scores),
-    latestScore: attempts[attempts.length - 1]?.score ?? null,
-  };
 }

@@ -213,6 +213,7 @@ describe('Responsive Design', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const popup = screen.getByTestId('vocabulary-popup');

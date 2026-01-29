@@ -7,18 +7,11 @@
 
 'use client';
 
-import { useState } from 'react';
-import type { SummaryQuestion, SummaryFeedback } from '@/lib/types/reading';
+import type { SummaryQuestion } from '@/lib/types/reading';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { SummaryFeedbackDisplay } from '@/components/reading/SummaryFeedbackDisplay';
-import { apiPost } from '@/lib/api-client';
-
-type ApiResponse<T> = {
-  success: boolean;
-  data: T;
-  error?: string;
-};
+import { useSummaryEvaluation } from '@/lib/hooks/use-summary-evaluation';
 
 type SummaryQuestionInputProps = {
   question: SummaryQuestion;
@@ -26,10 +19,7 @@ type SummaryQuestionInputProps = {
 };
 
 export function SummaryQuestionInput({ question, passageContent }: SummaryQuestionInputProps) {
-  const [text, setText] = useState('');
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const [feedback, setFeedback] = useState<SummaryFeedback | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { text, setText, feedback, isEvaluating, error, submitSummary } = useSummaryEvaluation();
 
   const minLength = question.minLength || 50;
   const trimmedLength = text.trim().length;
@@ -38,25 +28,7 @@ export function SummaryQuestionInput({ question, passageContent }: SummaryQuesti
   const handleSubmit = async () => {
     if (!canSubmit) return;
 
-    setIsEvaluating(true);
-    setError(null);
-
-    try {
-      const data = await apiPost<ApiResponse<SummaryFeedback>>('/api/reading/evaluate-summary', {
-        passage: passageContent,
-        userSummary: text.trim(),
-      });
-
-      if (data.success) {
-        setFeedback(data.data);
-      } else {
-        setError(data.error || '評価に失敗しました。もう一度お試しください。');
-      }
-    } catch {
-      setError('評価に失敗しました。もう一度お試しください。');
-    } finally {
-      setIsEvaluating(false);
-    }
+    await submitSummary(passageContent);
   };
 
   return (

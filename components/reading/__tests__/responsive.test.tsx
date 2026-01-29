@@ -15,7 +15,6 @@ import { VocabularyPopup } from '../VocabularyPopup';
 import { ComprehensionQuestions } from '../ComprehensionQuestions';
 import { QuestionResults } from '../QuestionResults';
 import { ReadingTimer } from '../ReadingTimer';
-import { SummaryWriting } from '../SummaryWriting';
 import { ErrorMessage } from '../ErrorMessage';
 import type { Passage, ComprehensionQuestion, VocabularyEntry } from '@/lib/types/reading';
 
@@ -58,6 +57,7 @@ describe('Responsive Design', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const closeButton = screen.getByTestId('vocab-close-button');
@@ -73,6 +73,7 @@ describe('Responsive Design', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const saveButton = screen.getByTestId('vocab-save-button');
@@ -140,14 +141,6 @@ describe('Responsive Design', () => {
         render(<QuestionResults results={mockResults} onNewPassage={vi.fn()} />);
         const button = screen.getByTestId('new-passage-button');
         expect(button.className).toMatch(/min-h-11|h-11/);
-      });
-    });
-
-    describe('SummaryWriting', () => {
-      it('should have adequate touch target on submit button', () => {
-        render(<SummaryWriting onSubmit={vi.fn()} isEvaluating={false} feedback={null} />);
-        const submitButton = screen.getByTestId('submit-summary-button');
-        expect(submitButton.className).toMatch(/min-h-11|h-11/);
       });
     });
 

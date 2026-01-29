@@ -15,41 +15,18 @@ import {
 } from '@/components/reading/ComprehensionQuestions';
 import { QuestionResults, type QuestionResult } from '@/components/reading/QuestionResults';
 import { ReadingTimer } from '@/components/reading/ReadingTimer';
-import { SummaryWriting } from '@/components/reading/SummaryWriting';
 import { PassageSkeleton } from '@/components/reading/PassageSkeleton';
 import { ErrorMessage } from '@/components/reading/ErrorMessage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type {
-  Passage,
-  VocabularyEntry,
-  ComprehensionQuestion,
-  SummaryFeedback,
-} from '@/lib/types/reading';
+import type { Passage, ComprehensionQuestion } from '@/lib/types/reading';
+import type { ReadingSession } from '@/lib/types/local-storage';
+import type { ApiResponse } from '@/lib/types/api';
 import { apiPost } from '@/lib/api-client';
-import {
-  useLocalStorage,
-  READING_HISTORY_STORAGE_KEY,
-  SAVED_VOCABULARY_STORAGE_KEY,
-} from '@/lib/hooks/use-local-storage';
-import type { ReadingSession, SavedVocabulary } from '@/lib/types/local-storage';
+import { useLocalStorage, READING_HISTORY_STORAGE_KEY } from '@/lib/hooks/use-local-storage';
+import { useVocabPopup } from '@/lib/hooks/use-vocab-popup';
 import { buildSessionData } from '@/lib/utils/reading-session';
 
 type ReadingPhase = 'settings' | 'reading' | 'results' | 'summary';
-
-type VocabPopupState = {
-  word: string;
-  entry: VocabularyEntry | null;
-  isLoading: boolean;
-  position: { x: number; y: number };
-  error: string | null;
-  context: string;
-};
-
-type ApiResponse<T> = {
-  success: boolean;
-  data: T;
-  error?: string;
-};
 
 /**
  * Check if user's answer is correct for a given question
@@ -77,21 +54,20 @@ export default function ReadingPage() {
   const [passage, setPassage] = useState<Passage | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastSettings, setLastSettings] = useState<ReadingSettingsValue | null>(null);
-  const [vocabPopup, setVocabPopup] = useState<VocabPopupState | null>(null);
-  const [isSaved, setIsSaved] = useState(false);
   const [questions, setQuestions] = useState<ComprehensionQuestion[]>([]);
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
-  const [summaryFeedback, setSummaryFeedback] = useState<SummaryFeedback | null>(null);
-  const [isEvaluatingSummary, setIsEvaluatingSummary] = useState(false);
-  const [summaryError, setSummaryError] = useState<string | null>(null);
-  const [lastSummary, setLastSummary] = useState<string | null>(null);
 
-  // Hook for saving history data
+  // Custom hooks
   const { add: addReadingHistory } = useLocalStorage<ReadingSession>(READING_HISTORY_STORAGE_KEY);
-  const { add: addVocabularyHistory } = useLocalStorage<SavedVocabulary>(
-    SAVED_VOCABULARY_STORAGE_KEY
-  );
+  const {
+    vocabPopup,
+    isSaved,
+    handleWordClick,
+    handleRetry: handleRetryVocabulary,
+    handleSave: handleSaveVocabulary,
+    handleClose: handleClosePopup,
+  } = useVocabPopup();
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
     setIsLoading(true);
@@ -114,61 +90,6 @@ export default function ReadingPage() {
       setIsLoading(false);
     }
   };
-
-  const handleWordClick = async (word: string, context: string) => {
-    setIsSaved(false);
-    const wordElement = document.querySelector(`[data-testid="word-${word.toLowerCase()}"]`);
-    const rect = wordElement?.getBoundingClientRect();
-    const position = rect ? { x: rect.left, y: rect.bottom } : { x: 100, y: 100 };
-
-    setVocabPopup({
-      word,
-      entry: null,
-      isLoading: true,
-      position,
-      error: null,
-      context,
-    });
-
-    try {
-      const data = await apiPost<ApiResponse<VocabularyEntry>>('/api/reading/vocabulary', {
-        word,
-        context,
-      });
-
-      if (data.success) {
-        setVocabPopup((prev) => (prev ? { ...prev, entry: data.data, isLoading: false } : null));
-      } else {
-        setVocabPopup((prev) =>
-          prev
-            ? { ...prev, isLoading: false, error: data.error || '単語の検索に失敗しました' }
-            : null
-        );
-      }
-    } catch {
-      setVocabPopup((prev) =>
-        prev ? { ...prev, isLoading: false, error: '単語の検索に失敗しました' } : null
-      );
-    }
-  };
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: handleWordClick depends on state and doesn't need to be in deps
-  const handleRetryVocabulary = useCallback(() => {
-    if (vocabPopup) {
-      handleWordClick(vocabPopup.word, vocabPopup.context);
-    }
-  }, [vocabPopup]);
-
-  const handleSaveVocabulary = useCallback(() => {
-    if (vocabPopup?.entry) {
-      addVocabularyHistory(vocabPopup.entry);
-      setIsSaved(true);
-    }
-  }, [vocabPopup, addVocabularyHistory]);
-
-  const handleClosePopup = useCallback(() => {
-    setVocabPopup(null);
-  }, []);
 
   const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
     setIsSubmittingAnswers(true);
@@ -198,7 +119,6 @@ export default function ReadingPage() {
     setPassage(null);
     setQuestions([]);
     setQuestionResults([]);
-    setSummaryFeedback(null);
     setPhase('settings');
   }, []);
 
@@ -224,37 +144,6 @@ export default function ReadingPage() {
     // Reset state and navigate to settings
     resetState();
   }, [passage, questionResults, addReadingHistory, resetState]);
-
-  const handleSubmitSummary = async (summary: string) => {
-    if (!passage) return;
-
-    setIsEvaluatingSummary(true);
-    setSummaryError(null);
-    setLastSummary(summary);
-
-    try {
-      const data = await apiPost<ApiResponse<SummaryFeedback>>('/api/reading/evaluate-summary', {
-        passage: passage.content,
-        userSummary: summary,
-      });
-
-      if (data.success) {
-        setSummaryFeedback(data.data);
-      } else {
-        setSummaryError(data.error || '要約の評価に失敗しました');
-      }
-    } catch {
-      setSummaryError('要約の評価に失敗しました');
-    } finally {
-      setIsEvaluatingSummary(false);
-    }
-  };
-
-  const handleRetrySummary = () => {
-    if (lastSummary) {
-      handleSubmitSummary(lastSummary);
-    }
-  };
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -328,16 +217,6 @@ export default function ReadingPage() {
           results={questionResults}
           passage={passage}
           onSaveHistory={handleComplete}
-        />
-      )}
-
-      {phase === 'summary' && (
-        <SummaryWriting
-          onSubmit={handleSubmitSummary}
-          isEvaluating={isEvaluatingSummary}
-          feedback={summaryFeedback}
-          error={summaryError ?? undefined}
-          onRetry={handleRetrySummary}
         />
       )}
     </div>

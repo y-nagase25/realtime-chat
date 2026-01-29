@@ -14,7 +14,6 @@ import { PassageDisplay } from '../PassageDisplay';
 import { VocabularyPopup } from '../VocabularyPopup';
 import { ComprehensionQuestions } from '../ComprehensionQuestions';
 import { QuestionResults } from '../QuestionResults';
-import { SummaryWriting } from '../SummaryWriting';
 import { PassageSkeleton } from '../PassageSkeleton';
 import type { Passage, ComprehensionQuestion, VocabularyEntry } from '@/lib/types/reading';
 
@@ -64,16 +63,6 @@ describe('UI Polish', () => {
         expect(cardContent).toBeInTheDocument();
       });
     });
-
-    describe('SummaryWriting', () => {
-      it('should have consistent vertical spacing using space-y-4', () => {
-        const { container } = render(
-          <SummaryWriting onSubmit={vi.fn()} isEvaluating={false} feedback={null} />
-        );
-        const cardContent = container.querySelector('.space-y-4');
-        expect(cardContent).toBeInTheDocument();
-      });
-    });
   });
 
   describe('Smooth Transitions', () => {
@@ -96,6 +85,7 @@ describe('UI Polish', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const popup = screen.getByTestId('vocabulary-popup');
@@ -207,14 +197,6 @@ describe('UI Polish', () => {
       });
     });
 
-    describe('SummaryWriting', () => {
-      it('should have proper title typography', () => {
-        render(<SummaryWriting onSubmit={vi.fn()} isEvaluating={false} feedback={null} />);
-        const title = screen.getByTestId('summary-title');
-        expect(title.className).toMatch(/text-xl|font-bold/);
-      });
-    });
-
     describe('ComprehensionQuestions', () => {
       const mockQuestions: ComprehensionQuestion[] = [
         {
@@ -308,13 +290,6 @@ describe('UI Polish', () => {
         );
         expect(container.querySelector('[data-testid="question-results"]')).toBeInTheDocument();
       });
-
-      it('should use Card component for SummaryWriting', () => {
-        const { container } = render(
-          <SummaryWriting onSubmit={vi.fn()} isEvaluating={false} feedback={null} />
-        );
-        expect(container.querySelector('[data-testid="summary-writing"]')).toBeInTheDocument();
-      });
     });
 
     describe('Muted Text Colors', () => {
@@ -330,14 +305,6 @@ describe('UI Polish', () => {
         };
         const { container } = render(
           <PassageDisplay passage={mockPassage} onWordClick={vi.fn()} />
-        );
-        const mutedElements = container.querySelectorAll('.text-muted-foreground');
-        expect(mutedElements.length).toBeGreaterThan(0);
-      });
-
-      it('should use text-muted-foreground for secondary text in SummaryWriting', () => {
-        const { container } = render(
-          <SummaryWriting onSubmit={vi.fn()} isEvaluating={false} feedback={null} />
         );
         const mutedElements = container.querySelectorAll('.text-muted-foreground');
         expect(mutedElements.length).toBeGreaterThan(0);
@@ -374,12 +341,6 @@ describe('UI Polish', () => {
         const button = screen.getByTestId('submit-answers-button');
         expect(button.className).toMatch(/w-full/);
       });
-
-      it('should use full-width submit button in SummaryWriting', () => {
-        render(<SummaryWriting onSubmit={vi.fn()} isEvaluating={false} feedback={null} />);
-        const button = screen.getByTestId('submit-summary-button');
-        expect(button.className).toMatch(/w-full/);
-      });
     });
   });
 
@@ -389,14 +350,6 @@ describe('UI Polish', () => {
         render(<ReadingSettings onSubmit={vi.fn()} isLoading={true} />);
         const button = screen.getByTestId('generate-button');
         expect(button).toHaveTextContent('生成中...');
-      });
-    });
-
-    describe('SummaryWriting', () => {
-      it('should show loading text on button when evaluating', () => {
-        render(<SummaryWriting onSubmit={vi.fn()} isEvaluating={true} feedback={null} />);
-        const button = screen.getByTestId('submit-summary-button');
-        expect(button).toHaveTextContent('評価中...');
       });
     });
 
@@ -410,6 +363,7 @@ describe('UI Polish', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const loadingContainer = screen.getByTestId('vocab-loading');

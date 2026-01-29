@@ -15,7 +15,6 @@ import { VocabularyPopup } from '../VocabularyPopup';
 import { ComprehensionQuestions } from '../ComprehensionQuestions';
 import { QuestionResults } from '../QuestionResults';
 import { ReadingTimer } from '../ReadingTimer';
-import { SummaryWriting } from '../SummaryWriting';
 import { ErrorMessage } from '../ErrorMessage';
 import type { Passage, ComprehensionQuestion, VocabularyEntry } from '@/lib/types/reading';
 
@@ -70,6 +69,7 @@ describe('Accessibility', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const popup = screen.getByTestId('vocabulary-popup');
@@ -85,6 +85,7 @@ describe('Accessibility', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const popup = screen.getByTestId('vocabulary-popup');
@@ -100,6 +101,7 @@ describe('Accessibility', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const closeButton = screen.getByTestId('vocab-close-button');
@@ -115,6 +117,7 @@ describe('Accessibility', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const loadingIndicator = screen.getByTestId('vocab-loading');
@@ -160,20 +163,6 @@ describe('Accessibility', () => {
         render(<ReadingTimer isRunning={true} wordCount={100} level="A2" />);
         const timer = screen.getByTestId('reading-timer');
         expect(timer).toHaveAttribute('aria-label');
-      });
-    });
-
-    describe('SummaryWriting', () => {
-      it('should have aria-label on textarea', () => {
-        render(<SummaryWriting onSubmit={vi.fn()} isEvaluating={false} feedback={null} />);
-        const textarea = screen.getByTestId('summary-textarea');
-        expect(textarea).toHaveAttribute('aria-label');
-      });
-
-      it('should have aria-busy on submit button when evaluating', () => {
-        render(<SummaryWriting onSubmit={vi.fn()} isEvaluating={true} feedback={null} />);
-        const submitButton = screen.getByTestId('submit-summary-button');
-        expect(submitButton).toHaveAttribute('aria-busy', 'true');
       });
     });
 
@@ -231,6 +220,7 @@ describe('Accessibility', () => {
             position={{ x: 100, y: 100 }}
             onClose={onClose}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
 
@@ -247,6 +237,7 @@ describe('Accessibility', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
 
@@ -347,6 +338,7 @@ describe('Accessibility', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const closeButton = screen.getByTestId('vocab-close-button');
@@ -392,6 +384,7 @@ describe('Accessibility', () => {
             position={{ x: 100, y: 100 }}
             onClose={vi.fn()}
             onSave={vi.fn()}
+            isSaved={false}
           />
         );
         const loadingText = screen.getByText('読み込み中...');

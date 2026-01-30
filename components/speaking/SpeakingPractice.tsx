@@ -8,7 +8,6 @@
 import { useCallback } from 'react';
 import type { Question } from '@/lib/types/db';
 import { useSpeakingScoring } from '@/lib/hooks/use-speaking-scoring';
-import { useAttemptHistory } from '@/lib/hooks/use-attempt-history';
 import { AudioRecorder } from './AudioRecorder';
 import { TranscriptDisplay } from './TranscriptDisplay';
 import { ScoringResults } from './ScoringResults';
@@ -17,13 +16,15 @@ import { Spinner } from '@/components/ui/spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
+import { SPEAKING_ATTEMPTS_STORAGE_KEY, useLocalStorage } from '@/lib/hooks/use-local-storage';
+import type { SpeakingAttempt } from '@/lib/types/local-storage';
 
 interface SpeakingPracticeProps {
   question: Question;
 }
 
 export function SpeakingPractice({ question }: SpeakingPracticeProps) {
-  const { addAttempt } = useAttemptHistory();
+  const { add: addAttempt } = useLocalStorage<SpeakingAttempt>(SPEAKING_ATTEMPTS_STORAGE_KEY);
 
   const { state, transcript, scoringResult, error, transcribeAudio, requestScoring, reset } =
     useSpeakingScoring({
@@ -76,7 +77,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
         <Alert variant="destructive">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertDescription>
-            <div className="font-medium">Error: {error}</div>
+            <div className="font-medium">{error}</div>
             <Button variant="outline" size="sm" className="mt-2" onClick={reset}>
               {SPEAKING_LABELS.tryAgain}
             </Button>

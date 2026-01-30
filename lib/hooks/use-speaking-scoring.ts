@@ -14,8 +14,8 @@ import type {
 } from '@/lib/types/speaking';
 import { apiPost, apiPostFormData } from '@/lib/api-client';
 import { RateLimitError } from '@/lib/errors';
-import { toast } from 'sonner';
-import { EXCEEDED_USAGE_LIMIT_MSG } from '../costants';
+import { EXCEEDED_USAGE_LIMIT_MSG } from '@/lib/constants';
+import { useToast } from '@/lib/hooks/use-toast';
 
 export interface UseSpeakingScoringOptions {
   questionId: number;
@@ -108,51 +108,55 @@ export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeak
   const [transcript, setTranscript] = useState<string | null>(null);
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { showToast: showExceededUsageLimitToast } = useToast(EXCEEDED_USAGE_LIMIT_MSG, 'warning');
 
   /**
    * Transcribe audio using Whisper API
    */
-  const transcribeAudio = useCallback(async (audioBlob: Blob) => {
-    dispatch({ type: 'STOP_RECORDING' });
-    setError(null);
+  const transcribeAudio = useCallback(
+    async (audioBlob: Blob) => {
+      dispatch({ type: 'STOP_RECORDING' });
+      setError(null);
 
-    try {
-      const formData = new FormData();
-      const audioFile = new File([audioBlob], 'recording.webm', {
-        type: audioBlob.type || 'audio/webm',
-      });
-      formData.append('file', audioFile);
+      try {
+        const formData = new FormData();
+        const audioFile = new File([audioBlob], 'recording.webm', {
+          type: audioBlob.type || 'audio/webm',
+        });
+        formData.append('file', audioFile);
 
-      const response = await withRetry(async () => {
-        try {
-          return await apiPostFormData<{ transcription?: { text: string }; text?: string }>(
-            '/api/transcribe',
-            formData
-          );
-        } catch (err) {
-          if (err instanceof RateLimitError) {
-            toast.warning(EXCEEDED_USAGE_LIMIT_MSG);
-            throw new Error(EXCEEDED_USAGE_LIMIT_MSG);
+        const response = await withRetry(async () => {
+          try {
+            return await apiPostFormData<{ transcription?: { text: string }; text?: string }>(
+              '/api/transcribe',
+              formData
+            );
+          } catch (err) {
+            if (err instanceof RateLimitError) {
+              showExceededUsageLimitToast();
+              throw new Error(EXCEEDED_USAGE_LIMIT_MSG);
+            }
+            throw err;
           }
-          throw err;
+        });
+
+        // Handle response format: { transcription: { text: string } }
+        const transcriptText = response.transcription?.text || response.text;
+
+        if (transcriptText) {
+          setTranscript(transcriptText);
+          dispatch({ type: 'TRANSCRIPTION_SUCCESS', transcript: transcriptText });
+        } else {
+          throw new Error('No transcript returned');
         }
-      });
-
-      // Handle response format: { transcription: { text: string } }
-      const transcriptText = response.transcription?.text || response.text;
-
-      if (transcriptText) {
-        setTranscript(transcriptText);
-        dispatch({ type: 'TRANSCRIPTION_SUCCESS', transcript: transcriptText });
-      } else {
-        throw new Error('No transcript returned');
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Transcription failed';
+        setError(errorMessage);
+        dispatch({ type: 'TRANSCRIPTION_ERROR', error: err as Error });
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Transcription failed';
-      setError(errorMessage);
-      dispatch({ type: 'TRANSCRIPTION_ERROR', error: err as Error });
-    }
-  }, []);
+    },
+    [showExceededUsageLimitToast]
+  );
 
   /**
    * Request scoring from GPT-4o API

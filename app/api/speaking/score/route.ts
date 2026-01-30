@@ -4,12 +4,10 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
-import { completionModel, openai } from '@/lib/openai';
 import { buildScoringPrompt } from '@/lib/utils/scoring';
 import { validateScoringRequest } from '@/lib/utils/validation';
-import type { CompletionUsage } from 'openai/resources';
-import { trackSpeakingScore } from '@/lib/utils/track-usage';
-import { env } from '@/lib/environment';
+import type { Scoring, ScoringRequest } from '@/lib/types/speaking';
+import { getJsonCompletion } from '@/lib/utils/reading-api';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -18,38 +16,19 @@ export async function POST(request: NextRequest) {
     // Parse and validate request body
     const body = await request.json();
 
-    validateScoringRequest(body);
+    const { valid, error } = validateScoringRequest(body);
 
-    const { questionText, modelAnswer, userTranscript } = body;
-
-    // Build scoring prompt
-    const prompt = buildScoringPrompt(questionText, modelAnswer, userTranscript);
-    if (env.isDevelopment) console.log(prompt);
-
-    // Call OpenAI Chat Completion API
-    const completion = await openai.chat.completions.create({
-      model: completionModel,
-      messages: [
-        {
-          role: 'system',
-          content: prompt,
-        },
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.3,
-      max_completion_tokens: 500,
-    });
-    const usage = completion.usage as CompletionUsage;
-    trackSpeakingScore(completionModel, usage);
-
-    // Parse response
-    const content = completion.choices[0]?.message?.content;
-
-    if (!content) {
-      throw new Error('No response from AI');
+    if (!valid) {
+      return NextResponse.json({ success: false, error }, { status: 400 });
     }
 
-    const result = JSON.parse(content);
+    const scoringRequest = body as ScoringRequest;
+
+    // Build scoring prompt
+    const prompt = buildScoringPrompt(scoringRequest);
+
+    // Call OpenAI Chat Completion API
+    const result = await getJsonCompletion<Scoring>(prompt, 500, 'transcription');
 
     // Validate response structure
     if (

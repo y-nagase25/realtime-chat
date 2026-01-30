@@ -1,9 +1,14 @@
-/**
- * Japanese labels for speaking practice UI
- */
+export const READING_LABELS = {
+  word: '単語',
+  pronunciation: '発音',
+  definitionJa: '意味',
+  definitionEn: '英語の意味',
+  exampleSentence: '例文',
+} as const;
+
 export const SPEAKING_LABELS = {
   // ScoringResults
-  result: '結果',
+  result: 'あなたの回答',
   answer: '模範解答',
   goodPoints: '良かった点',
   areasForImprovement: '改善点',
@@ -15,8 +20,8 @@ export const SPEAKING_LABELS = {
 
   // Attempt
   transcript: '書き起こしテキスト',
-  history: '会話履歴',
-  noAttempts: '会話履歴がありません。',
+  history: 'スピーキング履歴',
+  noAttempts: 'スピーキング履歴がありません。',
 
   // SessionStatistics
   sessionStatistics: 'セッション統計',

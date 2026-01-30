@@ -1,6 +1,5 @@
 import { env } from '@/lib/environment';
 import { audioModel, openai } from '@/lib/openai';
-import { checkUsageLimit } from '@/lib/usage-check';
 import { trackAudioTranscription } from '@/lib/utils/track-usage';
 import { type NextRequest, NextResponse } from 'next/server';
 import type { Transcription } from 'openai/resources/audio';
@@ -12,12 +11,6 @@ export async function POST(request: NextRequest) {
 
     if (!audioFile) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
-    }
-
-    // Check usage limit
-    const limitData = await checkUsageLimit(request);
-    if (limitData.exceeded) {
-      return NextResponse.json({ error: 'Daily usage limit exceeded' }, { status: 429 });
     }
 
     // Transcribe audio with OpenAI Whisper

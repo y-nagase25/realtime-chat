@@ -3,22 +3,6 @@
  */
 
 /**
- * Speaking attempt stored in local storage
- */
-export interface SpeakingAttempt {
-  id: string; // UUID generated client-side
-  question_id: number;
-  questionText: string;
-  modelAnswer: string;
-  transcript: string;
-  score: number; // 0-10
-  areas_for_improvement: string[];
-  good_points: string[];
-  created_at: string; // ISO timestamp
-  processing_time_ms: number;
-}
-
-/**
  * Scoring result from API
  */
 export interface ScoringResult {
@@ -26,16 +10,6 @@ export interface ScoringResult {
   areasForImprovement: string[];
   goodPoints: string[];
   processingTime: number; // milliseconds
-}
-
-/**
- * Session statistics across all attempts
- */
-export interface SessionStats {
-  totalAttempts: number;
-  averageScore: number;
-  bestScore: number;
-  latestScore: number | null;
 }
 
 /**
@@ -93,16 +67,18 @@ export interface ScoringRequest {
   userTranscript: string;
 }
 
+export interface Scoring {
+  score: number;
+  areasForImprovement: string[];
+  goodPoints: string[];
+  processingTime: number;
+}
+
 /**
  * API response for scoring
  */
 export interface ScoringResponse {
   success: boolean;
-  data?: {
-    score: number;
-    areasForImprovement: string[];
-    goodPoints: string[];
-    processingTime: number;
-  };
+  data?: Scoring;
   error?: string;
 }

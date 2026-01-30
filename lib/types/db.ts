@@ -14,7 +14,7 @@ export interface Question {
 }
 
 // 'public.token_usage' table
-export type ApiType = 'text_generation' | 'transcription' | 'realtime_session';
+export type ApiType = 'text_generation' | 'transcription' | 'reading' | 'realtime_session';
 
 export interface TokenUsageInsert {
   api_type: ApiType;
@@ -32,6 +32,14 @@ export interface TokenUsageRow extends TokenUsageInsert {
   created_at: string;
 }
 
+// 'public.daily_usage_aggregates' table
+export interface DailyUsageAggregates {
+  date: string;
+  total_tokens: number;
+  audio_duration_seconds: number;
+  updated_at: string;
+}
+
 // Supabase database schema type
 export interface Database {
   public: {
@@ -45,6 +53,9 @@ export interface Database {
         Row: TokenUsageRow;
         Insert: TokenUsageInsert;
         Update: Partial<TokenUsageInsert>;
+      };
+      daily_usage_aggregates: {
+        Row: DailyUsageAggregates;
       };
     };
   };

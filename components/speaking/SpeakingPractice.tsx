@@ -77,7 +77,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
         <Alert variant="destructive">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertDescription>
-            <div className="font-medium">Error: {error}</div>
+            <div className="font-medium">{error}</div>
             <Button variant="outline" size="sm" className="mt-2" onClick={reset}>
               {SPEAKING_LABELS.tryAgain}
             </Button>

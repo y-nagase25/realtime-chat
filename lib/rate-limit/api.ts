@@ -9,14 +9,20 @@ import { TOTAL_TOKEN_LIMIT_PER_DAY, WHISPER_SECONDS_LIMIT_PER_DAY } from '@/lib/
  */
 export async function checkOpenAIUsage(): Promise<RateLimitResult> {
   const result = await getUsageLimit();
-  if (!result || result.error || !result.data) {
+
+  // if result contains 0 row, today's usage is 0
+  if (result.error && result.error.code === 'PGRST116') {
+    return getRateLimitResult(true);
+  }
+
+  if (result.error || !result.data) {
     return getRateLimitResult(false);
   }
 
-  const data = result.data;
+  // if today's usage is within the limit, return true
   if (
-    data.total_tokens <= TOTAL_TOKEN_LIMIT_PER_DAY &&
-    data.audio_duration_seconds <= WHISPER_SECONDS_LIMIT_PER_DAY
+    result.data.total_tokens <= TOTAL_TOKEN_LIMIT_PER_DAY &&
+    result.data.audio_duration_seconds <= WHISPER_SECONDS_LIMIT_PER_DAY
   ) {
     return getRateLimitResult(true);
   }

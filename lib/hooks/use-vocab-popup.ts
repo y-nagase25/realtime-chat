@@ -4,6 +4,9 @@ import { apiPost } from '@/lib/api-client';
 import { useLocalStorage, SAVED_VOCABULARY_STORAGE_KEY } from './use-local-storage';
 import type { SavedVocabulary } from '@/lib/types/local-storage';
 import type { ApiResponse } from '@/lib/types/api';
+import { RateLimitError } from '@/lib/errors';
+import { useToast } from '@/lib/hooks/use-toast';
+import { EXCEEDED_USAGE_LIMIT_MSG } from '@/lib/constants';
 
 export type VocabPopupState = {
   word: string;
@@ -39,43 +42,51 @@ export function useVocabPopup(): UseVocabPopupReturn {
   const { add: addVocabularyHistory } = useLocalStorage<SavedVocabulary>(
     SAVED_VOCABULARY_STORAGE_KEY
   );
+  const { showToast: showExceededUsageLimitToast } = useToast(EXCEEDED_USAGE_LIMIT_MSG, 'warning');
 
-  const handleWordClick = useCallback(async (word: string, context: string) => {
-    setIsSaved(false);
-    const wordElement = document.querySelector(`[data-testid="word-${word.toLowerCase()}"]`);
-    const rect = wordElement?.getBoundingClientRect();
-    const position = rect ? { x: rect.left, y: rect.bottom } : { x: 100, y: 100 };
+  const handleWordClick = useCallback(
+    async (word: string, context: string) => {
+      setIsSaved(false);
+      const wordElement = document.querySelector(`[data-testid="word-${word.toLowerCase()}"]`);
+      const rect = wordElement?.getBoundingClientRect();
+      const position = rect ? { x: rect.left, y: rect.bottom } : { x: 100, y: 100 };
 
-    setVocabPopup({
-      word,
-      entry: null,
-      isLoading: true,
-      position,
-      error: null,
-      context,
-    });
-
-    try {
-      const data = await apiPost<ApiResponse<VocabularyEntry>>('/api/reading/vocabulary', {
+      setVocabPopup({
         word,
+        entry: null,
+        isLoading: true,
+        position,
+        error: null,
         context,
       });
 
-      if (data.success) {
-        setVocabPopup((prev) => (prev ? { ...prev, entry: data.data, isLoading: false } : null));
-      } else {
+      try {
+        const data = await apiPost<ApiResponse<VocabularyEntry>>('/api/reading/vocabulary', {
+          word,
+          context,
+        });
+
+        if (data.success) {
+          setVocabPopup((prev) => (prev ? { ...prev, entry: data.data, isLoading: false } : null));
+        } else {
+          setVocabPopup((prev) =>
+            prev
+              ? { ...prev, isLoading: false, error: data.error || '単語の検索に失敗しました' }
+              : null
+          );
+        }
+      } catch (err) {
+        if (err instanceof RateLimitError) {
+          showExceededUsageLimitToast();
+        }
+
         setVocabPopup((prev) =>
-          prev
-            ? { ...prev, isLoading: false, error: data.error || '単語の検索に失敗しました' }
-            : null
+          prev ? { ...prev, isLoading: false, error: '単語の検索に失敗しました' } : null
         );
       }
-    } catch {
-      setVocabPopup((prev) =>
-        prev ? { ...prev, isLoading: false, error: '単語の検索に失敗しました' } : null
-      );
-    }
-  }, []);
+    },
+    [showExceededUsageLimitToast]
+  );
 
   const handleRetry = useCallback(() => {
     if (vocabPopup) {

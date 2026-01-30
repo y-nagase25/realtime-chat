@@ -21,6 +21,7 @@ import {
 import { Button } from '../ui/button';
 import { getScoreBadgeClass } from '@/lib/utils/scoring';
 import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
+import { trimString } from '@/lib/utils/string';
 
 export function SpeakingAttemptHistory({
   speakingAttempts,
@@ -43,8 +44,8 @@ export function SpeakingAttemptHistory({
       <TableBody>
         {speakingAttempts.map((session) => (
           <TableRow key={session.id}>
-            <TableCell>{session.questionText}</TableCell>
-            <TableCell>{session.transcript}</TableCell>
+            <TableCell>{trimString(session.questionText, 20)}</TableCell>
+            <TableCell>{trimString(session.transcript, 20)}</TableCell>
             <TableCell>{session.score}</TableCell>
             <TableCell>{isoToDatetime(session.created_at)}</TableCell>
             <TableCell className="text-right">

@@ -8,34 +8,18 @@ import {
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
 import { ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
+import { NAV_ITEMS } from '@/lib/constants';
 
 export default function Page() {
-  const items = [
-    {
-      title: 'Reading',
-      description: 'リーディング問題の自動生成と採点・解説',
-      href: '/reading',
-    },
-    {
-      title: 'Speaking',
-      description: '文字起こしを活用したスピーキング練習',
-      href: '/speaking',
-    },
-    {
-      title: 'History',
-      description: '学習履歴',
-      href: '/history',
-    },
-  ];
   return (
     <AppLayout title="AI-GO" description="AI-powerd Language Learning">
-      <div className="max-w-xl">
+      <div className="max-w-2xl">
         <div className="space-y-4">
-          {items.map((item) => (
+          {NAV_ITEMS.map((item) => (
             <Item variant="outline" asChild key={item.href}>
               <Link href={item.href}>
                 <ItemContent>
-                  <ItemTitle>{item.title}</ItemTitle>
+                  <ItemTitle>{item.label}</ItemTitle>
                   <ItemDescription>{item.description}</ItemDescription>
                 </ItemContent>
                 <ItemActions>
@@ -48,7 +32,7 @@ export default function Page() {
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>このアプリについて</AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-2 text-balance">
+            <AccordionContent>
               <p>
                 AIは不正確な情報を生成する可能性があります。重要な情報は必ずご自身で確認してください。
               </p>

@@ -3,15 +3,17 @@ import { SpeakingPracticeContainer } from '@/components/speaking/SpeakingPractic
 import { AppLayout } from '@/components/AppLayout';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
+import { NAV_ITEMS } from '@/lib/constants';
+import { notFound } from 'next/navigation';
+
+const item = NAV_ITEMS.find((item) => item.label === 'Speaking');
 
 export default async function SpeakingPage() {
+  if (!item) return notFound();
   const { data: questions } = await getQuestions();
 
   return (
-    <AppLayout
-      title="スピーキング練習"
-      description="練習したいフレーズを選んで、AIとスピーキング練習"
-    >
+    <AppLayout title={item.label} description={item.description}>
       {!questions || questions.length === 0 ? (
         <NoQuestionsAvailable />
       ) : (

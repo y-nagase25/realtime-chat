@@ -4,12 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-
-const ROUTES = [
-  { label: 'Reading', href: '/reading' },
-  { label: 'Speaking', href: '/speaking' },
-  { label: 'History', href: '/history' },
-];
+import { NAV_ITEMS } from '@/lib/constants';
 
 export function Header() {
   const pathname = usePathname();
@@ -38,16 +33,16 @@ export function Header() {
             />
           </Link>
           <div className="flex items-center space-x-8">
-            {ROUTES.map((route) => (
+            {NAV_ITEMS.map((item) => (
               <Link
-                key={route.href}
-                href={route.href}
+                key={item.href}
+                href={item.href}
                 className={cn(
                   'transition-colors',
-                  isActiveLink(route.href) && 'border-b border-primary'
+                  isActiveLink(item.href) && 'border-b border-primary'
                 )}
               >
-                {route.label}
+                {item.label}
               </Link>
             ))}
           </div>

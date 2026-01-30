@@ -35,7 +35,7 @@ export default function RootLayout({
           <div className="min-h-screen bg-background">
             <div className="mx-auto max-w-[1480px] px-4 py-8">
               <Header />
-              <div className="container mx-auto space-y-6 p-6">{children}</div>
+              <div className="container mx-auto p-6">{children}</div>
             </div>
           </div>
           <Toaster />

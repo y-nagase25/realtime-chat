@@ -1,13 +1,15 @@
 import { Histories } from '@/components/history/Histories';
+import { AppLayout } from '@/components/AppLayout';
+import { NAV_ITEMS } from '@/lib/constants';
+import { notFound } from 'next/navigation';
+
+const item = NAV_ITEMS.find((item) => item.label === 'History');
 
 export default function HistoryPage() {
+  if (!item) return notFound();
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">学習履歴</h1>
-        <p className="mt-2 text-muted-foreground">過去の学習履歴を確認できます</p>
-      </div>
+    <AppLayout title={item.label} description={item.description}>
       <Histories />
-    </div>
+    </AppLayout>
   );
 }

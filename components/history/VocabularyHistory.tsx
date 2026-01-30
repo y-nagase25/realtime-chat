@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '../ui/button';
 import { READING_LABELS } from '@/lib/constants/speaking-labels';
+import { trimString } from '@/lib/utils/string';
 
 export function VocabularyHistory({
   vocabularyHistory,
@@ -110,11 +111,4 @@ function DetailSheet({
       </SheetContent>
     </Sheet>
   );
-}
-
-function trimString(str: string, len: number = 30): string {
-  if (str.length > len) {
-    return `${str.slice(0, len)}...`;
-  }
-  return str;
 }

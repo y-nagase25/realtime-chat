@@ -1,23 +1,34 @@
-/**
- * Speaking Practice Page
- * Main page for practicing speaking with AI scoring
- */
-
 import { getQuestions } from '@/lib/loaders';
 import { SpeakingPracticeContainer } from '@/components/speaking/SpeakingPracticeContainer';
-import { SPEAKING_LABELS } from '@/lib/constants/speaking-labels';
+import { AppLayout } from '@/components/AppLayout';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircleIcon } from 'lucide-react';
 
-export default async function SpeakingPracticePage() {
+export default async function SpeakingPage() {
   const { data: questions } = await getQuestions();
 
   return (
-    <>
-      <h1 className="text-3xl font-bold">{SPEAKING_LABELS.speakingPractice}</h1>
+    <AppLayout
+      title="スピーキング練習"
+      description="練習したいフレーズを選んで、AIとスピーキング練習"
+    >
       {!questions || questions.length === 0 ? (
-        <p className="text-muted-foreground">{SPEAKING_LABELS.noQuestionsAvailable}</p>
+        <NoQuestionsAvailable />
       ) : (
         <SpeakingPracticeContainer questions={questions} />
       )}
-    </>
+    </AppLayout>
+  );
+}
+
+function NoQuestionsAvailable() {
+  return (
+    <Alert variant="destructive" className="max-w-md">
+      <AlertCircleIcon />
+      <AlertTitle>エラー</AlertTitle>
+      <AlertDescription>
+        問題を取得できませんでした。しばらくしてから再度お試しください。
+      </AlertDescription>
+    </Alert>
   );
 }

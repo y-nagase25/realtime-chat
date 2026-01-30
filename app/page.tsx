@@ -1,3 +1,4 @@
+import { AppLayout } from '@/components/AppLayout';
 import {
   Accordion,
   AccordionContent,
@@ -12,12 +13,12 @@ export default function Page() {
   const items = [
     {
       title: 'Reading',
-      description: 'リーディング問題の自動生成と解説',
+      description: 'リーディング問題の自動生成と採点・解説',
       href: '/reading',
     },
     {
       title: 'Speaking',
-      description: 'AIを活用したスピーキング練習',
+      description: '文字起こしを活用したスピーキング練習',
       href: '/speaking',
     },
     {
@@ -27,10 +28,8 @@ export default function Page() {
     },
   ];
   return (
-    <>
-      <h1 className="text-3xl font-bold">AI-GO</h1>
-      <p className="text-muted-foreground text-xl">AI-powerd Language Learning</p>
-      <div className="max-w-2xl">
+    <AppLayout title="AI-GO" description="AI-powerd Language Learning">
+      <div className="max-w-xl">
         <div className="space-y-4">
           {items.map((item) => (
             <Item variant="outline" asChild key={item.href}>
@@ -61,6 +60,6 @@ export default function Page() {
           </AccordionItem>
         </Accordion>
       </div>
-    </>
+    </AppLayout>
   );
 }

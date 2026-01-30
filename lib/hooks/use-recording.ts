@@ -6,7 +6,7 @@
 
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { createAudioBlob } from '@/lib/utils/audio';
-import { RECORDING_MAX_DURATION } from '../costants';
+import { RECORDING_MAX_DURATION } from '../constants';
 
 export interface UseRecordingReturn {
   isRecording: boolean;

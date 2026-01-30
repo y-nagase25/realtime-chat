@@ -25,6 +25,9 @@ import { apiPost } from '@/lib/api-client';
 import { useLocalStorage, READING_HISTORY_STORAGE_KEY } from '@/lib/hooks/use-local-storage';
 import { useVocabPopup } from '@/lib/hooks/use-vocab-popup';
 import { buildSessionData } from '@/lib/utils/reading-session';
+import { RateLimitError } from '@/lib/errors';
+import { EXCEEDED_USAGE_LIMIT_MSG } from '@/lib/constants';
+import { useToast } from '@/lib/hooks/use-toast';
 
 type ReadingPhase = 'settings' | 'reading' | 'results' | 'summary';
 
@@ -68,6 +71,7 @@ export default function ReadingPage() {
     handleSave: handleSaveVocabulary,
     handleClose: handleClosePopup,
   } = useVocabPopup();
+  const { showToast: showExceededUsageLimitToast } = useToast(EXCEEDED_USAGE_LIMIT_MSG, 'warning');
 
   const handleSubmit = async (settings: ReadingSettingsValue) => {
     setIsLoading(true);
@@ -85,7 +89,12 @@ export default function ReadingPage() {
       setQuestions(data.data.questions);
       setPhase('reading');
     } catch (err) {
-      setError(err instanceof Error ? err.message : '文章の生成に失敗しました');
+      if (err instanceof RateLimitError) {
+        showExceededUsageLimitToast();
+        setError(EXCEEDED_USAGE_LIMIT_MSG);
+      } else {
+        setError('文章の生成に失敗しました');
+      }
     } finally {
       setIsLoading(false);
     }

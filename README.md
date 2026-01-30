@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI-GO - English Learning App
 
-## Getting Started
+AI を活用した英語学習アプリケーションです。リーディング、スピーキングの練習機能と学習履歴の管理機能を提供します。
 
-First, run the development server:
+## 主な機能
+
+### リーディング練習
+- AI が生成したパッセージで読解練習
+- 多肢選択式、正誤判定、穴埋め形式の理解度確認問題
+- 単語をクリックして語彙を確認（英語・日本語対応）
+- 読解時間と WPM（1分あたりの単語数）の計測
+- 要約作成と AI による評価
+
+### スピーキング練習
+- 音声録音機能
+- Whisper API による自動文字起こし
+- AI によるスコアリングとフィードバック
+
+### 学習履歴
+- リーディング・スピーキングの学習進捗を管理
+- 過去の練習結果を確認
+
+## 技術スタック
+
+| カテゴリ | 技術 |
+|---------|------|
+| フレームワーク | Next.js 16 (App Router) |
+| ランタイム | React 19 |
+| スタイリング | Tailwind CSS 4 |
+| リンター/フォーマッター | Biome 2.2.0 |
+| UI コンポーネント | Radix UI |
+| データベース | Supabase |
+| テスト | Vitest (単体), Playwright (E2E) |
+
+## 開発コマンド
 
 ```bash
+# 開発サーバーの起動
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 本番ビルド
+npm run build
+
+# 本番サーバーの起動
+npm start
+
+# リント・フォーマット
+npm run lint
+npm run format
+
+# 単体テスト
+npm run test:unit
+npm run test:unit:watch
+npm run test:unit:coverage
+
+# E2E テスト
+npm run test:e2e
+npm run test:e2e:ui
+npm run test:e2e:debug
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 環境変数
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+OPENAI_API_KEY=sk-...
+NEXT_PUBLIC_SUPABASE_URL=https://...
+SUPABASE_SERVICE_ROLE_KEY=...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| パス | 説明 |
+|------|------|
+| `/` | ホームページ（各機能へのナビゲーション） |
+| `/reading` | リーディング練習 |
+| `/speaking` | スピーキング練習 |
+| `/history` | 学習履歴 |
 
-## Learn More
+## ディレクトリ構成
 
-To learn more about Next.js, take a look at the following resources:
+```
+/app                    - Next.js App Router
+  /api/                 - API ルートハンドラー
+/components             - React コンポーネント
+  /reading/             - リーディング機能
+  /speaking/            - スピーキング機能
+  /history/             - 履歴機能
+  /ui/                  - 汎用 UI コンポーネント
+/lib                    - ユーティリティ・型定義
+  /types/               - TypeScript 型定義
+  /hooks/               - カスタムフック
+  /utils/               - ユーティリティ関数
+/specs                  - 仕様書
+/e2e                    - E2E テスト
+/__tests__              - 単体テスト
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ブラウザ要件
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- マイクへのアクセス許可

@@ -20,6 +20,7 @@ import { useVocabPopup } from '@/lib/hooks/use-vocab-popup';
 import { VocabularyPopup } from './VocabularyPopup';
 import { GeneratedWords } from './GeneratedWords';
 import { findContextSentence, stripPunctuation } from '@/lib/utils/string';
+import { checkAnswer } from '@/lib/utils/reading-session';
 
 /**
  * Props for the PassageDisplay component
@@ -132,24 +133,4 @@ export function PassageDisplay({ passage, questions, proceedToResults }: Passage
       )}
     </>
   );
-}
-
-/**
- * Check if user's answer is correct for a given question
- */
-function checkAnswer(question: ComprehensionQuestion, userAnswer: UserAnswer): boolean {
-  switch (question.type) {
-    case 'multiple-choice':
-      return userAnswer === question.correctAnswer;
-    case 'true-false':
-      return userAnswer === question.correctAnswer;
-    case 'fill-in-blank': {
-      const normalized = String(userAnswer).trim().toLowerCase();
-      const correctNormalized = question.correctAnswer.trim().toLowerCase();
-      if (normalized === correctNormalized) return true;
-      return question.acceptableAnswers.some((a) => a.trim().toLowerCase() === normalized);
-    }
-    case 'summary':
-      return false;
-  }
 }

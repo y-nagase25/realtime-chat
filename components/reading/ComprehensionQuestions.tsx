@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { SummaryQuestionInput } from '@/components/reading/SummaryQuestionInput';
+import { CORRECT, INCORRECT } from '@/lib/utils/reading-session';
 
 /**
  * Props for the ComprehensionQuestions component
@@ -195,7 +196,7 @@ function TrueFalseInput({
       >
         <RadioGroupItem value="true" id={`${question.id}-true`} />
         <Label htmlFor={`${question.id}-true`} className="cursor-pointer">
-          True
+          {CORRECT}
         </Label>
       </div>
       <div
@@ -204,7 +205,7 @@ function TrueFalseInput({
       >
         <RadioGroupItem value="false" id={`${question.id}-false`} />
         <Label htmlFor={`${question.id}-false`} className="cursor-pointer">
-          False
+          {INCORRECT}
         </Label>
       </div>
     </RadioGroup>

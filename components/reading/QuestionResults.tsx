@@ -1,8 +1,9 @@
 'use client';
 
-import type { ComprehensionQuestion, QuestionResult, UserAnswer } from '@/lib/types/reading';
+import type { QuestionResult } from '@/lib/types/reading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { formatCorrectAnswer, formatUserAnswer } from '@/lib/utils/reading-session';
 
 export type QuestionResultsProps = {
   results: QuestionResult[];
@@ -107,36 +108,4 @@ function ResultItem({ result, index }: { result: QuestionResult; index: number }
       <p className="text-sm text-muted-foreground">解説: {question.explanationJa}</p>
     </div>
   );
-}
-
-/**
- * Format user's answer for display based on question type
- */
-function formatUserAnswer(question: ComprehensionQuestion, answer: UserAnswer): string {
-  switch (question.type) {
-    case 'multiple-choice':
-      return question.options[answer as number] ?? String(answer);
-    case 'true-false':
-      return answer === true ? 'True' : 'False';
-    case 'fill-in-blank':
-      return String(answer);
-    case 'summary':
-      return String(answer);
-  }
-}
-
-/**
- * Format correct answer for display based on question type
- */
-function formatCorrectAnswer(question: ComprehensionQuestion): string {
-  switch (question.type) {
-    case 'multiple-choice':
-      return question.options[question.correctAnswer];
-    case 'true-false':
-      return question.correctAnswer ? 'True' : 'False';
-    case 'fill-in-blank':
-      return question.correctAnswer;
-    case 'summary':
-      return '';
-  }
 }

@@ -59,10 +59,6 @@ export function ComprehensionQuestions({
     (q) => answers[q.id] !== undefined && answers[q.id] !== ''
   );
 
-  const handleSubmit = () => {
-    onSubmit(answers);
-  };
-
   return (
     <Card data-testid="comprehension-questions">
       <CardHeader>
@@ -109,7 +105,7 @@ export function ComprehensionQuestions({
           <Button
             data-testid="submit-answers-button"
             data-submitting={isSubmitting ? 'true' : undefined}
-            onClick={handleSubmit}
+            onClick={() => onSubmit(answers)}
             disabled={!allAnswered || isSubmitting}
             className="w-full min-h-11"
           >

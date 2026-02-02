@@ -7,8 +7,19 @@
 'use client';
 
 import { useState } from 'react';
-import type { Passage } from '@/lib/types/reading';
+import type {
+  ComprehensionQuestion,
+  Passage,
+  QuestionResult,
+  UserAnswer,
+} from '@/lib/types/reading';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { ReadingTimer } from './ReadingTimer';
+import { ComprehensionQuestions } from './ComprehensionQuestions';
+import { useVocabPopup } from '@/lib/hooks/use-vocab-popup';
+import { VocabularyPopup } from './VocabularyPopup';
+import { GeneratedWords } from './GeneratedWords';
+import { findContextSentence, stripPunctuation } from '@/lib/utils/string';
 
 /**
  * Props for the PassageDisplay component
@@ -16,142 +27,129 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 export type PassageDisplayProps = {
   /** The passage to display */
   passage: Passage;
-  /** Callback when a word is clicked */
-  onWordClick: (word: string, context: string) => void;
-  /** Whether to highlight grammar patterns in the passage */
-  highlightGrammar?: boolean;
+  /** The comprehension questions for the passage */
+  questions: ComprehensionQuestion[];
+  /** Callback when answers are submitted */
+  proceedToResults: (results: QuestionResult[]) => void;
 };
-
-/**
- * Grammar pattern keywords mapping
- */
-const GRAMMAR_KEYWORDS: Record<string, string[]> = {
-  articles: ['a', 'an', 'the'],
-  prepositions: ['in', 'on', 'at', 'for', 'to', 'with', 'by', 'from', 'of'],
-  'present-perfect': ['have', 'has', 'had'],
-  'relative-clauses': ['who', 'which', 'that', 'whose', 'whom', 'where', 'when'],
-  'passive-voice': ['was', 'were', 'been', 'being'],
-  conditionals: ['if', 'unless', 'would', 'could', 'might'],
-};
-
-/**
- * Strip punctuation from a word for lookup purposes
- */
-function stripPunctuation(word: string): string {
-  return word.replace(/[.,!?;:'"()[\]{}—–-]/g, '');
-}
-
-/**
- * Check if a word matches a grammar pattern
- */
-function isGrammarWord(word: string, grammarFocus?: string): boolean {
-  if (!grammarFocus) return false;
-  const keywords = GRAMMAR_KEYWORDS[grammarFocus];
-  if (!keywords) return false;
-  return keywords.includes(stripPunctuation(word).toLowerCase());
-}
-
-/**
- * Find the sentence containing a word at a given position in the text
- */
-function findContextSentence(content: string, wordIndex: number): string {
-  const words = content.split(/\s+/);
-  const precedingText = words.slice(0, wordIndex).join(' ');
-  const followingText = words.slice(wordIndex).join(' ');
-
-  const sentenceStart = precedingText.lastIndexOf('.') + 1;
-  const sentenceEnd = followingText.indexOf('.');
-
-  const before = precedingText.slice(sentenceStart).trim();
-  const after =
-    sentenceEnd >= 0 ? followingText.slice(0, sentenceEnd + 1).trim() : followingText.trim();
-
-  return `${before} ${after}`.trim();
-}
 
 /**
  * PassageDisplay - Displays a reading passage with interactive words
  */
-export function PassageDisplay({
-  passage,
-  onWordClick,
-  highlightGrammar = false,
-}: PassageDisplayProps) {
+export function PassageDisplay({ passage, questions, proceedToResults }: PassageDisplayProps) {
   const [clickedWord, setClickedWord] = useState<string | null>(null);
+  const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
+  const {
+    vocabPopup,
+    isSaved,
+    handleWordClick,
+    handleRetry: handleRetryVocabulary,
+    handleSave: handleSaveVocabulary,
+    handleClose: handleClosePopup,
+  } = useVocabPopup();
 
   const words = passage.content.split(/\s+/);
 
-  const handleWordClick = (word: string, index: number) => {
+  const onWordClick = (word: string, index: number) => {
     const cleanWord = stripPunctuation(word);
     if (!cleanWord) return;
 
     setClickedWord(cleanWord.toLowerCase());
     const context = findContextSentence(passage.content, index);
-    onWordClick(cleanWord, context);
+    handleWordClick(cleanWord, context);
+  };
+
+  const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
+    setIsSubmittingAnswers(true);
+
+    const regularQuestions = questions.filter((q) => q.type !== 'summary');
+    const results = regularQuestions.map((question) => {
+      const userAnswer = answers[question.id];
+      const isCorrect = checkAnswer(question, userAnswer);
+      return { question, userAnswer, isCorrect };
+    });
+
+    setIsSubmittingAnswers(false);
+    proceedToResults(results);
   };
 
   return (
-    <Card data-testid="passage-display">
-      <CardHeader className="space-y-2">
-        <h2 data-testid="passage-title" className="text-2xl font-bold">
-          {passage.title}
-        </h2>
-        <div
-          data-testid="passage-metadata"
-          className="flex items-center gap-2 text-sm text-muted-foreground"
-        >
-          <span>{passage.level}</span>
-          <span aria-hidden="true">•</span>
-          <span>{passage.wordCount} words</span>
-          <span aria-hidden="true">•</span>
-          <span>約{passage.estimatedReadingTimeMinutes}分</span>
+    <>
+      <Card data-testid="passage-display">
+        <CardHeader className="space-y-2">
+          <h2 data-testid="passage-title" className="text-2xl font-bold">
+            {passage.title}
+          </h2>
+          <div
+            data-testid="passage-metadata"
+            className="flex items-center gap-2 text-sm text-muted-foreground"
+          >
+            <span>{passage.level}</span>
+            <span aria-hidden="true">•</span>
+            <span>{passage.wordCount} words</span>
+            <span aria-hidden="true">•</span>
+            <span>約{passage.estimatedReadingTimeMinutes}分</span>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <GeneratedWords
+            words={words}
+            passage={passage}
+            clickedWord={clickedWord}
+            onWordClick={onWordClick}
+          />
+        </CardContent>
+      </Card>
+
+      <div className="mt-4">
+        <ReadingTimer isRunning={true} wordCount={passage.wordCount} level={passage.level} />
+      </div>
+
+      {questions.length > 0 && (
+        <div className="mt-6">
+          <ComprehensionQuestions
+            questions={questions}
+            onSubmit={handleSubmitAnswers}
+            isSubmitting={isSubmittingAnswers}
+            passageContent={passage.content}
+          />
         </div>
-      </CardHeader>
+      )}
 
-      <CardContent className="space-y-6">
-        <article data-testid="passage-content" className="leading-relaxed text-lg">
-          {words.map((word, index) => {
-            const cleanWord = stripPunctuation(word);
-            const grammarMatch = highlightGrammar && isGrammarWord(word, passage.grammarFocus);
-            const isClicked = clickedWord === cleanWord.toLowerCase();
-
-            const wordClasses = [
-              'cursor-pointer',
-              'inline',
-              'rounded',
-              'px-0.5',
-              'transition-colors',
-              'hover:bg-blue-100',
-              'focus-visible:outline-none',
-              'focus-visible:ring-2',
-              'focus-visible:ring-ring',
-              grammarMatch
-                ? 'grammar-highlight bg-purple-50 text-purple-900 border-b border-purple-300'
-                : '',
-              isClicked ? 'bg-blue-200' : '',
-            ]
-              .filter(Boolean)
-              .join(' ');
-
-            return (
-              <span key={`${word}-${index}`}>
-                <button
-                  type="button"
-                  data-testid={cleanWord ? `word-${cleanWord.toLowerCase()}` : undefined}
-                  data-grammar-highlight={grammarMatch ? 'true' : undefined}
-                  data-clicked={isClicked ? 'true' : undefined}
-                  className={wordClasses}
-                  onClick={() => handleWordClick(word, index)}
-                  aria-label={cleanWord}
-                >
-                  {word}
-                </button>
-                {index < words.length - 1 && ' '}
-              </span>
-            );
-          })}
-        </article>
-      </CardContent>
-    </Card>
+      {vocabPopup && (
+        <VocabularyPopup
+          word={vocabPopup.word}
+          entry={vocabPopup.entry}
+          isLoading={vocabPopup.isLoading}
+          position={vocabPopup.position}
+          onClose={handleClosePopup}
+          error={vocabPopup.error ?? undefined}
+          onRetry={handleRetryVocabulary}
+          onSave={handleSaveVocabulary}
+          isSaved={isSaved}
+        />
+      )}
+    </>
   );
+}
+
+/**
+ * Check if user's answer is correct for a given question
+ */
+function checkAnswer(question: ComprehensionQuestion, userAnswer: UserAnswer): boolean {
+  switch (question.type) {
+    case 'multiple-choice':
+      return userAnswer === question.correctAnswer;
+    case 'true-false':
+      return userAnswer === question.correctAnswer;
+    case 'fill-in-blank': {
+      const normalized = String(userAnswer).trim().toLowerCase();
+      const correctNormalized = question.correctAnswer.trim().toLowerCase();
+      if (normalized === correctNormalized) return true;
+      return question.acceptableAnswers.some((a) => a.trim().toLowerCase() === normalized);
+    }
+    case 'summary':
+      return false;
+  }
 }

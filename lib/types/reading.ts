@@ -29,6 +29,15 @@ export type GrammarPatternId =
   | 'passive-voice'
   | 'conditionals';
 
+/**
+ * Settings selected by the user
+ */
+export type ReadingSettingsValue = {
+  level: ReadingLevel;
+  topic: ReadingTopicId;
+  grammarFocus?: GrammarPatternId;
+};
+
 export type GrammarPattern = {
   id: GrammarPatternId;
   labelEn: string;

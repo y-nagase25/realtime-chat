@@ -1,15 +1,13 @@
-/**
- * ReadingSettings Component
- * Allows users to configure reading practice settings:
- * - Difficulty level (A1-C1)
- * - Topic selection
- * - Optional grammar focus
- */
-
 'use client';
 
 import { useState } from 'react';
-import type { ReadingLevel, ReadingTopicId, GrammarPatternId } from '@/lib/types/reading';
+import type {
+  ReadingLevel,
+  ReadingTopicId,
+  GrammarPatternId,
+  ReadingSettingsValue,
+  Passage,
+} from '@/lib/types/reading';
 import {
   READING_LEVELS,
   READING_LEVEL_OPTIONS,
@@ -25,52 +23,62 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { ErrorMessage } from './ErrorMessage';
+import { apiPost } from '@/lib/api-client';
+import type { ApiResponse } from '@/lib/types/api';
+import { RateLimitError } from '@/lib/errors';
+import { useToast } from '@/lib/hooks/use-toast';
+import { EXCEEDED_USAGE_LIMIT_MSG } from '@/lib/constants';
+import { PassageSkeleton } from './PassageSkeleton';
 
-/**
- * Settings selected by the user
- */
-export type ReadingSettingsValue = {
-  level: ReadingLevel;
-  topic: ReadingTopicId;
-  grammarFocus?: GrammarPatternId;
-};
-
-/**
- * Props for ReadingSettings component
- */
 export type ReadingSettingsProps = {
-  /** Callback when user submits settings */
-  onSubmit: (settings: ReadingSettingsValue) => void;
-  /** Whether the form is currently submitting (shows loading state) */
-  isLoading?: boolean;
-  /** Default values for the settings */
-  defaultValue?: Partial<ReadingSettingsValue>;
+  proceedToReading: (passage: Passage) => void;
 };
-
-const DEFAULT_LEVEL: ReadingLevel = 'A2';
-const DEFAULT_TOPIC: ReadingTopicId = 'daily-life';
 
 /**
  * ReadingSettings - Settings form for reading practice
  */
-export function ReadingSettings({
-  onSubmit,
-  isLoading = false,
-  defaultValue,
-}: ReadingSettingsProps) {
-  const [level, setLevel] = useState<ReadingLevel>(defaultValue?.level ?? DEFAULT_LEVEL);
-  const [topic, setTopic] = useState<ReadingTopicId>(defaultValue?.topic ?? DEFAULT_TOPIC);
-  const [grammarFocus, setGrammarFocus] = useState<GrammarPatternId | undefined>(
-    defaultValue?.grammarFocus
-  );
+export function ReadingSettings({ proceedToReading }: ReadingSettingsProps) {
+  const [readingSettings, setReadingSettings] = useState<ReadingSettingsValue>({
+    level: 'A2',
+    topic: 'daily-life',
+    grammarFocus: undefined,
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { showToast: showExceededUsageLimitToast } = useToast(EXCEEDED_USAGE_LIMIT_MSG, 'warning');
 
-  const handleSubmit = () => {
-    onSubmit({
-      level,
-      topic,
-      grammarFocus,
-    });
+  const generatePassage = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const data = await apiPost<ApiResponse<Passage>>('/api/reading/generate', readingSettings);
+
+      if (!data.success) {
+        throw new Error(data.error || '文章の生成に失敗しました');
+      }
+
+      proceedToReading(data.data);
+    } catch (err) {
+      if (err instanceof RateLimitError) {
+        showExceededUsageLimitToast();
+        setError(EXCEEDED_USAGE_LIMIT_MSG);
+      } else {
+        setError('文章の生成に失敗しました');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="mt-4">
+        <PassageSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -78,12 +86,16 @@ export function ReadingSettings({
       <div className="space-y-2">
         <Label htmlFor="level-selector">難易度</Label>
         <Select
-          value={level}
-          onValueChange={(value) => setLevel(value as ReadingLevel)}
+          value={readingSettings.level}
+          onValueChange={(value) =>
+            setReadingSettings({ ...readingSettings, level: value as ReadingLevel })
+          }
           disabled={isLoading}
         >
           <SelectTrigger id="level-selector" data-testid="level-selector" aria-label="難易度を選択">
-            <SelectValue placeholder="難易度を選択">{READING_LEVELS[level].labelJa}</SelectValue>
+            <SelectValue placeholder="難易度を選択">
+              {READING_LEVELS[readingSettings.level].labelJa}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {READING_LEVEL_OPTIONS.map((levelOption) => {
@@ -110,8 +122,10 @@ export function ReadingSettings({
       <div className="space-y-2">
         <Label htmlFor="topic-selector">トピック</Label>
         <Select
-          value={topic}
-          onValueChange={(value) => setTopic(value as ReadingTopicId)}
+          value={readingSettings.topic}
+          onValueChange={(value) =>
+            setReadingSettings({ ...readingSettings, topic: value as ReadingTopicId })
+          }
           disabled={isLoading}
         >
           <SelectTrigger
@@ -120,7 +134,7 @@ export function ReadingSettings({
             aria-label="トピックを選択"
           >
             <SelectValue placeholder="トピックを選択">
-              {READING_TOPICS.find((t) => t.id === topic)?.labelJa}
+              {READING_TOPICS.find((t) => t.id === readingSettings.topic)?.labelJa}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -140,9 +154,12 @@ export function ReadingSettings({
       <div className="space-y-2">
         <Label htmlFor="grammar-selector">文法フォーカス（オプション）</Label>
         <Select
-          value={grammarFocus ?? 'none'}
+          value={readingSettings.grammarFocus ?? 'none'}
           onValueChange={(value) =>
-            setGrammarFocus(value === 'none' ? undefined : (value as GrammarPatternId))
+            setReadingSettings({
+              ...readingSettings,
+              grammarFocus: value === 'none' ? undefined : (value as GrammarPatternId),
+            })
           }
           disabled={isLoading}
         >
@@ -152,8 +169,8 @@ export function ReadingSettings({
             aria-label="文法フォーカスを選択"
           >
             <SelectValue placeholder="選択なし">
-              {grammarFocus
-                ? GRAMMAR_PATTERNS.find((g) => g.id === grammarFocus)?.labelJa
+              {readingSettings.grammarFocus
+                ? GRAMMAR_PATTERNS.find((g) => g.id === readingSettings.grammarFocus)?.labelJa
                 : '選択なし'}
             </SelectValue>
           </SelectTrigger>
@@ -175,7 +192,7 @@ export function ReadingSettings({
 
       {/* Generate Button */}
       <Button
-        onClick={handleSubmit}
+        onClick={() => generatePassage()}
         disabled={isLoading}
         data-testid="generate-button"
         data-loading={isLoading}
@@ -184,6 +201,12 @@ export function ReadingSettings({
       >
         {isLoading ? '生成中...' : '文章を生成'}
       </Button>
+
+      {error && (
+        <div className="mt-4">
+          <ErrorMessage message={error} onRetry={() => generatePassage()} />
+        </div>
+      )}
     </div>
   );
 }

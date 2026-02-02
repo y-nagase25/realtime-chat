@@ -1,19 +1,12 @@
-/**
- * Reading Practice Page
- * Allows users to practice English reading with AI-generated passages
- */
-
 'use client';
 
 import { useState, useCallback } from 'react';
-import { ReadingSettings, type ReadingSettingsValue } from '@/components/reading/ReadingSettings';
+import { ReadingSettings } from '@/components/reading/ReadingSettings';
 import { PassageDisplay } from '@/components/reading/PassageDisplay';
 import { VocabularyPopup } from '@/components/reading/VocabularyPopup';
 import { ComprehensionQuestions } from '@/components/reading/ComprehensionQuestions';
 import { QuestionResults } from '@/components/reading/QuestionResults';
 import { ReadingTimer } from '@/components/reading/ReadingTimer';
-import { PassageSkeleton } from '@/components/reading/PassageSkeleton';
-import { ErrorMessage } from '@/components/reading/ErrorMessage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type {
   Passage,
@@ -22,14 +15,9 @@ import type {
   QuestionResult,
 } from '@/lib/types/reading';
 import type { ReadingSession } from '@/lib/types/local-storage';
-import type { ApiResponse } from '@/lib/types/api';
-import { apiPost } from '@/lib/api-client';
 import { useLocalStorage, READING_HISTORY_STORAGE_KEY } from '@/lib/hooks/use-local-storage';
 import { useVocabPopup } from '@/lib/hooks/use-vocab-popup';
 import { buildSessionData } from '@/lib/utils/reading-session';
-import { RateLimitError } from '@/lib/errors';
-import { EXCEEDED_USAGE_LIMIT_MSG } from '@/lib/constants';
-import { useToast } from '@/lib/hooks/use-toast';
 
 type ReadingPhase = 'settings' | 'reading' | 'results' | 'summary';
 
@@ -54,11 +42,9 @@ function checkAnswer(question: ComprehensionQuestion, userAnswer: UserAnswer): b
 }
 
 export function ReadingPageClient() {
+  // global state for reading practice
   const [phase, setPhase] = useState<ReadingPhase>('settings');
-  const [isLoading, setIsLoading] = useState(false);
   const [passage, setPassage] = useState<Passage | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [lastSettings, setLastSettings] = useState<ReadingSettingsValue | null>(null);
   const [questions, setQuestions] = useState<ComprehensionQuestion[]>([]);
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
@@ -73,34 +59,6 @@ export function ReadingPageClient() {
     handleSave: handleSaveVocabulary,
     handleClose: handleClosePopup,
   } = useVocabPopup();
-  const { showToast: showExceededUsageLimitToast } = useToast(EXCEEDED_USAGE_LIMIT_MSG, 'warning');
-
-  const handleSubmit = async (settings: ReadingSettingsValue) => {
-    setIsLoading(true);
-    setError(null);
-    setLastSettings(settings);
-
-    try {
-      const data = await apiPost<ApiResponse<Passage>>('/api/reading/generate', settings);
-
-      if (!data.success) {
-        throw new Error(data.error || '文章の生成に失敗しました');
-      }
-
-      setPassage(data.data);
-      setQuestions(data.data.questions);
-      setPhase('reading');
-    } catch (err) {
-      if (err instanceof RateLimitError) {
-        showExceededUsageLimitToast();
-        setError(EXCEEDED_USAGE_LIMIT_MSG);
-      } else {
-        setError('文章の生成に失敗しました');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
     setIsSubmittingAnswers(true);
@@ -115,12 +73,6 @@ export function ReadingPageClient() {
     setQuestionResults(results);
     setPhase('results');
     setIsSubmittingAnswers(false);
-  };
-
-  const handleRetryGenerate = () => {
-    if (lastSettings) {
-      handleSubmit(lastSettings);
-    }
   };
 
   /**
@@ -156,30 +108,27 @@ export function ReadingPageClient() {
     resetState();
   }, [passage, questionResults, addReadingHistory, resetState]);
 
+  /**
+   * Proceed to reading phase
+   */
+  const proceedToReading = useCallback((data: Passage) => {
+    setPassage(data);
+    setQuestions(data.questions);
+    setPhase('reading');
+  }, []);
+
   return (
     <>
       {phase === 'settings' && (
-        <>
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>設定</CardTitle>
-              <CardDescription>難易度とトピックを選んで文章を生成</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ReadingSettings onSubmit={handleSubmit} isLoading={isLoading} />
-              {error && (
-                <div className="mt-4">
-                  <ErrorMessage message={error} onRetry={handleRetryGenerate} />
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          {isLoading && (
-            <div className="mt-4">
-              <PassageSkeleton />
-            </div>
-          )}
-        </>
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle>設定</CardTitle>
+            <CardDescription>難易度とトピックを選んで文章を生成</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ReadingSettings proceedToReading={proceedToReading} />
+          </CardContent>
+        </Card>
       )}
 
       {phase === 'reading' && passage && (

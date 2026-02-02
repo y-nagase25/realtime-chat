@@ -1,57 +1,21 @@
-/**
- * QuestionResults Component
- * Displays comprehension question results with score,
- * correct/incorrect indicators, and explanations in Japanese.
- */
-
 'use client';
 
-import type { ComprehensionQuestion, Passage } from '@/lib/types/reading';
-import type { UserAnswer } from '@/components/reading/ComprehensionQuestions';
+import type { ComprehensionQuestion, QuestionResult, UserAnswer } from '@/lib/types/reading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
-/**
- * Result for a single question
- */
-export type QuestionResult = {
-  question: ComprehensionQuestion;
-  userAnswer: UserAnswer;
-  isCorrect: boolean;
-};
-
-/**
- * Props for the QuestionResults component
- */
 export type QuestionResultsProps = {
-  /** Array of question results */
   results: QuestionResult[];
-  /** The passage that was read */
-  passage?: Passage;
-  /** Callback when user wants to save history and complete (new API) */
   onSaveHistory?: () => void;
-  /**
-   * @deprecated Use onSaveHistory instead. This prop will be removed in future versions.
-   * Callback when user wants to generate a new passage (legacy API)
-   */
-  onNewPassage?: () => void;
 };
 
 /**
  * QuestionResults - Displays score and explanations for answered questions
  */
-export function QuestionResults({
-  results,
-  passage: _passage,
-  onSaveHistory,
-  onNewPassage,
-}: QuestionResultsProps) {
+export function QuestionResults({ results, onSaveHistory }: QuestionResultsProps) {
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
-
-  // Use onSaveHistory if provided, otherwise fall back to onNewPassage for backward compatibility
-  const handleComplete = onSaveHistory ?? onNewPassage;
 
   return (
     <Card data-testid="question-results">
@@ -75,7 +39,7 @@ export function QuestionResults({
         <div className="flex gap-3 pt-4">
           <Button
             data-testid="new-passage-button"
-            onClick={handleComplete}
+            onClick={onSaveHistory}
             className="flex-1 min-h-11"
           >
             完了

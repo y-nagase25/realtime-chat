@@ -111,6 +111,20 @@ export type ComprehensionQuestion =
   | SummaryQuestion;
 
 /**
+ * User answer type - supports all question types
+ */
+export type UserAnswer = string | number | boolean;
+
+/**
+ * Result for a single question
+ */
+export type QuestionResult = {
+  question: ComprehensionQuestion;
+  userAnswer: UserAnswer;
+  isCorrect: boolean;
+};
+
+/**
  * Vocabulary entry with Japanese translation
  */
 export type VocabularyEntry = {

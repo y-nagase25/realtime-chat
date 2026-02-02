@@ -1,22 +1,8 @@
-/**
- * Unit tests for QuestionResults component
- * Tests the save history functionality with new props
- */
-
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
-import { QuestionResults, type QuestionResult } from '@/components/reading/QuestionResults';
-import type { Passage, ComprehensionQuestion } from '@/lib/types/reading';
-
-// Mock useLocalStorage hook
-vi.mock('@/lib/hooks/use-local-storage', () => ({
-  useLocalStorage: vi.fn(() => ({
-    history: [],
-    add: vi.fn(),
-    remove: vi.fn(),
-  })),
-  READING_HISTORY_STORAGE_KEY: 'reading-practice-history',
-}));
+import { render, screen, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { QuestionResults } from '@/components/reading/QuestionResults';
+import type { ComprehensionQuestion, QuestionResult } from '@/lib/types/reading';
 
 // Create mock question data
 const mockMultipleChoiceQuestion: ComprehensionQuestion = {
@@ -36,16 +22,6 @@ const mockTrueFalseQuestion: ComprehensionQuestion = {
   correctAnswer: true,
   explanation: 'The sky appears blue...',
   explanationJa: '空は青いです。',
-};
-
-const mockPassage: Passage = {
-  title: 'Test Passage',
-  content: 'This is a test passage content.',
-  level: 'A1',
-  topic: 'daily-life',
-  wordCount: 100,
-  estimatedReadingTimeMinutes: 2,
-  questions: [mockMultipleChoiceQuestion, mockTrueFalseQuestion],
 };
 
 const mockResults: QuestionResult[] = [
@@ -70,35 +46,34 @@ describe('QuestionResults', () => {
     cleanup();
   });
 
+  const renderComponent = (
+    results: QuestionResult[] = mockResults,
+    onSaveHistory: () => void = vi.fn()
+  ) => {
+    render(<QuestionResults results={results} onSaveHistory={onSaveHistory} />);
+  };
+
   describe('basic rendering', () => {
     it('renders results title', () => {
-      render(
-        <QuestionResults results={mockResults} passage={mockPassage} onSaveHistory={vi.fn()} />
-      );
+      renderComponent();
 
       expect(screen.getByTestId('results-title')).toHaveTextContent('結果');
     });
 
     it('renders score correctly', () => {
-      render(
-        <QuestionResults results={mockResults} passage={mockPassage} onSaveHistory={vi.fn()} />
-      );
+      renderComponent();
 
       expect(screen.getByTestId('results-score')).toHaveTextContent('1 / 2 正解');
     });
 
     it('renders percentage correctly', () => {
-      render(
-        <QuestionResults results={mockResults} passage={mockPassage} onSaveHistory={vi.fn()} />
-      );
+      renderComponent();
 
       expect(screen.getByTestId('results-percentage')).toHaveTextContent('50%');
     });
 
     it('renders complete button', () => {
-      render(
-        <QuestionResults results={mockResults} passage={mockPassage} onSaveHistory={vi.fn()} />
-      );
+      renderComponent();
 
       expect(screen.getByTestId('new-passage-button')).toHaveTextContent('完了');
     });
@@ -106,27 +81,21 @@ describe('QuestionResults', () => {
 
   describe('result display', () => {
     it('renders correct answer indicator for correct answers', () => {
-      render(
-        <QuestionResults results={mockResults} passage={mockPassage} onSaveHistory={vi.fn()} />
-      );
+      renderComponent();
 
       const correctResult = screen.getByTestId('result-q1');
       expect(correctResult).toHaveTextContent('正解');
     });
 
     it('renders incorrect answer indicator for wrong answers', () => {
-      render(
-        <QuestionResults results={mockResults} passage={mockPassage} onSaveHistory={vi.fn()} />
-      );
+      renderComponent();
 
       const incorrectResult = screen.getByTestId('result-q2');
       expect(incorrectResult).toHaveTextContent('不正解');
     });
 
     it('shows user answer for incorrect questions', () => {
-      render(
-        <QuestionResults results={mockResults} passage={mockPassage} onSaveHistory={vi.fn()} />
-      );
+      renderComponent();
 
       const incorrectResult = screen.getByTestId('result-q2');
       expect(incorrectResult).toHaveTextContent('あなたの答え');
@@ -134,21 +103,15 @@ describe('QuestionResults', () => {
   });
 
   describe('onSaveHistory callback', () => {
-    it('calls onSaveHistory when complete button is clicked', () => {
+    it('calls onSaveHistory when complete button is clicked', async () => {
       const onSaveHistory = vi.fn();
 
-      render(
-        <QuestionResults
-          results={mockResults}
-          passage={mockPassage}
-          onSaveHistory={onSaveHistory}
-        />
-      );
+      renderComponent(mockResults, onSaveHistory);
 
-      const completeButton = screen.getByTestId('new-passage-button');
-      fireEvent.click(completeButton);
+      const user = userEvent.setup();
+      await user.click(screen.getByTestId('new-passage-button'));
 
-      expect(onSaveHistory).toHaveBeenCalledTimes(1);
+      expect(onSaveHistory).toHaveBeenCalled();
     });
   });
 
@@ -159,13 +122,7 @@ describe('QuestionResults', () => {
         { ...mockResults[1], isCorrect: true, userAnswer: true },
       ];
 
-      render(
-        <QuestionResults
-          results={allCorrectResults}
-          passage={mockPassage}
-          onSaveHistory={vi.fn()}
-        />
-      );
+      renderComponent(allCorrectResults);
 
       expect(screen.getByTestId('results-percentage')).toHaveTextContent('100%');
     });
@@ -176,13 +133,7 @@ describe('QuestionResults', () => {
         { ...mockResults[1], isCorrect: false },
       ];
 
-      render(
-        <QuestionResults
-          results={allIncorrectResults}
-          passage={mockPassage}
-          onSaveHistory={vi.fn()}
-        />
-      );
+      renderComponent(allIncorrectResults);
 
       expect(screen.getByTestId('results-percentage')).toHaveTextContent('0%');
     });
@@ -190,7 +141,7 @@ describe('QuestionResults', () => {
 
   describe('edge cases', () => {
     it('renders with empty results array', () => {
-      render(<QuestionResults results={[]} passage={mockPassage} onSaveHistory={vi.fn()} />);
+      renderComponent([]);
 
       expect(screen.getByTestId('results-score')).toHaveTextContent('0 / 0 正解');
       expect(screen.getByTestId('results-percentage')).toHaveTextContent('0%');

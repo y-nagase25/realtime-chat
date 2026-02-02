@@ -9,16 +9,18 @@ import { useState, useCallback } from 'react';
 import { ReadingSettings, type ReadingSettingsValue } from '@/components/reading/ReadingSettings';
 import { PassageDisplay } from '@/components/reading/PassageDisplay';
 import { VocabularyPopup } from '@/components/reading/VocabularyPopup';
-import {
-  ComprehensionQuestions,
-  type UserAnswer,
-} from '@/components/reading/ComprehensionQuestions';
-import { QuestionResults, type QuestionResult } from '@/components/reading/QuestionResults';
+import { ComprehensionQuestions } from '@/components/reading/ComprehensionQuestions';
+import { QuestionResults } from '@/components/reading/QuestionResults';
 import { ReadingTimer } from '@/components/reading/ReadingTimer';
 import { PassageSkeleton } from '@/components/reading/PassageSkeleton';
 import { ErrorMessage } from '@/components/reading/ErrorMessage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Passage, ComprehensionQuestion } from '@/lib/types/reading';
+import type {
+  Passage,
+  ComprehensionQuestion,
+  UserAnswer,
+  QuestionResult,
+} from '@/lib/types/reading';
 import type { ReadingSession } from '@/lib/types/local-storage';
 import type { ApiResponse } from '@/lib/types/api';
 import { apiPost } from '@/lib/api-client';
@@ -216,12 +218,8 @@ export function ReadingPageClient() {
         </>
       )}
 
-      {phase === 'results' && questionResults.length > 0 && passage && (
-        <QuestionResults
-          results={questionResults}
-          passage={passage}
-          onSaveHistory={handleComplete}
-        />
+      {phase === 'results' && questionResults.length > 0 && (
+        <QuestionResults results={questionResults} onSaveHistory={handleComplete} />
       )}
     </>
   );

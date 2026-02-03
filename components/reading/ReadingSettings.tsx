@@ -32,13 +32,13 @@ import { EXCEEDED_USAGE_LIMIT_MSG } from '@/lib/constants';
 import { PassageSkeleton } from './PassageSkeleton';
 
 export type ReadingSettingsProps = {
-  proceedToReading: (passage: Passage) => void;
+  handleStartReading: (passage: Passage) => void;
 };
 
 /**
  * ReadingSettings - Settings form for reading practice
  */
-export function ReadingSettings({ proceedToReading }: ReadingSettingsProps) {
+export function ReadingSettings({ handleStartReading }: ReadingSettingsProps) {
   const [readingSettings, setReadingSettings] = useState<ReadingSettingsValue>({
     level: 'A2',
     topic: 'daily-life',
@@ -59,7 +59,7 @@ export function ReadingSettings({ proceedToReading }: ReadingSettingsProps) {
         throw new Error(data.error || '文章の生成に失敗しました');
       }
 
-      proceedToReading(data.data);
+      handleStartReading(data.data);
     } catch (err) {
       if (err instanceof RateLimitError) {
         showExceededUsageLimitToast();

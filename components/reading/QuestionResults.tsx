@@ -7,13 +7,13 @@ import { formatCorrectAnswer, formatUserAnswer } from '@/lib/utils/reading-sessi
 
 export type QuestionResultsProps = {
   results: QuestionResult[];
-  onSaveHistory?: () => void;
+  handleReset?: () => void;
 };
 
 /**
  * QuestionResults - Displays score and explanations for answered questions
  */
-export function QuestionResults({ results, onSaveHistory }: QuestionResultsProps) {
+export function QuestionResults({ results, handleReset }: QuestionResultsProps) {
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
@@ -40,7 +40,7 @@ export function QuestionResults({ results, onSaveHistory }: QuestionResultsProps
         <div className="flex gap-3 pt-4">
           <Button
             data-testid="new-passage-button"
-            onClick={onSaveHistory}
+            onClick={handleReset}
             className="flex-1 min-h-11"
           >
             完了

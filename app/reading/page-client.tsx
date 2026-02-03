@@ -1,101 +1,75 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import { ReadingSettings } from '@/components/reading/ReadingSettings';
 import { PassageDisplay } from '@/components/reading/PassageDisplay';
 import { QuestionResults } from '@/components/reading/QuestionResults';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Passage, ComprehensionQuestion, QuestionResult } from '@/lib/types/reading';
+import type { Passage, QuestionResult } from '@/lib/types/reading';
 import type { ReadingSession } from '@/lib/types/local-storage';
 import { useLocalStorage, READING_HISTORY_STORAGE_KEY } from '@/lib/hooks/use-local-storage';
 import { buildSessionData } from '@/lib/utils/reading-session';
-
-type ReadingPhase = 'settings' | 'reading' | 'results' | 'summary';
+import { useReadingReducer } from '@/lib/hooks/use-reading-reducer';
 
 export function ReadingPageClient() {
-  // global state for reading practice
-  const [phase, setPhase] = useState<ReadingPhase>('settings');
-  const [passage, setPassage] = useState<Passage | null>(null);
-  const [questions, setQuestions] = useState<ComprehensionQuestion[]>([]);
-  const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
+  const [readingState, dispatch] = useReadingReducer();
 
   // Custom hooks
   const { add: addReadingHistory } = useLocalStorage<ReadingSession>(READING_HISTORY_STORAGE_KEY);
 
   /**
-   * Reset all state to return to settings phase
+   * Proceed to reading phase with generated passage
    */
-  const resetState = useCallback(() => {
-    setPassage(null);
-    setQuestions([]);
-    setQuestionResults([]);
-    setPhase('settings');
-  }, []);
+  const handleStartReading = (passage: Passage) => {
+    dispatch({ type: 'START_READING', payload: passage });
+  };
 
   /**
-   * Handle completion of reading session - saves history and resets state
+   * Proceed to results phase with calculated results
    */
-  const handleComplete = useCallback(() => {
-    if (!passage) {
-      // If passage is null for some reason, just reset state
-      resetState();
-      return;
+  const handleSubmitAnswers = (results: QuestionResult[]) => {
+    dispatch({ type: 'SUBMIT_ANSWERS', payload: results });
+  };
+
+  /**
+   * Finalize session: save history and reset to settings
+   */
+  const handleReset = () => {
+    if (readingState.phase === 'results') {
+      try {
+        const sessionData = buildSessionData(readingState.passage, readingState.results);
+        addReadingHistory(sessionData);
+      } catch (error) {
+        console.error('Failed to save reading history:', error);
+      }
     }
 
-    try {
-      // Build session data and save to localStorage
-      const sessionData = buildSessionData(passage, questionResults);
-      addReadingHistory(sessionData);
-    } catch {
-      // Log error but continue with navigation
-      // We don't want to block the user from proceeding
-    }
-
-    // Reset state and navigate to settings
-    resetState();
-  }, [passage, questionResults, addReadingHistory, resetState]);
-
-  /**
-   * Proceed to reading phase
-   */
-  const proceedToReading = useCallback((data: Passage) => {
-    setPassage(data);
-    setQuestions(data.questions);
-    setPhase('reading');
-  }, []);
-
-  /**
-   * Proceed to results phase
-   */
-  const proceedToResults = useCallback((results: QuestionResult[]) => {
-    setQuestionResults(results);
-    setPhase('results');
-  }, []);
+    dispatch({ type: 'RESET' });
+  };
 
   return (
     <>
-      {phase === 'settings' && (
+      {readingState.phase === 'settings' && (
         <Card className="mt-4">
           <CardHeader>
             <CardTitle>設定</CardTitle>
             <CardDescription>難易度とトピックを選んで文章を生成</CardDescription>
           </CardHeader>
           <CardContent>
-            <ReadingSettings proceedToReading={proceedToReading} />
+            <ReadingSettings handleStartReading={handleStartReading} />
           </CardContent>
         </Card>
       )}
 
-      {phase === 'reading' && passage && (
+      {readingState.phase === 'reading' && (
         <PassageDisplay
-          passage={passage}
-          questions={questions}
-          proceedToResults={proceedToResults}
+          passage={readingState.passage}
+          questions={readingState.questions}
+          handleSubmitAnswers={handleSubmitAnswers}
         />
       )}
 
-      {phase === 'results' && questionResults.length > 0 && (
-        <QuestionResults results={questionResults} onSaveHistory={handleComplete} />
+      {readingState.phase === 'results' && (
+        <QuestionResults results={readingState.results} handleReset={handleReset} />
       )}
     </>
   );

@@ -31,13 +31,13 @@ export type PassageDisplayProps = {
   /** The comprehension questions for the passage */
   questions: ComprehensionQuestion[];
   /** Callback when answers are submitted */
-  proceedToResults: (results: QuestionResult[]) => void;
+  handleSubmitAnswers: (results: QuestionResult[]) => void;
 };
 
 /**
  * PassageDisplay - Displays a reading passage with interactive words
  */
-export function PassageDisplay({ passage, questions, proceedToResults }: PassageDisplayProps) {
+export function PassageDisplay({ passage, questions, handleSubmitAnswers }: PassageDisplayProps) {
   const [clickedWord, setClickedWord] = useState<string | null>(null);
   const [isSubmittingAnswers, setIsSubmittingAnswers] = useState(false);
   const {
@@ -60,7 +60,7 @@ export function PassageDisplay({ passage, questions, proceedToResults }: Passage
     handleWordClick(cleanWord, context);
   };
 
-  const handleSubmitAnswers = (answers: Record<string, UserAnswer>) => {
+  const onSubmit = (answers: Record<string, UserAnswer>) => {
     setIsSubmittingAnswers(true);
 
     const regularQuestions = questions.filter((q) => q.type !== 'summary');
@@ -71,7 +71,7 @@ export function PassageDisplay({ passage, questions, proceedToResults }: Passage
     });
 
     setIsSubmittingAnswers(false);
-    proceedToResults(results);
+    handleSubmitAnswers(results);
   };
 
   return (
@@ -111,7 +111,7 @@ export function PassageDisplay({ passage, questions, proceedToResults }: Passage
         <div className="mt-6">
           <ComprehensionQuestions
             questions={questions}
-            onSubmit={handleSubmitAnswers}
+            onSubmit={onSubmit}
             isSubmitting={isSubmittingAnswers}
             passageContent={passage.content}
           />

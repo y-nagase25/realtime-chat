@@ -48,9 +48,9 @@ describe('QuestionResults', () => {
 
   const renderComponent = (
     results: QuestionResult[] = mockResults,
-    onSaveHistory: () => void = vi.fn()
+    handleReset: () => void = vi.fn()
   ) => {
-    render(<QuestionResults results={results} onSaveHistory={onSaveHistory} />);
+    render(<QuestionResults results={results} handleReset={handleReset} />);
   };
 
   describe('basic rendering', () => {
@@ -102,16 +102,16 @@ describe('QuestionResults', () => {
     });
   });
 
-  describe('onSaveHistory callback', () => {
-    it('calls onSaveHistory when complete button is clicked', async () => {
-      const onSaveHistory = vi.fn();
+  describe('handleReset callback', () => {
+    it('calls handleReset when complete button is clicked', async () => {
+      const handleReset = vi.fn();
 
-      renderComponent(mockResults, onSaveHistory);
+      renderComponent(mockResults, handleReset);
 
       const user = userEvent.setup();
       await user.click(screen.getByTestId('new-passage-button'));
 
-      expect(onSaveHistory).toHaveBeenCalled();
+      expect(handleReset).toHaveBeenCalled();
     });
   });
 

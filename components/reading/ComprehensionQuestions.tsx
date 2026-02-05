@@ -7,21 +7,13 @@
 'use client';
 
 import { useState } from 'react';
-import type {
-  ComprehensionQuestion,
-  MultipleChoiceQuestion,
-  TrueFalseQuestion,
-  FillInBlankQuestion,
-  SummaryQuestion,
-  UserAnswer,
-} from '@/lib/types/reading';
+import type { ComprehensionQuestion, SummaryQuestion, UserAnswer } from '@/lib/types/reading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { SummaryQuestionInput } from '@/components/reading/SummaryQuestionInput';
-import { CORRECT, INCORRECT } from '@/lib/utils/reading-session';
+import { MultipleChoiceInput } from '@/components/reading/input/MultipleChoiceInput';
+import { TrueFalseInput } from '@/components/reading/input/TrueFalseInput';
+import { FillInBlankInput } from '@/components/reading/input/FillInBlankInput';
+import { SummaryQuestionInput } from '@/components/reading/input/SummaryQuestionInput';
 
 /**
  * Props for the ComprehensionQuestions component
@@ -129,105 +121,5 @@ export function ComprehensionQuestions({
         )}
       </CardContent>
     </Card>
-  );
-}
-
-/**
- * Multiple choice question input with radio buttons
- */
-function MultipleChoiceInput({
-  question,
-  value,
-  onChange,
-}: {
-  question: MultipleChoiceQuestion;
-  value: number | undefined;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <RadioGroup
-      value={value !== undefined ? String(value) : undefined}
-      onValueChange={(val) => onChange(Number(val))}
-      aria-labelledby={`question-label-${question.id}`}
-      className="space-y-2"
-    >
-      {question.options.map((option, index) => (
-        <div
-          key={option}
-          data-testid={`option-${question.id}-${index}`}
-          className="flex items-center gap-3 min-h-11 py-2"
-        >
-          <RadioGroupItem value={String(index)} id={`${question.id}-${index}`} />
-          <Label htmlFor={`${question.id}-${index}`} className="cursor-pointer">
-            {option}
-          </Label>
-        </div>
-      ))}
-    </RadioGroup>
-  );
-}
-
-/**
- * True/False question input with radio buttons
- */
-function TrueFalseInput({
-  question,
-  value,
-  onChange,
-}: {
-  question: TrueFalseQuestion;
-  value: boolean | undefined;
-  onChange: (value: boolean) => void;
-}) {
-  return (
-    <RadioGroup
-      value={value !== undefined ? String(value) : undefined}
-      onValueChange={(val) => onChange(val === 'true')}
-      aria-labelledby={`question-label-${question.id}`}
-      className="space-y-2"
-    >
-      <div
-        data-testid={`option-${question.id}-true`}
-        className="flex items-center gap-3 min-h-11 py-2"
-      >
-        <RadioGroupItem value="true" id={`${question.id}-true`} />
-        <Label htmlFor={`${question.id}-true`} className="cursor-pointer">
-          {CORRECT}
-        </Label>
-      </div>
-      <div
-        data-testid={`option-${question.id}-false`}
-        className="flex items-center gap-3 min-h-11 py-2"
-      >
-        <RadioGroupItem value="false" id={`${question.id}-false`} />
-        <Label htmlFor={`${question.id}-false`} className="cursor-pointer">
-          {INCORRECT}
-        </Label>
-      </div>
-    </RadioGroup>
-  );
-}
-
-/**
- * Fill-in-the-blank question input with text field
- */
-function FillInBlankInput({
-  question,
-  value,
-  onChange,
-}: {
-  question: FillInBlankQuestion;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <Input
-      data-testid={`input-${question.id}`}
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="回答を入力..."
-      className="max-w-sm"
-    />
   );
 }

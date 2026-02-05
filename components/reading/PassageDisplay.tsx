@@ -104,7 +104,7 @@ export function PassageDisplay({ passage, questions, handleSubmitAnswers }: Pass
       </Card>
 
       <div className="mt-4">
-        <ReadingTimer isRunning={true} wordCount={passage.wordCount} level={passage.level} />
+        <ReadingTimer level={passage.level} />
       </div>
 
       {questions.length > 0 && (

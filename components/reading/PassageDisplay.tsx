@@ -18,7 +18,7 @@ import { ReadingTimer } from './ReadingTimer';
 import { ComprehensionQuestions } from './ComprehensionQuestions';
 import { useVocabPopup } from '@/lib/hooks/use-vocab-popup';
 import { VocabularyPopup } from './VocabularyPopup';
-import { GeneratedWords } from './GeneratedWords';
+import { Word } from './Word';
 import { findContextSentence, stripPunctuation } from '@/lib/utils/string';
 import { checkAnswer } from '@/lib/utils/reading-session';
 
@@ -94,12 +94,21 @@ export function PassageDisplay({ passage, questions, handleSubmitAnswers }: Pass
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <GeneratedWords
-            words={words}
-            passage={passage}
-            clickedWord={clickedWord}
-            onWordClick={onWordClick}
-          />
+          <article data-testid="passage-content" className="leading-relaxed text-lg">
+            {words.map((word, index) => {
+              return (
+                <Word
+                  key={`${word}-${index}`}
+                  word={word}
+                  index={index}
+                  passage={passage}
+                  clickedWord={clickedWord}
+                  onWordClick={onWordClick}
+                  wordsLength={words.length}
+                />
+              );
+            })}
+          </article>
         </CardContent>
       </Card>
 

@@ -4,48 +4,16 @@ import { cn } from '@/lib/utils';
 import type { Passage } from '@/lib/types/reading';
 import { isGrammarWord, stripPunctuation } from '@/lib/utils/string';
 
-type GeneratedWordsProps = {
-  words: string[];
-  passage: Passage;
-  clickedWord: string | null;
-  onWordClick: (word: string, index: number) => void;
-};
-
-export function GeneratedWords({ words, passage, clickedWord, onWordClick }: GeneratedWordsProps) {
-  return (
-    <article data-testid="passage-content" className="leading-relaxed text-lg">
-      {words.map((word, index) => {
-        return (
-          <Word
-            key={`${word}-${index}`}
-            word={word}
-            index={index}
-            passage={passage}
-            clickedWord={clickedWord}
-            onWordClick={onWordClick}
-            wordsLength={words.length}
-          />
-        );
-      })}
-    </article>
-  );
-}
-
-function Word({
-  word,
-  index,
-  passage,
-  clickedWord,
-  onWordClick,
-  wordsLength,
-}: {
+type WordProps = {
   word: string;
   index: number;
   passage: Passage;
   clickedWord: string | null;
   onWordClick: (word: string, index: number) => void;
   wordsLength: number;
-}) {
+};
+
+export function Word({ word, index, passage, clickedWord, onWordClick, wordsLength }: WordProps) {
   const cleanWord = stripPunctuation(word);
   const grammarMatch = !!passage.grammarFocus && isGrammarWord(word, passage.grammarFocus);
   const isClicked = clickedWord === cleanWord.toLowerCase();

@@ -85,7 +85,7 @@ describe('useSummaryEvaluation', () => {
     it('should set error on failed response', async () => {
       vi.mocked(apiClient.apiPost).mockResolvedValue({
         success: false,
-        error: 'Evaluation failed',
+        error: '要約の評価に失敗しました',
       });
 
       const { result } = renderHook(() => useSummaryEvaluation());
@@ -99,7 +99,7 @@ describe('useSummaryEvaluation', () => {
       });
 
       expect(result.current.feedback).toBeNull();
-      expect(result.current.error).toBe('Evaluation failed');
+      expect(result.current.error).toBe('要約の評価に失敗しました');
       expect(result.current.isEvaluating).toBe(false);
     });
 

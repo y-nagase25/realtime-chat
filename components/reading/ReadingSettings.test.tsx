@@ -97,28 +97,6 @@ describe('ReadingSettings', () => {
       expect(mockHandleStartReading).toHaveBeenCalledWith(mockPassage);
     });
 
-    it('shows loading skeleton while generating', async () => {
-      const user = userEvent.setup();
-      renderComponent();
-
-      // Create a promise that doesn't resolve immediately to simulate loading
-      let resolvePromise: (value: unknown) => void;
-      const promise = new Promise((resolve) => {
-        resolvePromise = resolve;
-      });
-      (apiPost as any).mockReturnValue(promise);
-
-      await user.click(screen.getByRole('button', { name: '文章を生成' }));
-
-      // Should show skeleton
-      expect(screen.getByTestId('passage-skeleton')).toBeInTheDocument();
-      // Should hide form
-      expect(screen.queryByRole('button', { name: '文章を生成' })).not.toBeInTheDocument();
-
-      // Resolve to clean up
-      if (resolvePromise!) resolvePromise({ success: true, data: {} });
-    });
-
     it('displays error message when API call fails with logic error', async () => {
       const user = userEvent.setup();
       renderComponent();

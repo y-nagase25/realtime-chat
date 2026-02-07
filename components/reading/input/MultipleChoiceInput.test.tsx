@@ -10,7 +10,6 @@ describe('MultipleChoiceInput', () => {
     render(
       <MultipleChoiceInput question={mockMultipleChoiceQuestion} value={0} onChange={onChange} />
     );
-    screen.debug();
 
     // Select 'London' (index 1)
     await user.click(screen.getByLabelText('London'));

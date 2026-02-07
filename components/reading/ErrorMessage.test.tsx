@@ -1,12 +1,8 @@
-import { describe, it, expect, afterEach, vi } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ErrorMessage } from './ErrorMessage';
+import userEvent from '@testing-library/user-event';
 
 describe('ErrorMessage', () => {
-  afterEach(() => {
-    cleanup();
-  });
-
   const renderComponent = (messages: string = 'エラー', onRetry?: () => void) => {
     render(<ErrorMessage message={messages} onRetry={onRetry} />);
   };
@@ -33,12 +29,11 @@ describe('ErrorMessage', () => {
     expect(screen.queryByTestId('error-retry-button')).not.toBeInTheDocument();
   });
 
-  it('should call onRetry when retry button is clicked', () => {
+  it('should call onRetry when retry button is clicked', async () => {
+    const user = userEvent.setup();
     renderComponent('エラー', onRetry);
-    screen.debug();
 
-    fireEvent.click(screen.getByTestId('error-retry-button'));
-
+    await user.click(screen.getByTestId('error-retry-button'));
     expect(onRetry).toHaveBeenCalled();
   });
 });

@@ -13,7 +13,7 @@ type SummaryFeedbackDisplayProps = {
 
 export function SummaryFeedbackDisplay({ feedback }: SummaryFeedbackDisplayProps) {
   return (
-    <div className="mt-4 space-y-4 rounded-lg border p-4">
+    <div className="mt-4 space-y-4 rounded-lg border p-4" data-testid="summary-feedback">
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-muted-foreground">スコア:</span>
         <span
@@ -24,6 +24,7 @@ export function SummaryFeedbackDisplay({ feedback }: SummaryFeedbackDisplayProps
                 ? 'bg-yellow-100 text-yellow-800'
                 : 'bg-red-100 text-red-800'
           }`}
+          data-testid="summary-feedback-score"
         >
           {feedback.score}/100
         </span>

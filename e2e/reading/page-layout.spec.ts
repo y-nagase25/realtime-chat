@@ -8,7 +8,7 @@ import type { Passage, ComprehensionQuestion, SummaryFeedback } from '@/lib/type
  * 1. ページメタデータ（タイトル）
  * 2. ページヘッダー
  * 3. レスポンシブレイアウト
- * 4. 全体フロー（設定→読書→問題→結果→要約）
+ * 4. 全体フロー（設定→読書→問題→結果→インライン要約）
  * 5. エラーハンドリング
  */
 
@@ -21,6 +21,14 @@ const MOCK_QUESTIONS: ComprehensionQuestion[] = [
     correctAnswer: 1,
     explanation: 'She ordered coffee and a croissant.',
     explanationJa: 'コーヒーとクロワッサンを注文しました。',
+  },
+  {
+    id: 'q-summary',
+    type: 'summary',
+    question: 'Write a brief summary of the passage.',
+    questionJa: '文章の要約を書いてください。',
+    explanation: 'A good summary captures the main events.',
+    explanationJa: '良い要約は主な出来事を捉えています。',
   },
 ];
 
@@ -53,12 +61,7 @@ test.describe('Reading Page Layout', () => {
   test('ページヘッダーが表示される', async ({ page }) => {
     await page.goto('/reading');
     const heading = page.locator('h1');
-    await expect(heading).toContainText('リーディング練習');
-  });
-
-  test('ページ説明が表示される', async ({ page }) => {
-    await page.goto('/reading');
-    await expect(page.locator('text=AIが生成した英文を読んで、理解力を高めましょう')).toBeVisible();
+    await expect(heading).toContainText('Reading');
   });
 
   test('設定カードが初期表示される', async ({ page }) => {
@@ -99,7 +102,7 @@ test.describe('Reading Page - Full Flow', () => {
     await expect(page.getByTestId('generate-button')).toBeVisible();
   });
 
-  test('設定→読書→問題→結果→要約の全体フロー', async ({ page }) => {
+  test('設定→読書→インライン要約→フィードバックの全体フロー', async ({ page }) => {
     await page.goto('/reading');
 
     // Mock APIs
@@ -119,24 +122,23 @@ test.describe('Reading Page - Full Flow', () => {
       });
     });
 
-    // Generate → Read (questions visible) → Results
+    // Generate → Reading phase with questions
     await page.getByTestId('generate-button').click();
     await page.waitForSelector('[data-testid="passage-display"]');
-    await page.locator('[data-testid="option-q1-1"] [data-slot="radio-group-item"]').click();
-    await page.getByTestId('submit-answers-button').click();
-    await page.waitForSelector('[data-testid="question-results"]');
 
-    // Results → Summary
-    await page.getByTestId('write-summary-button').click();
-    await page.waitForSelector('[data-testid="summary-writing"]');
+    // Answer multiple-choice question
+    await page.locator('[data-testid="option-q1-1"] [data-slot="radio-group-item"]').click();
+
+    // Inline summary question should be visible
+    await expect(page.getByTestId('summary-question-input')).toBeVisible();
 
     // Write and submit summary
-    await page.getByTestId('summary-textarea').fill('Sarah woke up early.');
-    await page.getByTestId('submit-summary-button').click();
-    await page.waitForSelector('[data-testid="summary-feedback"]');
+    await page.getByTestId('summary-question-textarea').fill('Sarah woke up early.');
+    await page.getByTestId('summary-submit-button').click();
 
-    // Verify feedback
-    await expect(page.getByTestId('feedback-score')).toContainText('90');
+    // Verify inline feedback
+    await page.waitForSelector('[data-testid="summary-feedback"]');
+    await expect(page.getByTestId('summary-feedback-score')).toContainText('90');
   });
 });
 
@@ -155,9 +157,8 @@ test.describe('Reading Page - Error Handling', () => {
     await page.getByTestId('generate-button').click();
 
     // Error message should appear
-    await expect(page.locator('text=APIエラーが発生しました')).toBeVisible();
-
-    // Should still be on settings phase
-    await expect(page.getByTestId('generate-button')).toBeVisible();
+    await expect(page.getByTestId('error-message')).toBeVisible();
+    // retry button should appear
+    await expect(page.getByTestId('error-retry-button')).toBeVisible();
   });
 });

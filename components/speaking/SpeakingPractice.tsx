@@ -74,7 +74,7 @@ export function SpeakingPractice({ question }: SpeakingPracticeProps) {
     <div className="space-y-6">
       {/* Error Display */}
       {error && state === 'error' && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" data-testid="audio-recorder-error-message">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertDescription>
             <div className="font-medium">{error}</div>

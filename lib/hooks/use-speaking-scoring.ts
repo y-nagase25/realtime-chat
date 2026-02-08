@@ -73,34 +73,6 @@ function speakingReducer(state: SpeakingState, event: SpeakingEvent): SpeakingSt
 }
 
 /**
- * Retry helper with exponential backoff
- */
-async function withRetry<T>(fn: () => Promise<T>, maxRetries: number = 3): Promise<T> {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await fn();
-    } catch (error) {
-      const err = error as Error;
-
-      // Don't retry on validation errors
-      if (err.message.includes('Invalid')) {
-        throw err;
-      }
-
-      // last attempt
-      if (i === maxRetries - 1) {
-        throw err;
-      }
-
-      // Exponential backoff
-      await new Promise((resolve) => setTimeout(resolve, 2 ** i * 1000));
-    }
-  }
-
-  throw new Error('Unexpected state: retry loop completed without result');
-}
-
-/**
  * Main hook for speaking practice scoring
  */
 export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeakingScoringReturn {
@@ -125,20 +97,10 @@ export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeak
         });
         formData.append('file', audioFile);
 
-        const response = await withRetry(async () => {
-          try {
-            return await apiPostFormData<{ transcription?: { text: string }; text?: string }>(
-              '/api/transcribe',
-              formData
-            );
-          } catch (err) {
-            if (err instanceof RateLimitError) {
-              showExceededUsageLimitToast();
-              throw new Error(EXCEEDED_USAGE_LIMIT_MSG);
-            }
-            throw err;
-          }
-        });
+        const response = await apiPostFormData<{ transcription?: { text: string }; text?: string }>(
+          '/api/transcribe',
+          formData
+        );
 
         // Handle response format: { transcription: { text: string } }
         const transcriptText = response.transcription?.text || response.text;
@@ -150,7 +112,11 @@ export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeak
           throw new Error('No transcript returned');
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Transcription failed';
+        let errorMessage = '文字起こしに失敗しました';
+        if (err instanceof RateLimitError) {
+          showExceededUsageLimitToast();
+          errorMessage = EXCEEDED_USAGE_LIMIT_MSG;
+        }
         setError(errorMessage);
         dispatch({ type: 'TRANSCRIPTION_ERROR', error: err as Error });
       }
@@ -174,9 +140,7 @@ export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeak
           userTranscript,
         };
 
-        const response = await withRetry(async () => {
-          return await apiPost<ScoringResponse>('/api/speaking/score', requestBody);
-        });
+        const response = await apiPost<ScoringResponse>('/api/speaking/score', requestBody);
 
         if (response.success && response.data) {
           setScoringResult(response.data);
@@ -185,12 +149,16 @@ export function useSpeakingScoring(options: UseSpeakingScoringOptions): UseSpeak
           throw new Error(response.error || 'Scoring failed');
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Scoring failed';
+        let errorMessage = '採点に失敗しました';
+        if (err instanceof RateLimitError) {
+          showExceededUsageLimitToast();
+          errorMessage = EXCEEDED_USAGE_LIMIT_MSG;
+        }
         setError(errorMessage);
         dispatch({ type: 'SCORING_ERROR', error: err as Error });
       }
     },
-    [options]
+    [options, showExceededUsageLimitToast]
   );
 
   /**

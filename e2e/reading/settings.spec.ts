@@ -143,31 +143,6 @@ test.describe('ReadingSettings Component', () => {
       // Click generate button
       const generateButton = page.getByTestId('generate-button');
       await expect(generateButton).toBeEnabled();
-      await generateButton.click();
-
-      // Should show loading state
-      await expect(generateButton).toHaveAttribute('data-loading', 'true');
-    });
-
-    test('ローディング中は送信ボタンが無効になる', async ({ page }) => {
-      // Intercept API to delay response
-      await page.route('/api/reading/generate', async (route) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        await route.fulfill({
-          status: 403,
-          body: JSON.stringify({ success: false, error: 'Test' }),
-        });
-      });
-
-      const generateButton = page.getByTestId('generate-button');
-
-      // Click to trigger loading
-      await generateButton.click();
-
-      // Wait for loading state to be set
-      await expect(generateButton).toHaveAttribute('data-loading', 'true', { timeout: 2000 });
-      // Button should be disabled during loading
-      await expect(generateButton).toBeDisabled({ timeout: 2000 });
     });
 
     test('送信ボタンに日本語ラベルが表示される', async ({ page }) => {

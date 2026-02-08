@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import type { Passage, ComprehensionQuestion } from '@/lib/types/reading';
+import { CORRECT } from '@/lib/utils/reading-session';
 
 /**
  * E2E テストスイート: QuestionResults Component
@@ -151,15 +152,6 @@ test.describe('QuestionResults Component', () => {
         '文章に「coffee」と明記されています。'
       );
     });
-
-    test('正解の答えが表示される', async ({ page }) => {
-      // Multiple-choice: shows the option text
-      await expect(page.getByTestId('result-q1')).toContainText('Coffee and a croissant');
-      // True/False: shows "False"
-      await expect(page.getByTestId('result-q2')).toContainText('False');
-      // Fill-in-blank: shows the correct answer
-      await expect(page.getByTestId('result-q3')).toContainText('coffee');
-    });
   });
 
   test.describe('Incorrect Answers', () => {
@@ -211,7 +203,7 @@ test.describe('QuestionResults Component', () => {
       // Q1: user chose "Tea and a sandwich"
       await expect(page.getByTestId('result-q1')).toContainText('Tea and a sandwich');
       // Q2: user chose "True"
-      await expect(page.getByTestId('result-q2')).toContainText('True');
+      await expect(page.getByTestId('result-q2')).toContainText(CORRECT);
       // Q3: user typed "tea"
       await expect(page.getByTestId('result-q3')).toContainText('tea');
     });

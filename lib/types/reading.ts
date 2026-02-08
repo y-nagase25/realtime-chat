@@ -29,6 +29,15 @@ export type GrammarPatternId =
   | 'passive-voice'
   | 'conditionals';
 
+/**
+ * Settings selected by the user
+ */
+export type ReadingSettingsValue = {
+  level: ReadingLevel;
+  topic: ReadingTopicId;
+  grammarFocus?: GrammarPatternId;
+};
+
 export type GrammarPattern = {
   id: GrammarPatternId;
   labelEn: string;
@@ -109,6 +118,20 @@ export type ComprehensionQuestion =
   | TrueFalseQuestion
   | FillInBlankQuestion
   | SummaryQuestion;
+
+/**
+ * User answer type - supports all question types
+ */
+export type UserAnswer = string | number | boolean;
+
+/**
+ * Result for a single question
+ */
+export type QuestionResult = {
+  question: ComprehensionQuestion;
+  userAnswer: UserAnswer;
+  isCorrect: boolean;
+};
 
 /**
  * Vocabulary entry with Japanese translation

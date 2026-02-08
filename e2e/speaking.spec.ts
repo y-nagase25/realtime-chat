@@ -1,3 +1,4 @@
+import { EXCEEDED_USAGE_LIMIT_MSG } from '@/lib/constants';
 import { test, expect } from '@playwright/test';
 
 // マイク権限と偽の音声入力を有効化
@@ -73,6 +74,8 @@ test.describe('スピーキング機能 - 使用制限チェック', () => {
     await page.locator('button:has(svg.lucide-pause)').click();
 
     // エラーメッセージの表示確認
-    await expect(page.getByText(/Error: 本日の利用制限を超えました。/)).toBeVisible();
+    const errorMessage = page.getByTestId('audio-recorder-error-message');
+    await expect(errorMessage).toBeVisible();
+    await expect(errorMessage).toContainText(EXCEEDED_USAGE_LIMIT_MSG);
   });
 });

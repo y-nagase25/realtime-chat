@@ -32,7 +32,7 @@ export function SummaryQuestionInput({ question, passageContent }: SummaryQuesti
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-testid="summary-question-input">
       <div className="flex items-center gap-2">
         <span className="rounded bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
           任意
@@ -52,6 +52,7 @@ export function SummaryQuestionInput({ question, passageContent }: SummaryQuesti
         maxLength={2000}
         disabled={isEvaluating}
         className="resize-y"
+        data-testid="summary-question-textarea"
       />
 
       <div className="flex items-center justify-between">
@@ -67,12 +68,22 @@ export function SummaryQuestionInput({ question, passageContent }: SummaryQuesti
           {trimmedLength} / {minLength}文字
         </span>
 
-        <Button onClick={handleSubmit} disabled={!canSubmit} size="sm" variant="outline">
+        <Button
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          size="sm"
+          variant="outline"
+          data-testid="summary-submit-button"
+        >
           {isEvaluating ? '評価中...' : feedback ? '再送信' : '送信'}
         </Button>
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="text-sm text-destructive" data-testid="summary-error">
+          {error}
+        </p>
+      )}
 
       {feedback && <SummaryFeedbackDisplay feedback={feedback} />}
     </div>

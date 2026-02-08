@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import type { Passage, ComprehensionQuestion } from '@/lib/types/reading';
+import { CORRECT, INCORRECT } from '@/lib/utils/reading-session';
 
 /**
  * E2E テストスイート: ComprehensionQuestions Component
@@ -128,8 +129,8 @@ test.describe('ComprehensionQuestions Component', () => {
     });
 
     test('TrueとFalseのラベルが表示される', async ({ page }) => {
-      await expect(page.getByTestId('option-q2-true')).toContainText('True');
-      await expect(page.getByTestId('option-q2-false')).toContainText('False');
+      await expect(page.getByTestId('option-q2-true')).toContainText(CORRECT);
+      await expect(page.getByTestId('option-q2-false')).toContainText(INCORRECT);
     });
 
     test('True/Falseを選択できる', async ({ page }) => {

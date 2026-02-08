@@ -1,57 +1,22 @@
-/**
- * QuestionResults Component
- * Displays comprehension question results with score,
- * correct/incorrect indicators, and explanations in Japanese.
- */
-
 'use client';
 
-import type { ComprehensionQuestion, Passage } from '@/lib/types/reading';
-import type { UserAnswer } from '@/components/reading/ComprehensionQuestions';
+import type { QuestionResult } from '@/lib/types/reading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { formatCorrectAnswer, formatUserAnswer } from '@/lib/utils/reading-session';
 
-/**
- * Result for a single question
- */
-export type QuestionResult = {
-  question: ComprehensionQuestion;
-  userAnswer: UserAnswer;
-  isCorrect: boolean;
-};
-
-/**
- * Props for the QuestionResults component
- */
 export type QuestionResultsProps = {
-  /** Array of question results */
   results: QuestionResult[];
-  /** The passage that was read */
-  passage?: Passage;
-  /** Callback when user wants to save history and complete (new API) */
-  onSaveHistory?: () => void;
-  /**
-   * @deprecated Use onSaveHistory instead. This prop will be removed in future versions.
-   * Callback when user wants to generate a new passage (legacy API)
-   */
-  onNewPassage?: () => void;
+  handleReset?: () => void;
 };
 
 /**
  * QuestionResults - Displays score and explanations for answered questions
  */
-export function QuestionResults({
-  results,
-  passage: _passage,
-  onSaveHistory,
-  onNewPassage,
-}: QuestionResultsProps) {
+export function QuestionResults({ results, handleReset }: QuestionResultsProps) {
   const correctCount = results.filter((r) => r.isCorrect).length;
   const totalCount = results.length;
   const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
-
-  // Use onSaveHistory if provided, otherwise fall back to onNewPassage for backward compatibility
-  const handleComplete = onSaveHistory ?? onNewPassage;
 
   return (
     <Card data-testid="question-results">
@@ -75,7 +40,7 @@ export function QuestionResults({
         <div className="flex gap-3 pt-4">
           <Button
             data-testid="new-passage-button"
-            onClick={handleComplete}
+            onClick={handleReset}
             className="flex-1 min-h-11"
           >
             完了
@@ -143,36 +108,4 @@ function ResultItem({ result, index }: { result: QuestionResult; index: number }
       <p className="text-sm text-muted-foreground">解説: {question.explanationJa}</p>
     </div>
   );
-}
-
-/**
- * Format user's answer for display based on question type
- */
-function formatUserAnswer(question: ComprehensionQuestion, answer: UserAnswer): string {
-  switch (question.type) {
-    case 'multiple-choice':
-      return question.options[answer as number] ?? String(answer);
-    case 'true-false':
-      return answer === true ? 'True' : 'False';
-    case 'fill-in-blank':
-      return String(answer);
-    case 'summary':
-      return String(answer);
-  }
-}
-
-/**
- * Format correct answer for display based on question type
- */
-function formatCorrectAnswer(question: ComprehensionQuestion): string {
-  switch (question.type) {
-    case 'multiple-choice':
-      return question.options[question.correctAnswer];
-    case 'true-false':
-      return question.correctAnswer ? 'True' : 'False';
-    case 'fill-in-blank':
-      return question.correctAnswer;
-    case 'summary':
-      return '';
-  }
 }

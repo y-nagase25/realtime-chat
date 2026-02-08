@@ -8,7 +8,7 @@ import { RateLimitError } from '@/lib/errors';
 import { useToast } from '@/lib/hooks/use-toast';
 import { EXCEEDED_USAGE_LIMIT_MSG } from '@/lib/constants';
 
-export type VocabPopupState = {
+type VocabPopupState = {
   word: string;
   entry: VocabularyEntry | null;
   isLoading: boolean;
@@ -17,14 +17,14 @@ export type VocabPopupState = {
   context: string;
 };
 
-export interface UseVocabPopupReturn {
+type UseVocabPopupReturn = {
   vocabPopup: VocabPopupState | null;
   isSaved: boolean;
   handleWordClick: (word: string, context: string) => Promise<void>;
   handleRetry: () => void;
   handleSave: () => void;
   handleClose: () => void;
-}
+};
 
 /**
  * Custom hook for managing vocabulary popup state and interactions

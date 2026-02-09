@@ -2,7 +2,7 @@
  * Type definitions for usage statistics feature
  */
 
-import type { TokenUsageRow } from './db';
+import type { DailyUsageAggregates, TokenUsageRow } from './db';
 
 /**
  * Raw database record from usage_tracking table
@@ -64,3 +64,5 @@ export interface UsageDisplayState {
   hasError: boolean;
   refetch: () => void;
 }
+
+export type DailyUsageAggregatesClient = Omit<DailyUsageAggregates, 'date' | 'updated_at'>;

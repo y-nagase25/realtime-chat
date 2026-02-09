@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS } from '@/lib/constants';
+import { useDailyUsage } from '@/lib/hooks/context/useDailyUsage';
 
 export function Header() {
   const pathname = usePathname();
+  const { usageAmount } = useDailyUsage();
 
   const isActiveLink = (href: string): boolean => {
     return pathname.startsWith(href);
@@ -46,6 +48,9 @@ export function Header() {
               </Link>
             ))}
           </div>
+        </div>
+        <div>
+          {usageAmount.total_tokens} / {usageAmount.audio_duration_seconds}
         </div>
       </nav>
     </header>

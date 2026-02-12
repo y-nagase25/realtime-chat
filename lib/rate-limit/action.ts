@@ -8,7 +8,6 @@ import type { DailyUsageAggregatesClient } from '../types/usage-stats';
  */
 export async function fetchUsageAggregates(): Promise<DailyUsageAggregatesClient> {
   const result = await getUsageLimit();
-  console.log(result);
 
   // if result contains 0 row, today's usage is 0
   if (result.error && result.error.code === 'PGRST116') {

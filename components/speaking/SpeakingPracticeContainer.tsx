@@ -1,12 +1,9 @@
-/**
- * Speaking Practice Container Component
- * Manages question selection state for QuestionsList and SpeakingPractice components
- */
-
 'use client';
 
+import { useEffect } from 'react';
 import type { Question } from '@/lib/types/db';
 import { useQuestionSelection } from '@/lib/hooks/use-question-selection';
+import { useDailyUsage } from '@/lib/hooks/context/useDailyUsage';
 import { QuestionsList } from '@/components/QuestionsList';
 import { SpeakingPractice } from './SpeakingPractice';
 
@@ -16,6 +13,11 @@ interface SpeakingPracticeContainerProps {
 
 export function SpeakingPracticeContainer({ questions }: SpeakingPracticeContainerProps) {
   const { selectedQuestion, selectQuestion } = useQuestionSelection(questions);
+  const { fetchUsageAmount } = useDailyUsage();
+
+  useEffect(() => {
+    fetchUsageAmount();
+  }, [fetchUsageAmount]);
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-10">

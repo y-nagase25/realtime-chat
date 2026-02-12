@@ -5,12 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS } from '@/lib/constants';
-import { useDailyUsage } from '@/lib/hooks/context/useDailyUsage';
+import { HeaderPopover } from './HeaderPopover';
 
 export function Header() {
   const pathname = usePathname();
-  const { usageAmount } = useDailyUsage();
-
   const isActiveLink = (href: string): boolean => {
     return pathname.startsWith(href);
   };
@@ -49,9 +47,7 @@ export function Header() {
             ))}
           </div>
         </div>
-        <div>
-          {usageAmount.total_tokens} / {usageAmount.audio_duration_seconds}
-        </div>
+        <HeaderPopover />
       </nav>
     </header>
   );

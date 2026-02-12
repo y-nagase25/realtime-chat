@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { ReadingSettings } from '@/components/reading/ReadingSettings';
 import { PassageDisplay } from '@/components/reading/PassageDisplay';
 import { QuestionResults } from '@/components/reading/QuestionResults';
@@ -9,9 +10,11 @@ import type { ReadingSession } from '@/lib/types/local-storage';
 import { useLocalStorage, READING_HISTORY_STORAGE_KEY } from '@/lib/hooks/use-local-storage';
 import { buildSessionData } from '@/lib/utils/reading-session';
 import { useReadingReducer } from '@/lib/hooks/use-reading-reducer';
+import { useDailyUsage } from '@/lib/hooks/context/useDailyUsage';
 
 export function ReadingPageClient() {
   const [readingState, dispatch] = useReadingReducer();
+  const { fetchUsageAmount } = useDailyUsage();
 
   // Custom hooks
   const { add: addReadingHistory } = useLocalStorage<ReadingSession>(READING_HISTORY_STORAGE_KEY);
@@ -45,6 +48,11 @@ export function ReadingPageClient() {
 
     dispatch({ type: 'RESET' });
   };
+
+  useEffect(() => {
+    // fetch usage amount when reading page is mounted
+    fetchUsageAmount();
+  }, [fetchUsageAmount]);
 
   return (
     <>

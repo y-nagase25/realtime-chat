@@ -50,11 +50,16 @@ export function AudioRecorder({
         </ItemContent>
         <ItemActions>
           {!isRecording ? (
-            <Button onClick={startRecording} disabled={disabled}>
+            <Button onClick={startRecording} disabled={disabled} data-testid="start-recording">
               <Mic />
             </Button>
           ) : (
-            <Button onClick={stopRecording} disabled={disabled} variant="destructive">
+            <Button
+              onClick={stopRecording}
+              disabled={disabled}
+              variant="destructive"
+              data-testid="stop-recording"
+            >
               <Pause />
             </Button>
           )}

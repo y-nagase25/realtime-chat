@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { CsrfProvider } from '@/components/providers/CsrfProvider';
 import { APP_NAME } from '@/lib/constants';
 import { Toaster } from 'sonner';
+import { DailyUsageProvider } from '@/components/providers/DailyUsageProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,13 +33,15 @@ export default function RootLayout({
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <CsrfProvider>
-          <div className="min-h-screen bg-background">
-            <div className="mx-auto max-w-[1480px] px-4 py-8">
-              <Header />
-              <div className="container mx-auto p-6">{children}</div>
+          <DailyUsageProvider>
+            <div className="min-h-screen bg-background">
+              <div className="mx-auto max-w-[1480px] px-4 py-8">
+                <Header />
+                <div className="container mx-auto p-6">{children}</div>
+              </div>
             </div>
-          </div>
-          <Toaster />
+            <Toaster />
+          </DailyUsageProvider>
         </CsrfProvider>
       </body>
     </html>

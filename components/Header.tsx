@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS } from '@/lib/constants';
+import { HeaderPopover } from './HeaderPopover';
 
 export function Header() {
   const pathname = usePathname();
-
   const isActiveLink = (href: string): boolean => {
     return pathname.startsWith(href);
   };
@@ -47,6 +47,7 @@ export function Header() {
             ))}
           </div>
         </div>
+        <HeaderPopover />
       </nav>
     </header>
   );

@@ -31,14 +31,14 @@ test.describe('スピーキング機能 - 使用制限チェック', () => {
 
     // 質問が表示されるのを待つ (データがない場合に備えてタイムアウト長め推奨だが、モックAPIを使うのが本来はベスト)
     // ここでは画面上の最初の「録音開始」ボタンを探す
-    const recordButton = page.locator('button:has(svg.lucide-mic)');
+    const recordButton = page.getByTestId('start-recording');
     await expect(recordButton).toBeVisible();
 
     // 3. 録音操作の実行
     await recordButton.click();
 
     // 録音中状態（停止ボタン表示）を確認
-    const stopButton = page.locator('button:has(svg.lucide-pause)');
+    const stopButton = page.getByTestId('stop-recording');
     await expect(stopButton).toBeVisible();
 
     // 少し待ってから停止（実際の録音時間を模倣）
@@ -67,11 +67,16 @@ test.describe('スピーキング機能 - 使用制限チェック', () => {
 
     await page.goto('/speaking');
 
-    const recordButton = page.locator('button:has(svg.lucide-mic)');
+    const recordButton = page.getByTestId('start-recording');
     await expect(recordButton).toBeVisible();
+
     await recordButton.click();
+
+    const stopButton = page.getByTestId('stop-recording');
+    await expect(stopButton).toBeVisible();
+
     await page.waitForTimeout(1000);
-    await page.locator('button:has(svg.lucide-pause)').click();
+    await stopButton.click();
 
     // エラーメッセージの表示確認
     const errorMessage = page.getByTestId('audio-recorder-error-message');
